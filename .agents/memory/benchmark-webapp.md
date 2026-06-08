@@ -34,5 +34,12 @@ must label it so higher always reads as better.
 - OpenAPI YAML: a `description:` value starting with `""` or containing ` | ` is
   parsed as a YAML block scalar and breaks orval ("Failed to resolve input").
   Quote such descriptions or avoid `|`.
-- Provider default models + judge model are duplicated in both `config.py` and the
-  server's `lib/benchmark/config.ts`; keep them in sync if changed.
+- The actual model name per provider is chosen by the PYTHON CLI (`config.py`
+  DEFAULT_MODELS), NOT the server. The server's `lib/benchmark/config.ts`
+  defaultModel is display-only. Keep the two in sync, but fixing a bad model
+  means editing `config.py`.
+- Gemini model names go stale fast: `gemini-1.5-flash` now returns 404 (model not
+  found for v1beta generateContent). Verify against the live ListModels endpoint
+  (`/v1beta/models?key=...`) before setting a default; `gemini-2.0-flash` works.
+- Provider rate-limits make a real 50-question × 4-model run slow (~24s/req in the
+  query phase, ~45 min, then a faster judge phase). Set expectations accordingly.

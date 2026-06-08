@@ -40,7 +40,7 @@ DEFAULT_MODELS = {
     "openai": os.environ.get("OPENAI_MODEL", "gpt-4o-mini"),
     "anthropic": os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-4-5-20250929"),
     "mistral": os.environ.get("MISTRAL_MODEL", "mistral-large-latest"),
-    "gemini": os.environ.get("GEMINI_MODEL", "gemini-1.5-flash"),
+    "gemini": os.environ.get("GEMINI_MODEL", "gemini-2.0-flash"),
     "ollama": os.environ.get("OLLAMA_MODEL", "llama3.1"),
 }
 

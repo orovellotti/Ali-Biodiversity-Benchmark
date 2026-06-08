@@ -26,7 +26,7 @@ const PROVIDER_DEFS: ProviderDef[] = [
   { id: "openai", envKey: "OPENAI_API_KEY", defaultModel: process.env["OPENAI_MODEL"] ?? "gpt-4o-mini" },
   { id: "anthropic", envKey: "ANTHROPIC_API_KEY", defaultModel: process.env["ANTHROPIC_MODEL"] ?? "claude-sonnet-4-5-20250929" },
   { id: "mistral", envKey: "MISTRAL_API_KEY", defaultModel: process.env["MISTRAL_MODEL"] ?? "mistral-large-latest" },
-  { id: "gemini", envKey: "GEMINI_API_KEY", defaultModel: process.env["GEMINI_MODEL"] ?? "gemini-1.5-flash" },
+  { id: "gemini", envKey: "GEMINI_API_KEY", defaultModel: process.env["GEMINI_MODEL"] ?? "gemini-2.0-flash" },
   { id: "ollama", envKey: null, defaultModel: process.env["OLLAMA_MODEL"] ?? "llama3.1" },
 ];
 
