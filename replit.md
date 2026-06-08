@@ -1,6 +1,19 @@
-# [Project name]
+# Biodiversity Judgment Benchmark
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+A Python CLI (`biodiversity-benchmark/`) that benchmarks multiple LLMs (OpenAI, Anthropic, Mistral, Gemini, Ollama) against the 800-question biodiversity judgment dataset, scores answers with an OpenAI LLM-as-judge, and produces comparative CSV + Markdown reports.
+
+## Biodiversity Benchmark (Python CLI)
+
+- Lives in `biodiversity-benchmark/` — standalone, independent of the pnpm/TS workspace below.
+- Run a quick check (no API calls): `cd biodiversity-benchmark && python main.py --dry-run --limit 5`
+- Full run: `python main.py --models openai,anthropic,mistral,gemini --limit 50`
+- Requires `OPENAI_API_KEY` (also used by the judge); other provider keys optional.
+- Outputs land in `biodiversity-benchmark/outputs/` (raw_results.jsonl, evaluated_results.jsonl, comparison.csv, summary_by_model.csv, summary_by_topic.csv, report.md).
+- See `biodiversity-benchmark/README.md` for full usage.
+
+---
+
+_The sections below describe the pnpm/TypeScript workspace scaffold that ships with the repo (not currently used by the benchmark CLI)._
 
 ## Run & Operate
 

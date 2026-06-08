@@ -1,0 +1,1 @@
+- [LLM provider SDK gotchas](llm-sdk-gotchas.md) — mistralai 2.x install broken (pin 1.x); Anthropic `-latest` aliases 404 (use dated ids); Gemini free-tier 429; pandas to_markdown needs tabulate.
