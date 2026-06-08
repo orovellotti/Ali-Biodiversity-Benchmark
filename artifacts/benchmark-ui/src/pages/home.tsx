@@ -164,6 +164,9 @@ export function Home() {
                               >
                                 {p.id} ({p.defaultModel})
                               </label>
+                              {p.id === "openai-small" && (
+                                <span className="text-xs text-muted-foreground">Petit modèle « baseline » volontairement plus faible (comparaison)</span>
+                              )}
                               {!p.available && (
                                 <span className="text-xs text-muted-foreground">Non disponible (clé API manquante ou serveur local hors ligne)</span>
                               )}

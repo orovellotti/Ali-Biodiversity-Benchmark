@@ -44,6 +44,13 @@ must label it so higher always reads as better.
   DEFAULT_MODELS), NOT the server. The server's `lib/benchmark/config.ts`
   defaultModel is display-only. Keep the two in sync, but fixing a bad model
   means editing `config.py`.
+- Adding a new provider/model id touches FIVE places: (1) `config.py`
+  PROVIDER_API_KEYS + DEFAULT_MODELS, (2) a provider class under
+  `providers/` + register in `providers/__init__.py` PROVIDER_CLASSES,
+  (3) `--models` help text in `main.py`, (4) server `config.ts` PROVIDER_DEFS
+  (drives UI + VALID_PROVIDERS run validation), (5) optional UI label/note.
+  OpenAI-compatible variants can subclass OpenAIProvider and just set a new
+  `name` (the base looks up its key via `config.get_api_key(self.name)`).
 - Gemini model names go stale fast: `gemini-1.5-flash` now returns 404 (model not
   found for v1beta generateContent). Verify against the live ListModels endpoint
   (`/v1beta/models?key=...`) before setting a default; `gemini-2.0-flash` works.

@@ -7,13 +7,14 @@ from .base import BaseProvider, ProviderError
 from .gemini_provider import GeminiProvider
 from .mistral_provider import MistralProvider
 from .ollama_provider import OllamaProvider
-from .openai_provider import OpenAIProvider
+from .openai_provider import OpenAIProvider, OpenAISmallProvider
 
 PROVIDER_CLASSES = {
     "openai": OpenAIProvider,
     "anthropic": AnthropicProvider,
     "mistral": MistralProvider,
     "gemini": GeminiProvider,
+    "openai-small": OpenAISmallProvider,
     "ollama": OllamaProvider,
 }
 

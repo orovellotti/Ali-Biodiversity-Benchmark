@@ -16,7 +16,7 @@ class OpenAIProvider(BaseProvider):
 
     def _get_client(self):
         if self._client is None:
-            api_key = config.get_api_key("openai")
+            api_key = config.get_api_key(self.name)
             if not api_key:
                 raise ProviderError("OPENAI_API_KEY manquante.")
             try:
@@ -27,7 +27,7 @@ class OpenAIProvider(BaseProvider):
         return self._client
 
     def is_available(self) -> bool:
-        return bool(config.get_api_key("openai"))
+        return bool(config.get_api_key(self.name))
 
     def _generate(self, system: str, user: str) -> str:
         client = self._get_client()
@@ -44,3 +44,13 @@ class OpenAIProvider(BaseProvider):
         if not content:
             raise ProviderError("Réponse OpenAI vide.")
         return content.strip()
+
+
+class OpenAISmallProvider(OpenAIProvider):
+    """Petit modèle OpenAI volontairement plus faible (baseline de comparaison).
+
+    Réutilise le client OpenAI et la clé OPENAI_API_KEY, mais pointe par défaut
+    vers un modèle plus ancien/léger (gpt-3.5-turbo).
+    """
+
+    name = "openai-small"

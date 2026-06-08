@@ -30,6 +30,9 @@ PROVIDER_API_KEYS = {
     "anthropic": "ANTHROPIC_API_KEY",
     "mistral": "MISTRAL_API_KEY",
     "gemini": "GEMINI_API_KEY",
+    # Petit modèle "baseline" volontairement plus faible (même clé qu'OpenAI),
+    # utile comme point de comparaison bas dans le classement.
+    "openai-small": "OPENAI_API_KEY",
     "ollama": None,
 }
 
@@ -41,6 +44,7 @@ DEFAULT_MODELS = {
     "anthropic": os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-4-5-20250929"),
     "mistral": os.environ.get("MISTRAL_MODEL", "mistral-large-latest"),
     "gemini": os.environ.get("GEMINI_MODEL", "gemini-2.0-flash"),
+    "openai-small": os.environ.get("OPENAI_SMALL_MODEL", "gpt-3.5-turbo"),
     "ollama": os.environ.get("OLLAMA_MODEL", "llama3.1"),
 }
 
