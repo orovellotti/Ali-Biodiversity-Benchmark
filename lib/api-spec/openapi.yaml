@@ -314,6 +314,9 @@ components:
           type: string
         model:
           type: string
+        size:
+          type: ["string", "null"]
+          description: "Approximate model size class (e.g. Petit, Moyen, Grand)"
         nQuestions:
           type: integer
         nErrors:

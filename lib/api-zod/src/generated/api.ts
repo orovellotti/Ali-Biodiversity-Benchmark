@@ -141,6 +141,7 @@ export const GetRunResultsResponse = zod.object({
   "summaryByModel": zod.array(zod.object({
   "provider": zod.string(),
   "model": zod.string(),
+  "size": zod.string().nullish().describe('Approximate model size class (e.g. Petit, Moyen, Grand)'),
   "nQuestions": zod.number(),
   "nErrors": zod.number(),
   "avgLatency": zod.number().nullish(),

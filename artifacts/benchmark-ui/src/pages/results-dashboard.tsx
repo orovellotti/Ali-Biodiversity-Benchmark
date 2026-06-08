@@ -119,7 +119,12 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
                   <div className="font-bold text-lg">{modelSummary.model}</div>
                   <Badge variant={index === 0 ? "default" : "secondary"}>#{index + 1}</Badge>
                 </div>
-                <div className="text-sm text-muted-foreground mb-4">{modelSummary.provider}</div>
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="text-sm text-muted-foreground">{modelSummary.provider}</span>
+                  {modelSummary.size && (
+                    <Badge variant="outline" className="text-xs">Taille : {modelSummary.size}</Badge>
+                  )}
+                </div>
                 
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
@@ -153,7 +158,7 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
                 variant="ghost" 
                 size="icon" 
                 className="h-8 w-8"
-                onClick={() => exportToCSV("scores-dimensions.csv", results.summaryByModel, ["model", "accuracy", "uncertaintyHandling", "justificationQuality", "sourceAwareness", "regulatoryHallucinationRisk"])}
+                onClick={() => exportToCSV("scores-dimensions.csv", results.summaryByModel, ["model", "size", "accuracy", "uncertaintyHandling", "justificationQuality", "sourceAwareness", "regulatoryHallucinationRisk"])}
               >
                 <Download className="w-4 h-4" />
               </Button>

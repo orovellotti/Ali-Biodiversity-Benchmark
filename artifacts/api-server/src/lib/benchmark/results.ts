@@ -8,6 +8,7 @@ import type {
 } from "@workspace/api-zod";
 import { runDir } from "./paths";
 import { getRun } from "./runner";
+import { modelSize } from "./config";
 
 interface RawRow {
   question_id?: string;
@@ -124,6 +125,7 @@ function summarizeModels(rows: ResultRow[]): ModelSummary[] {
     out.push({
       provider: first.provider,
       model: first.model,
+      size: modelSize(first.model),
       nQuestions: group.length,
       nErrors: group.filter((r) => r.error).length,
       avgLatency: avg(latencies),

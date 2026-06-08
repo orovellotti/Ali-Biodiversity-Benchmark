@@ -56,3 +56,9 @@ must label it so higher always reads as better.
   (`/v1beta/models?key=...`) before setting a default; `gemini-2.0-flash` works.
 - Provider rate-limits make a real 50-question × 4-model run slow (~24s/req in the
   query phase, ~45 min, then a faster judge phase). Set expectations accordingly.
+- Model "size" in ModelSummary is HEURISTIC, not real param counts (vendors don't
+  publish them). `modelSize()` in server `config.ts` substring-matches the model
+  name → qualitative French tier (Petit/Moyen/Grand), null if unknown. Computed at
+  RESULTS READ TIME (results.ts summarizeModels), so historical runs get it free.
+  Rule ORDER matters: more-specific substrings (gpt-4o-mini) must come before
+  broader ones (gpt-4o) or minis get mislabeled Grand.

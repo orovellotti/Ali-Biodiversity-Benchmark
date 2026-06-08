@@ -89,6 +89,11 @@ export interface Run {
 export interface ModelSummary {
   provider: string;
   model: string;
+  /**
+     * Approximate model size class (e.g. Petit, Moyen, Grand)
+     * @nullable
+     */
+  size?: string | null;
   nQuestions: number;
   nErrors: number;
   /** @nullable */

@@ -33,6 +33,35 @@ const PROVIDER_DEFS: ProviderDef[] = [
 
 export const VALID_PROVIDERS = PROVIDER_DEFS.map((p) => p.id);
 
+// Approximate size class for a model. Exact parameter counts are not published
+// by most providers, so these are qualitative tiers (Petit / Moyen / Grand)
+// based on each model's positioning. Matched by substring on the model name.
+const SIZE_RULES: { match: string; size: string }[] = [
+  { match: "gpt-3.5", size: "Petit" },
+  { match: "gpt-4o-mini", size: "Petit" },
+  { match: "gpt-4o", size: "Grand" },
+  { match: "o1-mini", size: "Petit" },
+  { match: "flash", size: "Petit" },
+  { match: "haiku", size: "Petit" },
+  { match: "sonnet", size: "Grand" },
+  { match: "opus", size: "Grand" },
+  { match: "mistral-small", size: "Petit" },
+  { match: "ministral", size: "Petit" },
+  { match: "mistral-large", size: "Grand" },
+  { match: "gemini-2.0-pro", size: "Grand" },
+  { match: "gemini-1.5-pro", size: "Grand" },
+  { match: "llama3.1", size: "Moyen" },
+];
+
+export function modelSize(model: string | null | undefined): string | null {
+  if (!model) return null;
+  const m = model.toLowerCase();
+  for (const rule of SIZE_RULES) {
+    if (m.includes(rule.match)) return rule.size;
+  }
+  return null;
+}
+
 export function judgeModel(): string {
   return process.env["OPENAI_JUDGE_MODEL"] ?? "gpt-4o-mini";
 }
