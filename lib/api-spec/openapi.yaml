@@ -143,6 +143,20 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /benchmark/questions:
+    get:
+      operationId: listQuestions
+      tags: [benchmark]
+      summary: Preview the benchmark question base
+      responses:
+        "200":
+          description: All questions in the dataset
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/QuestionPreview"
 components:
   schemas:
     HealthStatus:
@@ -159,6 +173,26 @@ components:
           type: string
       required:
         - error
+    QuestionPreview:
+      type: object
+      required: [id, question]
+      properties:
+        id:
+          type: string
+        topic:
+          type: ["string", "null"]
+        subtopic:
+          type: ["string", "null"]
+        difficulty:
+          type: ["string", "null"]
+        questionType:
+          type: ["string", "null"]
+        countryScope:
+          type: ["string", "null"]
+        question:
+          type: string
+        expectedAnswerShort:
+          type: ["string", "null"]
     Provider:
       type: object
       required: [id, defaultModel, available, requiresKey]

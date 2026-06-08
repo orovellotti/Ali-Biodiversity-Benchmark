@@ -5,8 +5,10 @@ import {
   GetRunResponse,
   GetRunResultsResponse,
   ListRunsResponse,
+  ListQuestionsResponse,
 } from "@workspace/api-zod";
 import { getBenchmarkConfig } from "../lib/benchmark/config";
+import { listQuestions } from "../lib/benchmark/dataset";
 import {
   createRun,
   deleteRun,
@@ -20,6 +22,11 @@ const router: IRouter = Router();
 
 router.get("/benchmark/config", (_req, res) => {
   const data = GetBenchmarkConfigResponse.parse(getBenchmarkConfig());
+  res.json(data);
+});
+
+router.get("/benchmark/questions", (_req, res) => {
+  const data = ListQuestionsResponse.parse(listQuestions());
   res.json(data);
 });
 

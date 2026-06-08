@@ -23,6 +23,7 @@ import type {
   BenchmarkConfig,
   Error,
   HealthStatus,
+  QuestionPreview,
   Run,
   RunInput,
   RunResults
@@ -556,6 +557,83 @@ export function useGetRunResults<TData = Awaited<ReturnType<typeof getRunResults
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getGetRunResultsQueryOptions(runId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getListQuestionsUrl = () => {
+
+
+
+
+  return `/api/benchmark/questions`
+}
+
+/**
+ * @summary Preview the benchmark question base
+ */
+export const listQuestions = async ( options?: RequestInit): Promise<QuestionPreview[]> => {
+
+  return customFetch<QuestionPreview[]>(getListQuestionsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListQuestionsQueryKey = () => {
+    return [
+    `/api/benchmark/questions`
+    ] as const;
+    }
+
+
+export const getListQuestionsQueryOptions = <TData = Awaited<ReturnType<typeof listQuestions>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listQuestions>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListQuestionsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listQuestions>>> = ({ signal }) => listQuestions({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listQuestions>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListQuestionsQueryResult = NonNullable<Awaited<ReturnType<typeof listQuestions>>>
+export type ListQuestionsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Preview the benchmark question base
+ */
+
+export function useListQuestions<TData = Awaited<ReturnType<typeof listQuestions>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listQuestions>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListQuestionsQueryOptions(options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

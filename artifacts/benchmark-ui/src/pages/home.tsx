@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
 import { DarkModeToggle } from "@/components/controls";
+import { QuestionsPreview } from "@/components/questions-preview";
 import { t, formatDateTime } from "@/lib/format";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
@@ -108,6 +109,7 @@ export function Home() {
             </p>
           </div>
           <div className="flex items-center gap-3 pt-2 print:hidden">
+            <QuestionsPreview />
             <DarkModeToggle />
           </div>
         </div>

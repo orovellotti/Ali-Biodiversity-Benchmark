@@ -13,6 +13,23 @@ export interface Error {
   error: string;
 }
 
+export interface QuestionPreview {
+  id: string;
+  /** @nullable */
+  topic?: string | null;
+  /** @nullable */
+  subtopic?: string | null;
+  /** @nullable */
+  difficulty?: string | null;
+  /** @nullable */
+  questionType?: string | null;
+  /** @nullable */
+  countryScope?: string | null;
+  question: string;
+  /** @nullable */
+  expectedAnswerShort?: string | null;
+}
+
 export interface Provider {
   id: string;
   defaultModel: string;

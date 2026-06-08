@@ -199,3 +199,19 @@ export const GetRunResultsResponse = zod.object({
 })
 
 
+/**
+ * @summary Preview the benchmark question base
+ */
+export const ListQuestionsResponseItem = zod.object({
+  "id": zod.string(),
+  "topic": zod.string().nullish(),
+  "subtopic": zod.string().nullish(),
+  "difficulty": zod.string().nullish(),
+  "questionType": zod.string().nullish(),
+  "countryScope": zod.string().nullish(),
+  "question": zod.string(),
+  "expectedAnswerShort": zod.string().nullish()
+})
+export const ListQuestionsResponse = zod.array(ListQuestionsResponseItem)
+
+

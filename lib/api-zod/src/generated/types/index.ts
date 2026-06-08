@@ -12,6 +12,7 @@ export * from './groupSummary';
 export * from './healthStatus';
 export * from './modelSummary';
 export * from './provider';
+export * from './questionPreview';
 export * from './resultRow';
 export * from './run';
 export * from './runInput';

@@ -16,6 +16,18 @@ export const TRANSLATIONS: Record<string, string> = {
   regulatoryHallucinationRisk: "Risque d'hallucination réglementaire",
   overallScore: "Score global",
 
+  // Difficulty
+  easy: "Facile",
+  medium: "Moyen",
+  hard: "Difficile",
+  expert: "Expert",
+
+  // Question types
+  factuel: "Factuel",
+  raisonnement: "Raisonnement",
+  arbitrage: "Arbitrage",
+  critique: "Critique",
+
   // Status
   queued: "En attente",
   running: "En cours",

@@ -4,8 +4,12 @@ import { datasetPath } from "./paths";
 interface Question {
   id: string;
   topic?: string;
+  subtopic?: string;
   difficulty?: string;
   question_type?: string;
+  country_scope?: string;
+  question?: string;
+  expected_answer_short?: string;
 }
 
 interface DatasetCache {
@@ -29,6 +33,30 @@ function load(): DatasetCache {
   ] as string[];
   cache = { questions, difficulties, questionTypes };
   return cache;
+}
+
+export interface QuestionPreview {
+  id: string;
+  topic: string | null;
+  subtopic: string | null;
+  difficulty: string | null;
+  questionType: string | null;
+  countryScope: string | null;
+  question: string;
+  expectedAnswerShort: string | null;
+}
+
+export function listQuestions(): QuestionPreview[] {
+  return load().questions.map((q) => ({
+    id: q.id,
+    topic: q.topic ?? null,
+    subtopic: q.subtopic ?? null,
+    difficulty: q.difficulty ?? null,
+    questionType: q.question_type ?? null,
+    countryScope: q.country_scope ?? null,
+    question: q.question ?? "",
+    expectedAnswerShort: q.expected_answer_short ?? null,
+  }));
 }
 
 export function totalQuestions(): number {

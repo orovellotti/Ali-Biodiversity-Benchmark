@@ -34,6 +34,12 @@ must label it so higher always reads as better.
 - OpenAPI YAML: a `description:` value starting with `""` or containing ` | ` is
   parsed as a YAML block scalar and breaks orval ("Failed to resolve input").
   Quote such descriptions or avoid `|`.
+- Orval array-response collision: defining a top-level component schema that is an
+  array (e.g. `ListXResponse: {type: array, items: ...}`) makes orval emit BOTH a
+  zod const and a generated type with the same name, and `@workspace/api-zod`
+  re-exports both → TS2308 "already exported a member". Fix: inline the array in the
+  response (`type: array; items: $ref` directly under the 200 schema) like
+  `/benchmark/runs` does; keep only the item as a named component schema.
 - The actual model name per provider is chosen by the PYTHON CLI (`config.py`
   DEFAULT_MODELS), NOT the server. The server's `lib/benchmark/config.ts`
   defaultModel is display-only. Keep the two in sync, but fixing a bad model
