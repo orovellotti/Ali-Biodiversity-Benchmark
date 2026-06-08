@@ -1,0 +1,140 @@
+Crée une application Python complète pour benchmarker plusieurs LLM à partir d’un fichier JSON nommé :
+
+biodiversity_judgment_benchmark_800_questions.json
+
+Objectif :
+L’application doit lire les 800 questions du benchmark biodiversité, interroger plusieurs APIs de modèles IA, évaluer leurs réponses, puis produire un rapport comparatif.
+
+APIs à supporter :
+- OpenAI
+- Anthropic
+- Mistral
+- Google Gemini
+- Ollama local si disponible
+
+Utilise des variables d’environnement :
+OPENAI_API_KEY
+ANTHROPIC_API_KEY
+MISTRAL_API_KEY
+GEMINI_API_KEY
+
+Structure attendue du projet :
+- main.py
+- config.py
+- providers/
+  - openai_provider.py
+  - anthropic_provider.py
+  - mistral_provider.py
+  - gemini_provider.py
+  - ollama_provider.py
+- evaluator.py
+- report.py
+- requirements.txt
+- README.md
+- outputs/
+
+Fonctionnement :
+1. Charger le fichier JSON.
+2. Permettre de choisir :
+   - tous les modèles
+   - un sous-ensemble de modèles
+   - un nombre limité de questions pour test rapide
+   - un topic spécifique : taxonomie, statuts_reglementaires, sequence_erc, etude_impact, restauration_ecologique, especes_protegees, services_ecosystemiques, arbitrages_socio_ecologiques
+3. Pour chaque question, envoyer au modèle un prompt standardisé.
+4. Stocker :
+   - id question
+   - topic
+   - difficulté
+   - modèle
+   - réponse brute
+   - temps de réponse
+   - erreur éventuelle
+5. Évaluer chaque réponse automatiquement selon les critères du fichier :
+   - exactitude scientifique
+   - prise en compte des incertitudes
+   - qualité de la justification
+   - citation ou mention des sources à vérifier
+   - absence d’hallucination réglementaire
+
+Méthode d’évaluation :
+Créer un évaluateur LLM-as-judge utilisant OpenAI par défaut.
+Le judge doit retourner un JSON strict :
+
+{
+  "accuracy": 0-5,
+  "uncertainty_handling": 0-5,
+  "justification_quality": 0-5,
+  "source_awareness": 0-5,
+  "regulatory_hallucination_risk": 0-5,
+  "overall_score": 0-100,
+  "strengths": "...",
+  "weaknesses": "...",
+  "verdict": "..."
+}
+
+Important :
+- regulatory_hallucination_risk doit être inversé : 5 = faible risque, 0 = fort risque.
+- Ne pas noter sévèrement l’absence de sources exactes si la question demande seulement une stratégie, mais pénaliser les affirmations réglementaires non sourcées.
+- Pour les questions d’arbitrage, valoriser la présentation des compromis plutôt qu’une position militante unique.
+
+Prompt standard envoyé aux modèles testés :
+
+Tu es un assistant expert en biodiversité, réglementation environnementale, séquence ERC, études d’impact et restauration écologique.
+Réponds de manière professionnelle, nuancée et vérifiable.
+Si une information réglementaire dépend du pays, de la région, de la date ou d’un arrêté, indique qu’elle doit être vérifiée dans une source officielle.
+Ne fabrique pas de statut réglementaire.
+Question :
+{question}
+
+Format de sortie :
+- Réponse synthétique
+- Raisonnement
+- Sources ou types de sources à vérifier
+- Incertitudes / points nécessitant validation humaine
+
+Sorties attendues :
+1. outputs/raw_results.jsonl
+2. outputs/evaluated_results.jsonl
+3. outputs/comparison.csv
+4. outputs/report.md
+5. outputs/summary_by_model.csv
+6. outputs/summary_by_topic.csv
+
+Le rapport Markdown doit inclure :
+- classement global des modèles
+- score moyen par modèle
+- score moyen par topic
+- score moyen par difficulté
+- top 10 meilleures réponses
+- top 10 pires réponses
+- analyse des risques d’hallucination réglementaire
+- analyse spécifique des questions d’arbitrage socio-écologique
+- recommandations pour choisir un modèle pour ALI / Natural Solutions
+
+Contraintes techniques :
+- Python 3.11
+- utiliser argparse
+- utiliser pandas
+- utiliser pydantic
+- utiliser tqdm
+- gérer les retries avec tenacity
+- journaliser les erreurs sans interrompre tout le benchmark
+- prévoir un mode --dry-run
+- prévoir un mode --limit 10
+- prévoir un mode --topic sequence_erc
+- prévoir un mode --models openai,mistral,anthropic
+
+Commande attendue :
+
+python main.py --input biodiversity_judgment_benchmark_800_questions.json --models openai,mistral,anthropic,gemini --limit 50
+
+Exemple de README :
+Explique comment :
+1. importer le fichier JSON dans Replit
+2. ajouter les secrets d’API
+3. lancer un test rapide
+4. lancer le benchmark complet
+5. lire les résultats
+
+Produis tout le code nécessaire.
+Le code doit être robuste, clair, commenté, et directement exécutable dans Replit.
