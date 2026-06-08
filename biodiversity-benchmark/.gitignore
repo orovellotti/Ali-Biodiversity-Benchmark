@@ -5,3 +5,4 @@ outputs/*.jsonl
 outputs/*.csv
 outputs/report.md
 !outputs/.gitkeep
+runs/

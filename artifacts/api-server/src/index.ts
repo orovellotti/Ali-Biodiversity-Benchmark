@@ -1,5 +1,8 @@
 import app from "./app";
 import { logger } from "./lib/logger";
+import { reconcileOnStartup } from "./lib/benchmark/runner";
+
+reconcileOnStartup();
 
 const rawPort = process.env["PORT"];
 

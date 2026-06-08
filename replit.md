@@ -35,15 +35,22 @@ _The sections below describe the pnpm/TypeScript workspace scaffold that ships w
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- API contract (source of truth): `lib/api-spec/openapi.yaml` → run codegen to regenerate hooks/Zod (`@workspace/api-client-react`, `@workspace/api-zod`).
+- Benchmark backend: `artifacts/api-server/src/lib/benchmark/*` (paths, dataset, config, runner, results) + `src/routes/benchmark.ts` (mounted under `/api`).
+- Web front end (French): `artifacts/benchmark-ui` (React/Vite, previewPath `/`). Pages in `src/pages/{home,run-detail,results-dashboard}.tsx`; French label helpers in `src/lib/format.ts`.
+- Python CLI (unchanged engine): `biodiversity-benchmark/main.py`.
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- The web app drives the existing Python CLI as a subprocess; it does not reimplement scoring. The CLI writes live progress to a `--progress-file` (status.json) consumed by the API.
+- Per-run state = server-written `meta.json` + python-written `status.json`, merged by the runner. `runs/` is gitignored; runs left active across a server restart are reconciled to "interrupted".
+- Live progress is polled ~2s from the UI (local subprocess — the data-viz 5-min refresh floor deliberately does not apply).
+- `runId` is strictly validated (regex + path-containment) before any filesystem op to prevent path traversal; run inputs (models/topic/limit) are validated server-side (400 on bad input).
+- `regulatory_hallucination_risk` is an inverted score (5 = no risk); the UI labels it so higher always reads as better.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+A French-language control room for benchmarking LLMs (OpenAI, Anthropic, Mistral, Gemini) against the 800-question biodiversity judgment dataset. Users configure & launch runs (pick models/topic/limit, dry-run, skip-eval), watch live progress, and explore results: model rankings, comparative charts by topic/difficulty, and a filterable per-question drill-down with raw answers and judge verdicts. CSV export per table/chart and PDF print of the results page.
 
 ## User preferences
 

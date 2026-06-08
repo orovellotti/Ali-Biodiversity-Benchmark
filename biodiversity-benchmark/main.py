@@ -32,6 +32,39 @@ logger = logging.getLogger("benchmark")
 
 
 # --------------------------------------------------------------------------- #
+# Suivi de progression (fichier JSON lisible par le serveur web)
+# --------------------------------------------------------------------------- #
+def write_progress(
+    path: str | None,
+    phase: str,
+    completed: int,
+    total: int,
+    extra: dict | None = None,
+) -> None:
+    """Écrit l'état d'avancement dans un fichier JSON (écriture atomique)."""
+    if not path:
+        return
+    payload = {
+        "phase": phase,
+        "completed": completed,
+        "total": total,
+        "updated_at": time.time(),
+    }
+    if extra:
+        payload.update(extra)
+    try:
+        directory = os.path.dirname(path)
+        if directory:
+            os.makedirs(directory, exist_ok=True)
+        tmp = f"{path}.tmp"
+        with open(tmp, "w", encoding="utf-8") as fh:
+            json.dump(payload, fh, ensure_ascii=False)
+        os.replace(tmp, path)
+    except Exception:  # pragma: no cover - le suivi ne doit jamais interrompre
+        pass
+
+
+# --------------------------------------------------------------------------- #
 # Chargement et filtrage des questions
 # --------------------------------------------------------------------------- #
 def load_questions(path: str) -> tuple[dict, list[dict]]:
@@ -101,11 +134,16 @@ def init_providers(names: list[str], dry_run: bool) -> list:
 # Boucle principale d'interrogation
 # --------------------------------------------------------------------------- #
 def query_models(
-    providers: list, questions: list[dict], dry_run: bool
+    providers: list,
+    questions: list[dict],
+    dry_run: bool,
+    progress_file: str | None = None,
 ) -> list[dict]:
     """Interroge chaque modèle pour chaque question."""
     raw_results: list[dict] = []
     total = len(providers) * len(questions)
+    completed = 0
+    write_progress(progress_file, "query", completed, total)
     pbar = tqdm(total=total, desc="Interrogation", unit="req")
 
     for provider in providers:
@@ -130,7 +168,9 @@ def query_models(
                 record["raw_response"] = "[DRY-RUN] Aucune requête envoyée."
                 record["latency_seconds"] = 0.0
                 raw_results.append(record)
+                completed += 1
                 pbar.update(1)
+                write_progress(progress_file, "query", completed, total)
                 continue
 
             start = time.time()
@@ -149,7 +189,9 @@ def query_models(
                 record["latency_seconds"] = round(time.time() - start, 3)
 
             raw_results.append(record)
+            completed += 1
             pbar.update(1)
+            write_progress(progress_file, "query", completed, total)
 
     pbar.close()
     return raw_results
@@ -159,10 +201,16 @@ def query_models(
 # Évaluation LLM-as-judge
 # --------------------------------------------------------------------------- #
 def evaluate_results(
-    raw_results: list[dict], questions_by_id: dict, dry_run: bool
+    raw_results: list[dict],
+    questions_by_id: dict,
+    dry_run: bool,
+    progress_file: str | None = None,
 ) -> list[dict]:
     """Évalue chaque réponse via le juge et fusionne les scores."""
     evaluated: list[dict] = []
+    total = len(raw_results)
+    completed = 0
+    write_progress(progress_file, "evaluate", completed, total)
 
     judge = None
     if not dry_run:
@@ -211,6 +259,8 @@ def evaluate_results(
 
         merged.update(scores)
         evaluated.append(merged)
+        completed += 1
+        write_progress(progress_file, "evaluate", completed, total)
 
     return evaluated
 
@@ -265,6 +315,11 @@ def build_parser() -> argparse.ArgumentParser:
         "--output-dir",
         default="outputs",
         help="Dossier de sortie des résultats et rapports.",
+    )
+    parser.add_argument(
+        "--progress-file",
+        default=None,
+        help="Fichier JSON où écrire l'avancement (utilisé par l'interface web).",
     )
     parser.add_argument(
         "--dry-run",
@@ -325,7 +380,9 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     # 1. Interrogation des modèles
-    raw_results = query_models(providers, questions, args.dry_run)
+    raw_results = query_models(
+        providers, questions, args.dry_run, args.progress_file
+    )
     raw_path = os.path.join(args.output_dir, "raw_results.jsonl")
     write_jsonl(raw_results, raw_path)
     logger.info("Réponses brutes écrites dans %s", raw_path)
@@ -333,16 +390,20 @@ def main(argv: list[str] | None = None) -> int:
     # 2. Évaluation
     questions_by_id = {q.get("id"): q for q in all_questions}
     dry_or_skip = args.dry_run or args.no_eval
-    evaluated = evaluate_results(raw_results, questions_by_id, dry_or_skip)
+    evaluated = evaluate_results(
+        raw_results, questions_by_id, dry_or_skip, args.progress_file
+    )
     eval_path = os.path.join(args.output_dir, "evaluated_results.jsonl")
     write_jsonl(evaluated, eval_path)
     logger.info("Résultats évalués écrits dans %s", eval_path)
 
     # 3. Rapports
+    write_progress(args.progress_file, "report", len(evaluated), len(evaluated))
     meta = dict(meta)
     meta["judge_model"] = config.JUDGE_MODEL
     generate_all_reports(evaluated, args.output_dir, meta=meta)
 
+    write_progress(args.progress_file, "done", len(evaluated), len(evaluated))
     logger.info("Terminé. Consultez %s/report.md", args.output_dir)
     return 0
 

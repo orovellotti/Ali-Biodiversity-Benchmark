@@ -10,6 +10,8 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: benchmark
+    description: Biodiversity LLM benchmark operations
 paths:
   /healthz:
     get:
@@ -24,6 +26,123 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /benchmark/config:
+    get:
+      operationId: getBenchmarkConfig
+      tags: [benchmark]
+      summary: Benchmark configuration
+      description: Available providers, topics, difficulties and dataset metadata.
+      responses:
+        "200":
+          description: Configuration
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BenchmarkConfig"
+  /benchmark/runs:
+    get:
+      operationId: listRuns
+      tags: [benchmark]
+      summary: List benchmark runs
+      responses:
+        "200":
+          description: List of runs (most recent first)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Run"
+    post:
+      operationId: createRun
+      tags: [benchmark]
+      summary: Start a new benchmark run
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RunInput"
+      responses:
+        "201":
+          description: Run started
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Run"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /benchmark/runs/{runId}:
+    get:
+      operationId: getRun
+      tags: [benchmark]
+      summary: Get a single run with live progress
+      parameters:
+        - name: runId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Run detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Run"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      operationId: deleteRun
+      tags: [benchmark]
+      summary: Delete a run and its outputs
+      parameters:
+        - name: runId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /benchmark/runs/{runId}/results:
+    get:
+      operationId: getRunResults
+      tags: [benchmark]
+      summary: Aggregated results for a run
+      parameters:
+        - name: runId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Aggregated results
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RunResults"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   schemas:
     HealthStatus:
@@ -33,4 +152,240 @@ components:
           type: string
       required:
         - status
-
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+    Provider:
+      type: object
+      required: [id, defaultModel, available, requiresKey]
+      properties:
+        id:
+          type: string
+        defaultModel:
+          type: string
+        available:
+          type: boolean
+        requiresKey:
+          type: boolean
+    BenchmarkConfig:
+      type: object
+      required:
+        - providers
+        - topics
+        - difficulties
+        - questionTypes
+        - judgeModel
+        - judgeAvailable
+        - totalQuestions
+      properties:
+        providers:
+          type: array
+          items:
+            $ref: "#/components/schemas/Provider"
+        topics:
+          type: array
+          items:
+            type: string
+        difficulties:
+          type: array
+          items:
+            type: string
+        questionTypes:
+          type: array
+          items:
+            type: string
+        judgeModel:
+          type: string
+        judgeAvailable:
+          type: boolean
+        totalQuestions:
+          type: integer
+    RunInput:
+      type: object
+      required: [models]
+      properties:
+        models:
+          type: array
+          minItems: 1
+          items:
+            type: string
+        limit:
+          type: ["integer", "null"]
+        topic:
+          type: ["string", "null"]
+        dryRun:
+          type: boolean
+          default: false
+        noEval:
+          type: boolean
+          default: false
+    Run:
+      type: object
+      required:
+        - id
+        - status
+        - phase
+        - models
+        - dryRun
+        - noEval
+        - completed
+        - total
+        - createdAt
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+          description: "queued, running, completed, failed or interrupted"
+        phase:
+          type: string
+          description: "empty, query, evaluate, report or done"
+        models:
+          type: array
+          items:
+            type: string
+        limit:
+          type: ["integer", "null"]
+        topic:
+          type: ["string", "null"]
+        dryRun:
+          type: boolean
+        noEval:
+          type: boolean
+        completed:
+          type: integer
+        total:
+          type: integer
+        questionCount:
+          type: ["integer", "null"]
+        createdAt:
+          type: string
+        startedAt:
+          type: ["string", "null"]
+        finishedAt:
+          type: ["string", "null"]
+        error:
+          type: ["string", "null"]
+        judgeModel:
+          type: ["string", "null"]
+    ModelSummary:
+      type: object
+      required: [provider, model, nQuestions, nErrors]
+      properties:
+        provider:
+          type: string
+        model:
+          type: string
+        nQuestions:
+          type: integer
+        nErrors:
+          type: integer
+        avgLatency:
+          type: ["number", "null"]
+        accuracy:
+          type: ["number", "null"]
+        uncertaintyHandling:
+          type: ["number", "null"]
+        justificationQuality:
+          type: ["number", "null"]
+        sourceAwareness:
+          type: ["number", "null"]
+        regulatoryHallucinationRisk:
+          type: ["number", "null"]
+        overallScore:
+          type: ["number", "null"]
+    GroupSummary:
+      type: object
+      required: [group, provider, model]
+      properties:
+        group:
+          type: string
+          description: topic or difficulty label
+        provider:
+          type: string
+        model:
+          type: string
+        overallScore:
+          type: ["number", "null"]
+        accuracy:
+          type: ["number", "null"]
+        uncertaintyHandling:
+          type: ["number", "null"]
+        justificationQuality:
+          type: ["number", "null"]
+        sourceAwareness:
+          type: ["number", "null"]
+        regulatoryHallucinationRisk:
+          type: ["number", "null"]
+    ResultRow:
+      type: object
+      required: [questionId, provider, model]
+      properties:
+        questionId:
+          type: string
+        topic:
+          type: ["string", "null"]
+        subtopic:
+          type: ["string", "null"]
+        difficulty:
+          type: ["string", "null"]
+        questionType:
+          type: ["string", "null"]
+        countryScope:
+          type: ["string", "null"]
+        question:
+          type: ["string", "null"]
+        provider:
+          type: string
+        model:
+          type: string
+        rawResponse:
+          type: ["string", "null"]
+        latencySeconds:
+          type: ["number", "null"]
+        error:
+          type: ["string", "null"]
+        accuracy:
+          type: ["number", "null"]
+        uncertaintyHandling:
+          type: ["number", "null"]
+        justificationQuality:
+          type: ["number", "null"]
+        sourceAwareness:
+          type: ["number", "null"]
+        regulatoryHallucinationRisk:
+          type: ["number", "null"]
+        overallScore:
+          type: ["number", "null"]
+        strengths:
+          type: ["string", "null"]
+        weaknesses:
+          type: ["string", "null"]
+        verdict:
+          type: ["string", "null"]
+    RunResults:
+      type: object
+      required: [run, summaryByModel, summaryByTopic, summaryByDifficulty, rows]
+      properties:
+        run:
+          $ref: "#/components/schemas/Run"
+        summaryByModel:
+          type: array
+          items:
+            $ref: "#/components/schemas/ModelSummary"
+        summaryByTopic:
+          type: array
+          items:
+            $ref: "#/components/schemas/GroupSummary"
+        summaryByDifficulty:
+          type: array
+          items:
+            $ref: "#/components/schemas/GroupSummary"
+        rows:
+          type: array
+          items:
+            $ref: "#/components/schemas/ResultRow"
