@@ -2,19 +2,9 @@ import type { BenchmarkConfig, Provider } from "@workspace/api-zod";
 import {
   difficulties,
   questionTypes,
+  topics,
   totalQuestions,
 } from "./dataset";
-
-export const TOPICS = [
-  "taxonomie",
-  "statuts_reglementaires",
-  "sequence_erc",
-  "etude_impact",
-  "restauration_ecologique",
-  "especes_protegees",
-  "services_ecosystemiques",
-  "arbitrages_socio_ecologiques",
-];
 
 interface ProviderDef {
   id: string;
@@ -83,7 +73,7 @@ function providers(): Provider[] {
 export function getBenchmarkConfig(): BenchmarkConfig {
   return {
     providers: providers(),
-    topics: TOPICS,
+    topics: topics(),
     difficulties: difficulties(),
     questionTypes: questionTypes(),
     judgeModel: judgeModel(),

@@ -25,7 +25,7 @@ export function benchmarkDir(): string {
 export function datasetPath(): string {
   return path.join(
     benchmarkDir(),
-    "biodiversity_judgment_benchmark_800_questions.json",
+    "biodiversity_benchmark_80_v2_discriminant.json",
   );
 }
 

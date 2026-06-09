@@ -1,7 +1,7 @@
 """Point d'entrée du benchmark biodiversité multi-LLM.
 
 Exemple :
-    python main.py --input biodiversity_judgment_benchmark_800_questions.json \\
+    python main.py --input biodiversity_benchmark_80_v2_discriminant.json \\
         --models openai,mistral,anthropic,gemini --limit 50
 """
 
@@ -80,17 +80,23 @@ def load_questions(path: str) -> tuple[dict, list[dict]]:
     return meta, questions
 
 
+def topic_of(question: dict) -> str | None:
+    """Dimension de regroupement : ``topic`` (anciens jeux) ou ``section``."""
+    return question.get("topic") or question.get("section")
+
+
 def filter_questions(
     questions: list[dict], topic: str | None, limit: int | None
 ) -> list[dict]:
-    """Filtre par topic puis applique une limite."""
+    """Filtre par topic/section puis applique une limite."""
     filtered = questions
     if topic:
-        filtered = [q for q in filtered if q.get("topic") == topic]
+        filtered = [q for q in filtered if topic_of(q) == topic]
         if not filtered:
+            available = sorted({t for q in questions if (t := topic_of(q))})
             raise ValueError(
                 f"Aucune question pour le topic {topic!r}. "
-                f"Topics disponibles : {', '.join(config.TOPICS)}"
+                f"Topics disponibles : {', '.join(available)}"
             )
     if limit is not None:
         filtered = filtered[:limit]
@@ -148,10 +154,10 @@ def query_models(
 
     for provider in providers:
         for q in questions:
-            user_prompt = config.build_user_prompt(q.get("question", ""))
+            user_prompt = config.build_user_prompt(q)
             record = {
                 "question_id": q.get("id"),
-                "topic": q.get("topic"),
+                "topic": topic_of(q),
                 "subtopic": q.get("subtopic"),
                 "difficulty": q.get("difficulty"),
                 "question_type": q.get("question_type"),
@@ -285,7 +291,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--input",
-        default="biodiversity_judgment_benchmark_800_questions.json",
+        default="biodiversity_benchmark_80_v2_discriminant.json",
         help="Chemin du fichier JSON du benchmark.",
     )
     parser.add_argument(
@@ -296,9 +302,8 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--topic",
-        choices=config.TOPICS,
         default=None,
-        help="Limiter le benchmark à un topic.",
+        help="Limiter le benchmark à un topic/section (valeurs lues dans le jeu de données).",
     )
     parser.add_argument(
         "--limit",

@@ -4,8 +4,8 @@ import path from "node:path";
 import type { Run, RunInput } from "@workspace/api-zod";
 import { logger } from "../logger";
 import { benchmarkDir, runDir, runsDir } from "./paths";
-import { questionCount, totalQuestions } from "./dataset";
-import { judgeModel, VALID_PROVIDERS, TOPICS } from "./config";
+import { questionCount, totalQuestions, topics } from "./dataset";
+import { judgeModel, VALID_PROVIDERS } from "./config";
 
 interface RunMeta {
   id: string;
@@ -167,7 +167,7 @@ export function createRun(input: RunInput): Run {
       );
     }
   }
-  if (topic != null && !TOPICS.includes(topic)) {
+  if (topic != null && !topics().includes(topic)) {
     throw new ValidationError(`Topic inconnu : ${topic}`);
   }
   const dryRun = input.dryRun ?? false;

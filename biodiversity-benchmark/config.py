@@ -9,19 +9,8 @@ from __future__ import annotations
 
 import os
 
-# --------------------------------------------------------------------------- #
-# Topics disponibles dans le benchmark (utilisés par --topic)
-# --------------------------------------------------------------------------- #
-TOPICS = [
-    "taxonomie",
-    "statuts_reglementaires",
-    "sequence_erc",
-    "etude_impact",
-    "restauration_ecologique",
-    "especes_protegees",
-    "services_ecosystemiques",
-    "arbitrages_socio_ecologiques",
-]
+# Les topics/sections disponibles sont désormais dérivés dynamiquement du jeu
+# de données chargé (champ `section` ou `topic`), il n'y a plus de liste figée.
 
 # Fournisseurs supportés et la variable d'environnement contenant leur clé.
 # Ollama est local et ne nécessite pas de clé.
@@ -85,10 +74,51 @@ USER_PROMPT_TEMPLATE = (
     "- Incertitudes / points nécessitant validation humaine"
 )
 
+# Consigne spécifique aux questions de raisonnement sur graphe de connaissance.
+GRAPH_INSTRUCTION = (
+    "Ce graphe de connaissance est la SEULE source autorisée pour répondre. "
+    "N'ajoute aucun fait externe au graphe. Donne explicitement les chemins de "
+    "preuve (la suite de triplets utilisés) et distingue clairement les effets "
+    "directs des effets indirects."
+)
 
-def build_user_prompt(question: str) -> str:
-    """Construit le prompt utilisateur standardisé pour une question."""
-    return USER_PROMPT_TEMPLATE.format(question=question)
+
+def format_graph_context(graph: dict | None) -> str:
+    """Formate un graphe de connaissance (triplets) en texte lisible, ou ''."""
+    if not isinstance(graph, dict):
+        return ""
+    triples = graph.get("triples") or []
+    if not isinstance(triples, (list, tuple)) or not triples:
+        return ""
+    name = graph.get("name", "")
+    header = "# Graphe de connaissance fourni"
+    if name:
+        header += f" ({name})"
+    lines = []
+    for t in triples:
+        if isinstance(t, (list, tuple)) and len(t) == 3:
+            lines.append(f"- {t[0]} --[{t[1]}]--> {t[2]}")
+        else:
+            lines.append(f"- {t}")
+    return header + "\n" + "\n".join(lines)
+
+
+def build_user_prompt(question: dict) -> str:
+    """Construit le prompt utilisateur standardisé pour une question.
+
+    Pour les questions disposant d'un ``graph_context``, le graphe est injecté
+    en tête du prompt avec la consigne de répondre uniquement à partir de
+    celui-ci.
+    """
+    text = question.get("question", "")
+    graph_block = format_graph_context(question.get("graph_context"))
+    if graph_block:
+        return (
+            f"{graph_block}\n\n"
+            f"{GRAPH_INSTRUCTION}\n\n"
+            f"{USER_PROMPT_TEMPLATE.format(question=text)}"
+        )
+    return USER_PROMPT_TEMPLATE.format(question=text)
 
 
 # --------------------------------------------------------------------------- #
@@ -111,7 +141,7 @@ JUDGE_USER_TEMPLATE = """Évalue la réponse d'un modèle à une question de bio
 
 # Type de question
 {question_type} (topic : {topic}, difficulté : {difficulty})
-
+{graph_section}
 # Réponse attendue (squelette générique, non exhaustif)
 {expected_answer}
 
@@ -136,6 +166,10 @@ JUDGE_USER_TEMPLATE = """Évalue la réponse d'un modèle à une question de bio
 - Pour les questions d'arbitrage, valorise la présentation équilibrée des
   compromis (écologie / développement / parties prenantes) plutôt qu'une
   position militante unique.
+- Pour les questions de raisonnement sur graphe de connaissance, vérifie la
+  fidélité STRICTE au graphe fourni : pénalise tout fait ajouté absent des
+  triplets, et valorise les chemins de preuve corrects ainsi que la distinction
+  entre effets directs et indirects.
 
 Renvoie STRICTEMENT ce JSON (et rien d'autre) :
 {{
@@ -155,11 +189,19 @@ def build_judge_prompt(question: dict, model_answer: str) -> str:
     """Construit le prompt du juge à partir d'une question et d'une réponse."""
     criteria = question.get("evaluation_criteria", [])
     criteria_txt = "\n".join(f"- {c}" for c in criteria) if criteria else "- (non précisés)"
+    graph_block = format_graph_context(question.get("graph_context"))
+    graph_section = (
+        f"\n# Graphe de connaissance fourni au modèle (seule source autorisée)\n"
+        f"{graph_block}\n"
+        if graph_block
+        else ""
+    )
     return JUDGE_USER_TEMPLATE.format(
         question=question.get("question", ""),
         question_type=question.get("question_type", "?"),
-        topic=question.get("topic", "?"),
+        topic=question.get("topic") or question.get("section", "?"),
         difficulty=question.get("difficulty", "?"),
+        graph_section=graph_section,
         expected_answer=question.get("expected_answer_short", "(non fournie)"),
         evaluation_criteria=criteria_txt,
         model_answer=model_answer,

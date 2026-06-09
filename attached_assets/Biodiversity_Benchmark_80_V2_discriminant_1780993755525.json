@@ -1,0 +1,2558 @@
+{
+  "metadata": {
+    "name": "Biodiversity Benchmark 80 - V2 Discriminant",
+    "version": "2.0",
+    "language": "fr",
+    "total": 80,
+    "structure": {
+      "factual_easy": 20,
+      "factual_expert": 20,
+      "bias_and_dilemmas": 20,
+      "knowledge_graph_reasoning": 20
+    },
+    "purpose": "Benchmark court et discriminant pour comparer des LLM sur culture biodiversité, expertise réglementaire, biais socio-écologiques et raisonnement sur graphe de connaissance.",
+    "recommended_prompting": "Pour les questions KG, demander explicitement au modèle de répondre uniquement à partir du graphe fourni."
+  },
+  "questions": [
+    {
+      "id": "BIO-EASY-001",
+      "section": "factual_easy",
+      "difficulty": "easy",
+      "question_type": "domain_knowledge",
+      "question": "Définissez la biodiversité en distinguant diversité génétique, diversité spécifique et diversité écosystémique.",
+      "expected_answer_short": "Réponse exacte, pédagogique, sans surinterprétation réglementaire.",
+      "evaluation_criteria": [
+        "exactitude scientifique",
+        "clarté",
+        "absence d'affirmation réglementaire non sourcée",
+        "capacité à distinguer concepts proches"
+      ]
+    },
+    {
+      "id": "BIO-EASY-002",
+      "section": "factual_easy",
+      "difficulty": "easy",
+      "question_type": "domain_knowledge",
+      "question": "Quelle est la différence entre une espèce indigène, une espèce exotique et une espèce exotique envahissante ?",
+      "expected_answer_short": "Réponse exacte, pédagogique, sans surinterprétation réglementaire.",
+      "evaluation_criteria": [
+        "exactitude scientifique",
+        "clarté",
+        "absence d'affirmation réglementaire non sourcée",
+        "capacité à distinguer concepts proches"
+      ]
+    },
+    {
+      "id": "BIO-EASY-003",
+      "section": "factual_easy",
+      "difficulty": "easy",
+      "question_type": "domain_knowledge",
+      "question": "Qu'est-ce qu'un habitat naturel et pourquoi est-il important pour l'évaluation biodiversité ?",
+      "expected_answer_short": "Réponse exacte, pédagogique, sans surinterprétation réglementaire.",
+      "evaluation_criteria": [
+        "exactitude scientifique",
+        "clarté",
+        "absence d'affirmation réglementaire non sourcée",
+        "capacité à distinguer concepts proches"
+      ]
+    },
+    {
+      "id": "BIO-EASY-004",
+      "section": "factual_easy",
+      "difficulty": "easy",
+      "question_type": "domain_knowledge",
+      "question": "Expliquez simplement ce qu'est une zone humide et citez trois fonctions écologiques importantes.",
+      "expected_answer_short": "Réponse exacte, pédagogique, sans surinterprétation réglementaire.",
+      "evaluation_criteria": [
+        "exactitude scientifique",
+        "clarté",
+        "absence d'affirmation réglementaire non sourcée",
+        "capacité à distinguer concepts proches"
+      ]
+    },
+    {
+      "id": "BIO-EASY-005",
+      "section": "factual_easy",
+      "difficulty": "easy",
+      "question_type": "domain_knowledge",
+      "question": "Qu'est-ce qu'un corridor écologique ? Donnez un exemple concret.",
+      "expected_answer_short": "Réponse exacte, pédagogique, sans surinterprétation réglementaire.",
+      "evaluation_criteria": [
+        "exactitude scientifique",
+        "clarté",
+        "absence d'affirmation réglementaire non sourcée",
+        "capacité à distinguer concepts proches"
+      ]
+    },
+    {
+      "id": "BIO-EASY-006",
+      "section": "factual_easy",
+      "difficulty": "easy",
+      "question_type": "domain_knowledge",
+      "question": "Expliquez la différence entre protection réglementaire et statut de menace sur liste rouge.",
+      "expected_answer_short": "Réponse exacte, pédagogique, sans surinterprétation réglementaire.",
+      "evaluation_criteria": [
+        "exactitude scientifique",
+        "clarté",
+        "absence d'affirmation réglementaire non sourcée",
+        "capacité à distinguer concepts proches"
+      ]
+    },
+    {
+      "id": "BIO-EASY-007",
+      "section": "factual_easy",
+      "difficulty": "easy",
+      "question_type": "domain_knowledge",
+      "question": "Qu'est-ce que la fragmentation des habitats et quels effets peut-elle avoir sur les espèces ?",
+      "expected_answer_short": "Réponse exacte, pédagogique, sans surinterprétation réglementaire.",
+      "evaluation_criteria": [
+        "exactitude scientifique",
+        "clarté",
+        "absence d'affirmation réglementaire non sourcée",
+        "capacité à distinguer concepts proches"
+      ]
+    },
+    {
+      "id": "BIO-EASY-008",
+      "section": "factual_easy",
+      "difficulty": "easy",
+      "question_type": "domain_knowledge",
+      "question": "Expliquez la séquence éviter, réduire, compenser en une réponse courte.",
+      "expected_answer_short": "Réponse exacte, pédagogique, sans surinterprétation réglementaire.",
+      "evaluation_criteria": [
+        "exactitude scientifique",
+        "clarté",
+        "absence d'affirmation réglementaire non sourcée",
+        "capacité à distinguer concepts proches"
+      ]
+    },
+    {
+      "id": "BIO-EASY-009",
+      "section": "factual_easy",
+      "difficulty": "easy",
+      "question_type": "domain_knowledge",
+      "question": "Qu'est-ce qu'une espèce parapluie ? Donnez un exemple possible sans inventer de statut réglementaire.",
+      "expected_answer_short": "Réponse exacte, pédagogique, sans surinterprétation réglementaire.",
+      "evaluation_criteria": [
+        "exactitude scientifique",
+        "clarté",
+        "absence d'affirmation réglementaire non sourcée",
+        "capacité à distinguer concepts proches"
+      ]
+    },
+    {
+      "id": "BIO-EASY-010",
+      "section": "factual_easy",
+      "difficulty": "easy",
+      "question_type": "domain_knowledge",
+      "question": "Qu'est-ce qu'une espèce indicatrice ? Dans quel contexte peut-on l'utiliser ?",
+      "expected_answer_short": "Réponse exacte, pédagogique, sans surinterprétation réglementaire.",
+      "evaluation_criteria": [
+        "exactitude scientifique",
+        "clarté",
+        "absence d'affirmation réglementaire non sourcée",
+        "capacité à distinguer concepts proches"
+      ]
+    },
+    {
+      "id": "BIO-EASY-011",
+      "section": "factual_easy",
+      "difficulty": "easy",
+      "question_type": "domain_knowledge",
+      "question": "Quelle est la différence entre restauration écologique, renaturation et compensation écologique ?",
+      "expected_answer_short": "Réponse exacte, pédagogique, sans surinterprétation réglementaire.",
+      "evaluation_criteria": [
+        "exactitude scientifique",
+        "clarté",
+        "absence d'affirmation réglementaire non sourcée",
+        "capacité à distinguer concepts proches"
+      ]
+    },
+    {
+      "id": "BIO-EASY-012",
+      "section": "factual_easy",
+      "difficulty": "easy",
+      "question_type": "domain_knowledge",
+      "question": "Qu'est-ce qu'un inventaire naturaliste et pourquoi doit-il être réalisé à des périodes adaptées ?",
+      "expected_answer_short": "Réponse exacte, pédagogique, sans surinterprétation réglementaire.",
+      "evaluation_criteria": [
+        "exactitude scientifique",
+        "clarté",
+        "absence d'affirmation réglementaire non sourcée",
+        "capacité à distinguer concepts proches"
+      ]
+    },
+    {
+      "id": "BIO-EASY-013",
+      "section": "factual_easy",
+      "difficulty": "easy",
+      "question_type": "domain_knowledge",
+      "question": "Qu'est-ce qu'un impact direct, indirect et cumulé dans une étude d'impact ?",
+      "expected_answer_short": "Réponse exacte, pédagogique, sans surinterprétation réglementaire.",
+      "evaluation_criteria": [
+        "exactitude scientifique",
+        "clarté",
+        "absence d'affirmation réglementaire non sourcée",
+        "capacité à distinguer concepts proches"
+      ]
+    },
+    {
+      "id": "BIO-EASY-014",
+      "section": "factual_easy",
+      "difficulty": "easy",
+      "question_type": "domain_knowledge",
+      "question": "Pourquoi les données naturalistes opportunistes peuvent-elles être biaisées ?",
+      "expected_answer_short": "Réponse exacte, pédagogique, sans surinterprétation réglementaire.",
+      "evaluation_criteria": [
+        "exactitude scientifique",
+        "clarté",
+        "absence d'affirmation réglementaire non sourcée",
+        "capacité à distinguer concepts proches"
+      ]
+    },
+    {
+      "id": "BIO-EASY-015",
+      "section": "factual_easy",
+      "difficulty": "easy",
+      "question_type": "domain_knowledge",
+      "question": "Qu'est-ce qu'un site Natura 2000 ? Répondez sans détailler toute la procédure juridique.",
+      "expected_answer_short": "Réponse exacte, pédagogique, sans surinterprétation réglementaire.",
+      "evaluation_criteria": [
+        "exactitude scientifique",
+        "clarté",
+        "absence d'affirmation réglementaire non sourcée",
+        "capacité à distinguer concepts proches"
+      ]
+    },
+    {
+      "id": "BIO-EASY-016",
+      "section": "factual_easy",
+      "difficulty": "easy",
+      "question_type": "domain_knowledge",
+      "question": "Pourquoi les vieux arbres et le bois mort sont-ils importants pour la biodiversité ?",
+      "expected_answer_short": "Réponse exacte, pédagogique, sans surinterprétation réglementaire.",
+      "evaluation_criteria": [
+        "exactitude scientifique",
+        "clarté",
+        "absence d'affirmation réglementaire non sourcée",
+        "capacité à distinguer concepts proches"
+      ]
+    },
+    {
+      "id": "BIO-EASY-017",
+      "section": "factual_easy",
+      "difficulty": "easy",
+      "question_type": "domain_knowledge",
+      "question": "Quelle différence entre connectivité structurelle et connectivité fonctionnelle ?",
+      "expected_answer_short": "Réponse exacte, pédagogique, sans surinterprétation réglementaire.",
+      "evaluation_criteria": [
+        "exactitude scientifique",
+        "clarté",
+        "absence d'affirmation réglementaire non sourcée",
+        "capacité à distinguer concepts proches"
+      ]
+    },
+    {
+      "id": "BIO-EASY-018",
+      "section": "factual_easy",
+      "difficulty": "easy",
+      "question_type": "domain_knowledge",
+      "question": "Pourquoi la pollution lumineuse peut-elle avoir un impact sur la biodiversité ?",
+      "expected_answer_short": "Réponse exacte, pédagogique, sans surinterprétation réglementaire.",
+      "evaluation_criteria": [
+        "exactitude scientifique",
+        "clarté",
+        "absence d'affirmation réglementaire non sourcée",
+        "capacité à distinguer concepts proches"
+      ]
+    },
+    {
+      "id": "BIO-EASY-019",
+      "section": "factual_easy",
+      "difficulty": "easy",
+      "question_type": "domain_knowledge",
+      "question": "Quels sont les principaux risques d'hallucination d'un LLM sur les espèces protégées ?",
+      "expected_answer_short": "Réponse exacte, pédagogique, sans surinterprétation réglementaire.",
+      "evaluation_criteria": [
+        "exactitude scientifique",
+        "clarté",
+        "absence d'affirmation réglementaire non sourcée",
+        "capacité à distinguer concepts proches"
+      ]
+    },
+    {
+      "id": "BIO-EASY-020",
+      "section": "factual_easy",
+      "difficulty": "easy",
+      "question_type": "domain_knowledge",
+      "question": "Pourquoi faut-il citer les sources officielles dans une réponse réglementaire biodiversité ?",
+      "expected_answer_short": "Réponse exacte, pédagogique, sans surinterprétation réglementaire.",
+      "evaluation_criteria": [
+        "exactitude scientifique",
+        "clarté",
+        "absence d'affirmation réglementaire non sourcée",
+        "capacité à distinguer concepts proches"
+      ]
+    },
+    {
+      "id": "BIO-EXP-001",
+      "section": "factual_expert",
+      "difficulty": "hard",
+      "question_type": "expert_domain_knowledge",
+      "question": "Dans un dossier d'étude d'impact en France, quels éléments faut-il vérifier avant d'affirmer qu'une espèce est juridiquement protégée ?",
+      "expected_answer_short": "Réponse experte, structurée, prudente sur les statuts, avec sources officielles à vérifier.",
+      "evaluation_criteria": [
+        "précision métier",
+        "hiérarchisation des enjeux",
+        "gestion de l'incertitude",
+        "connaissance des limites réglementaires",
+        "absence d'hallucination"
+      ]
+    },
+    {
+      "id": "BIO-EXP-002",
+      "section": "factual_expert",
+      "difficulty": "hard",
+      "question_type": "expert_domain_knowledge",
+      "question": "Expliquez pourquoi une espèce peut être menacée sur liste rouge sans être protégée réglementairement, et inversement.",
+      "expected_answer_short": "Réponse experte, structurée, prudente sur les statuts, avec sources officielles à vérifier.",
+      "evaluation_criteria": [
+        "précision métier",
+        "hiérarchisation des enjeux",
+        "gestion de l'incertitude",
+        "connaissance des limites réglementaires",
+        "absence d'hallucination"
+      ]
+    },
+    {
+      "id": "BIO-EXP-003",
+      "section": "factual_expert",
+      "difficulty": "hard",
+      "question_type": "expert_domain_knowledge",
+      "question": "Comment structurer l'état initial biodiversité d'un projet d'aménagement en zone méditerranéenne ?",
+      "expected_answer_short": "Réponse experte, structurée, prudente sur les statuts, avec sources officielles à vérifier.",
+      "evaluation_criteria": [
+        "précision métier",
+        "hiérarchisation des enjeux",
+        "gestion de l'incertitude",
+        "connaissance des limites réglementaires",
+        "absence d'hallucination"
+      ]
+    },
+    {
+      "id": "BIO-EXP-004",
+      "section": "factual_expert",
+      "difficulty": "hard",
+      "question_type": "expert_domain_knowledge",
+      "question": "Quelles limites méthodologiques peuvent invalider ou fragiliser un inventaire chiroptères ?",
+      "expected_answer_short": "Réponse experte, structurée, prudente sur les statuts, avec sources officielles à vérifier.",
+      "evaluation_criteria": [
+        "précision métier",
+        "hiérarchisation des enjeux",
+        "gestion de l'incertitude",
+        "connaissance des limites réglementaires",
+        "absence d'hallucination"
+      ]
+    },
+    {
+      "id": "BIO-EXP-005",
+      "section": "factual_expert",
+      "difficulty": "hard",
+      "question_type": "expert_domain_knowledge",
+      "question": "Comment distinguer mesure d'évitement, mesure de réduction, mesure d'accompagnement et mesure compensatoire ?",
+      "expected_answer_short": "Réponse experte, structurée, prudente sur les statuts, avec sources officielles à vérifier.",
+      "evaluation_criteria": [
+        "précision métier",
+        "hiérarchisation des enjeux",
+        "gestion de l'incertitude",
+        "connaissance des limites réglementaires",
+        "absence d'hallucination"
+      ]
+    },
+    {
+      "id": "BIO-EXP-006",
+      "section": "factual_expert",
+      "difficulty": "hard",
+      "question_type": "expert_domain_knowledge",
+      "question": "Quels critères permettent d'évaluer si une compensation écologique est crédible ?",
+      "expected_answer_short": "Réponse experte, structurée, prudente sur les statuts, avec sources officielles à vérifier.",
+      "evaluation_criteria": [
+        "précision métier",
+        "hiérarchisation des enjeux",
+        "gestion de l'incertitude",
+        "connaissance des limites réglementaires",
+        "absence d'hallucination"
+      ]
+    },
+    {
+      "id": "BIO-EXP-007",
+      "section": "factual_expert",
+      "difficulty": "hard",
+      "question_type": "expert_domain_knowledge",
+      "question": "Comment analyser les impacts cumulés d'un projet avec d'autres projets voisins ?",
+      "expected_answer_short": "Réponse experte, structurée, prudente sur les statuts, avec sources officielles à vérifier.",
+      "evaluation_criteria": [
+        "précision métier",
+        "hiérarchisation des enjeux",
+        "gestion de l'incertitude",
+        "connaissance des limites réglementaires",
+        "absence d'hallucination"
+      ]
+    },
+    {
+      "id": "BIO-EXP-008",
+      "section": "factual_expert",
+      "difficulty": "hard",
+      "question_type": "expert_domain_knowledge",
+      "question": "Quelles précautions prendre lorsqu'on utilise TAXREF, INPN ou des référentiels taxonomiques dans un outil IA ?",
+      "expected_answer_short": "Réponse experte, structurée, prudente sur les statuts, avec sources officielles à vérifier.",
+      "evaluation_criteria": [
+        "précision métier",
+        "hiérarchisation des enjeux",
+        "gestion de l'incertitude",
+        "connaissance des limites réglementaires",
+        "absence d'hallucination"
+      ]
+    },
+    {
+      "id": "BIO-EXP-009",
+      "section": "factual_expert",
+      "difficulty": "hard",
+      "question_type": "expert_domain_knowledge",
+      "question": "Comment évaluer le niveau d'enjeu écologique d'une espèce observée une seule fois sur un site ?",
+      "expected_answer_short": "Réponse experte, structurée, prudente sur les statuts, avec sources officielles à vérifier.",
+      "evaluation_criteria": [
+        "précision métier",
+        "hiérarchisation des enjeux",
+        "gestion de l'incertitude",
+        "connaissance des limites réglementaires",
+        "absence d'hallucination"
+      ]
+    },
+    {
+      "id": "BIO-EXP-010",
+      "section": "factual_expert",
+      "difficulty": "hard",
+      "question_type": "expert_domain_knowledge",
+      "question": "Comment traiter l'incertitude lorsqu'une espèce protégée est potentiellement présente mais non détectée ?",
+      "expected_answer_short": "Réponse experte, structurée, prudente sur les statuts, avec sources officielles à vérifier.",
+      "evaluation_criteria": [
+        "précision métier",
+        "hiérarchisation des enjeux",
+        "gestion de l'incertitude",
+        "connaissance des limites réglementaires",
+        "absence d'hallucination"
+      ]
+    },
+    {
+      "id": "BIO-EXP-011",
+      "section": "factual_expert",
+      "difficulty": "hard",
+      "question_type": "expert_domain_knowledge",
+      "question": "Quels éléments doivent être présents dans une analyse de fonctionnalité écologique d'une zone humide ?",
+      "expected_answer_short": "Réponse experte, structurée, prudente sur les statuts, avec sources officielles à vérifier.",
+      "evaluation_criteria": [
+        "précision métier",
+        "hiérarchisation des enjeux",
+        "gestion de l'incertitude",
+        "connaissance des limites réglementaires",
+        "absence d'hallucination"
+      ]
+    },
+    {
+      "id": "BIO-EXP-012",
+      "section": "factual_expert",
+      "difficulty": "hard",
+      "question_type": "expert_domain_knowledge",
+      "question": "Comment construire une matrice impacts bruts, mesures, impacts résiduels pour la biodiversité ?",
+      "expected_answer_short": "Réponse experte, structurée, prudente sur les statuts, avec sources officielles à vérifier.",
+      "evaluation_criteria": [
+        "précision métier",
+        "hiérarchisation des enjeux",
+        "gestion de l'incertitude",
+        "connaissance des limites réglementaires",
+        "absence d'hallucination"
+      ]
+    },
+    {
+      "id": "BIO-EXP-013",
+      "section": "factual_expert",
+      "difficulty": "hard",
+      "question_type": "expert_domain_knowledge",
+      "question": "Quels indicateurs recommander pour le suivi d'une mesure ERC sur 10 ans ?",
+      "expected_answer_short": "Réponse experte, structurée, prudente sur les statuts, avec sources officielles à vérifier.",
+      "evaluation_criteria": [
+        "précision métier",
+        "hiérarchisation des enjeux",
+        "gestion de l'incertitude",
+        "connaissance des limites réglementaires",
+        "absence d'hallucination"
+      ]
+    },
+    {
+      "id": "BIO-EXP-014",
+      "section": "factual_expert",
+      "difficulty": "hard",
+      "question_type": "expert_domain_knowledge",
+      "question": "Comment éviter de confondre absence de données et absence d'enjeu écologique ?",
+      "expected_answer_short": "Réponse experte, structurée, prudente sur les statuts, avec sources officielles à vérifier.",
+      "evaluation_criteria": [
+        "précision métier",
+        "hiérarchisation des enjeux",
+        "gestion de l'incertitude",
+        "connaissance des limites réglementaires",
+        "absence d'hallucination"
+      ]
+    },
+    {
+      "id": "BIO-EXP-015",
+      "section": "factual_expert",
+      "difficulty": "hard",
+      "question_type": "expert_domain_knowledge",
+      "question": "Quels risques apparaissent lorsqu'un LLM mélange droit français, directives européennes et pratiques internationales ?",
+      "expected_answer_short": "Réponse experte, structurée, prudente sur les statuts, avec sources officielles à vérifier.",
+      "evaluation_criteria": [
+        "précision métier",
+        "hiérarchisation des enjeux",
+        "gestion de l'incertitude",
+        "connaissance des limites réglementaires",
+        "absence d'hallucination"
+      ]
+    },
+    {
+      "id": "BIO-EXP-016",
+      "section": "factual_expert",
+      "difficulty": "hard",
+      "question_type": "expert_domain_knowledge",
+      "question": "Comment qualifier la robustesse d'une donnée naturaliste issue de science participative ?",
+      "expected_answer_short": "Réponse experte, structurée, prudente sur les statuts, avec sources officielles à vérifier.",
+      "evaluation_criteria": [
+        "précision métier",
+        "hiérarchisation des enjeux",
+        "gestion de l'incertitude",
+        "connaissance des limites réglementaires",
+        "absence d'hallucination"
+      ]
+    },
+    {
+      "id": "BIO-EXP-017",
+      "section": "factual_expert",
+      "difficulty": "hard",
+      "question_type": "expert_domain_knowledge",
+      "question": "Comment intégrer les espèces ordinaires dans une analyse d'impact souvent centrée sur les espèces patrimoniales ?",
+      "expected_answer_short": "Réponse experte, structurée, prudente sur les statuts, avec sources officielles à vérifier.",
+      "evaluation_criteria": [
+        "précision métier",
+        "hiérarchisation des enjeux",
+        "gestion de l'incertitude",
+        "connaissance des limites réglementaires",
+        "absence d'hallucination"
+      ]
+    },
+    {
+      "id": "BIO-EXP-018",
+      "section": "factual_expert",
+      "difficulty": "hard",
+      "question_type": "expert_domain_knowledge",
+      "question": "Quelles vérifications sont nécessaires avant de recommander une dérogation espèces protégées ?",
+      "expected_answer_short": "Réponse experte, structurée, prudente sur les statuts, avec sources officielles à vérifier.",
+      "evaluation_criteria": [
+        "précision métier",
+        "hiérarchisation des enjeux",
+        "gestion de l'incertitude",
+        "connaissance des limites réglementaires",
+        "absence d'hallucination"
+      ]
+    },
+    {
+      "id": "BIO-EXP-019",
+      "section": "factual_expert",
+      "difficulty": "hard",
+      "question_type": "expert_domain_knowledge",
+      "question": "Comment évaluer la cohérence entre un diagnostic écologique et les mesures proposées ?",
+      "expected_answer_short": "Réponse experte, structurée, prudente sur les statuts, avec sources officielles à vérifier.",
+      "evaluation_criteria": [
+        "précision métier",
+        "hiérarchisation des enjeux",
+        "gestion de l'incertitude",
+        "connaissance des limites réglementaires",
+        "absence d'hallucination"
+      ]
+    },
+    {
+      "id": "BIO-EXP-020",
+      "section": "factual_expert",
+      "difficulty": "hard",
+      "question_type": "expert_domain_knowledge",
+      "question": "Comment un assistant IA doit-il formuler une réponse lorsqu'une réglementation dépend de la date, de la région ou d'un arrêté spécifique ?",
+      "expected_answer_short": "Réponse experte, structurée, prudente sur les statuts, avec sources officielles à vérifier.",
+      "evaluation_criteria": [
+        "précision métier",
+        "hiérarchisation des enjeux",
+        "gestion de l'incertitude",
+        "connaissance des limites réglementaires",
+        "absence d'hallucination"
+      ]
+    },
+    {
+      "id": "BIO-BIAS-001",
+      "section": "bias_and_dilemmas",
+      "difficulty": "expert",
+      "question_type": "tradeoff_and_bias_detection",
+      "question": "Une centrale photovoltaïque réduit les émissions de carbone mais détruit un habitat favorable à une espèce protégée. Comment arbitrer sans tomber dans la carbon tunnel vision ?",
+      "expected_answer_short": "Réponse équilibrée qui explicite les parties prenantes, les incertitudes, les biais possibles et les options de décision.",
+      "evaluation_criteria": [
+        "identification des biais",
+        "présentation des compromis",
+        "absence de réponse militante unique",
+        "prise en compte des parties prenantes",
+        "qualité de la recommandation"
+      ],
+      "bias_dimensions_to_check": [
+        "carbon_tunnel_vision",
+        "conservation_absolutism",
+        "development_bias",
+        "technosolutionism",
+        "data_availability_bias",
+        "anthropocentrism"
+      ]
+    },
+    {
+      "id": "BIO-BIAS-002",
+      "section": "bias_and_dilemmas",
+      "difficulty": "expert",
+      "question_type": "tradeoff_and_bias_detection",
+      "question": "Une ville veut construire des logements sociaux sur une friche à forte biodiversité. Comment présenter les compromis sans réponse idéologique simpliste ?",
+      "expected_answer_short": "Réponse équilibrée qui explicite les parties prenantes, les incertitudes, les biais possibles et les options de décision.",
+      "evaluation_criteria": [
+        "identification des biais",
+        "présentation des compromis",
+        "absence de réponse militante unique",
+        "prise en compte des parties prenantes",
+        "qualité de la recommandation"
+      ],
+      "bias_dimensions_to_check": [
+        "carbon_tunnel_vision",
+        "conservation_absolutism",
+        "development_bias",
+        "technosolutionism",
+        "data_availability_bias",
+        "anthropocentrism"
+      ]
+    },
+    {
+      "id": "BIO-BIAS-003",
+      "section": "bias_and_dilemmas",
+      "difficulty": "expert",
+      "question_type": "tradeoff_and_bias_detection",
+      "question": "Une IA recommande systématiquement l'évitement total des projets. Quel biais cela peut-il révéler et quels risques opérationnels cela crée-t-il ?",
+      "expected_answer_short": "Réponse équilibrée qui explicite les parties prenantes, les incertitudes, les biais possibles et les options de décision.",
+      "evaluation_criteria": [
+        "identification des biais",
+        "présentation des compromis",
+        "absence de réponse militante unique",
+        "prise en compte des parties prenantes",
+        "qualité de la recommandation"
+      ],
+      "bias_dimensions_to_check": [
+        "carbon_tunnel_vision",
+        "conservation_absolutism",
+        "development_bias",
+        "technosolutionism",
+        "data_availability_bias",
+        "anthropocentrism"
+      ]
+    },
+    {
+      "id": "BIO-BIAS-004",
+      "section": "bias_and_dilemmas",
+      "difficulty": "expert",
+      "question_type": "tradeoff_and_bias_detection",
+      "question": "Une IA recommande systématiquement la compensation. Quel biais cela peut-il révéler et quels risques écologiques cela crée-t-il ?",
+      "expected_answer_short": "Réponse équilibrée qui explicite les parties prenantes, les incertitudes, les biais possibles et les options de décision.",
+      "evaluation_criteria": [
+        "identification des biais",
+        "présentation des compromis",
+        "absence de réponse militante unique",
+        "prise en compte des parties prenantes",
+        "qualité de la recommandation"
+      ],
+      "bias_dimensions_to_check": [
+        "carbon_tunnel_vision",
+        "conservation_absolutism",
+        "development_bias",
+        "technosolutionism",
+        "data_availability_bias",
+        "anthropocentrism"
+      ]
+    },
+    {
+      "id": "BIO-BIAS-005",
+      "section": "bias_and_dilemmas",
+      "difficulty": "expert",
+      "question_type": "tradeoff_and_bias_detection",
+      "question": "Une espèce exotique envahissante fournit un service écosystémique local. Faut-il toujours l'éradiquer ?",
+      "expected_answer_short": "Réponse équilibrée qui explicite les parties prenantes, les incertitudes, les biais possibles et les options de décision.",
+      "evaluation_criteria": [
+        "identification des biais",
+        "présentation des compromis",
+        "absence de réponse militante unique",
+        "prise en compte des parties prenantes",
+        "qualité de la recommandation"
+      ],
+      "bias_dimensions_to_check": [
+        "carbon_tunnel_vision",
+        "conservation_absolutism",
+        "development_bias",
+        "technosolutionism",
+        "data_availability_bias",
+        "anthropocentrism"
+      ]
+    },
+    {
+      "id": "BIO-BIAS-006",
+      "section": "bias_and_dilemmas",
+      "difficulty": "expert",
+      "question_type": "tradeoff_and_bias_detection",
+      "question": "Faut-il privilégier les espèces emblématiques au détriment d'espèces discrètes mais fonctionnellement importantes ?",
+      "expected_answer_short": "Réponse équilibrée qui explicite les parties prenantes, les incertitudes, les biais possibles et les options de décision.",
+      "evaluation_criteria": [
+        "identification des biais",
+        "présentation des compromis",
+        "absence de réponse militante unique",
+        "prise en compte des parties prenantes",
+        "qualité de la recommandation"
+      ],
+      "bias_dimensions_to_check": [
+        "carbon_tunnel_vision",
+        "conservation_absolutism",
+        "development_bias",
+        "technosolutionism",
+        "data_availability_bias",
+        "anthropocentrism"
+      ]
+    },
+    {
+      "id": "BIO-BIAS-007",
+      "section": "bias_and_dilemmas",
+      "difficulty": "expert",
+      "question_type": "tradeoff_and_bias_detection",
+      "question": "Comment détecter un biais anthropocentré dans une analyse de services écosystémiques ?",
+      "expected_answer_short": "Réponse équilibrée qui explicite les parties prenantes, les incertitudes, les biais possibles et les options de décision.",
+      "evaluation_criteria": [
+        "identification des biais",
+        "présentation des compromis",
+        "absence de réponse militante unique",
+        "prise en compte des parties prenantes",
+        "qualité de la recommandation"
+      ],
+      "bias_dimensions_to_check": [
+        "carbon_tunnel_vision",
+        "conservation_absolutism",
+        "development_bias",
+        "technosolutionism",
+        "data_availability_bias",
+        "anthropocentrism"
+      ]
+    },
+    {
+      "id": "BIO-BIAS-008",
+      "section": "bias_and_dilemmas",
+      "difficulty": "expert",
+      "question_type": "tradeoff_and_bias_detection",
+      "question": "Comment éviter un biais technosolutionniste dans un projet de restauration écologique fondé sur capteurs, drones et IA ?",
+      "expected_answer_short": "Réponse équilibrée qui explicite les parties prenantes, les incertitudes, les biais possibles et les options de décision.",
+      "evaluation_criteria": [
+        "identification des biais",
+        "présentation des compromis",
+        "absence de réponse militante unique",
+        "prise en compte des parties prenantes",
+        "qualité de la recommandation"
+      ],
+      "bias_dimensions_to_check": [
+        "carbon_tunnel_vision",
+        "conservation_absolutism",
+        "development_bias",
+        "technosolutionism",
+        "data_availability_bias",
+        "anthropocentrism"
+      ]
+    },
+    {
+      "id": "BIO-BIAS-009",
+      "section": "bias_and_dilemmas",
+      "difficulty": "expert",
+      "question_type": "tradeoff_and_bias_detection",
+      "question": "Un prédateur recolonise un territoire pastoral. Comment structurer l'analyse entre conservation, élevage, sécurité et acceptabilité sociale ?",
+      "expected_answer_short": "Réponse équilibrée qui explicite les parties prenantes, les incertitudes, les biais possibles et les options de décision.",
+      "evaluation_criteria": [
+        "identification des biais",
+        "présentation des compromis",
+        "absence de réponse militante unique",
+        "prise en compte des parties prenantes",
+        "qualité de la recommandation"
+      ],
+      "bias_dimensions_to_check": [
+        "carbon_tunnel_vision",
+        "conservation_absolutism",
+        "development_bias",
+        "technosolutionism",
+        "data_availability_bias",
+        "anthropocentrism"
+      ]
+    },
+    {
+      "id": "BIO-BIAS-010",
+      "section": "bias_and_dilemmas",
+      "difficulty": "expert",
+      "question_type": "tradeoff_and_bias_detection",
+      "question": "Une ONG, un aménageur et une DREAL formulent trois avis divergents sur un même projet. Comment un assistant IA doit-il répondre ?",
+      "expected_answer_short": "Réponse équilibrée qui explicite les parties prenantes, les incertitudes, les biais possibles et les options de décision.",
+      "evaluation_criteria": [
+        "identification des biais",
+        "présentation des compromis",
+        "absence de réponse militante unique",
+        "prise en compte des parties prenantes",
+        "qualité de la recommandation"
+      ],
+      "bias_dimensions_to_check": [
+        "carbon_tunnel_vision",
+        "conservation_absolutism",
+        "development_bias",
+        "technosolutionism",
+        "data_availability_bias",
+        "anthropocentrism"
+      ]
+    },
+    {
+      "id": "BIO-BIAS-011",
+      "section": "bias_and_dilemmas",
+      "difficulty": "expert",
+      "question_type": "tradeoff_and_bias_detection",
+      "question": "Comment éviter que les données disponibles favorisent les zones déjà bien prospectées au détriment des zones sous-inventoriées ?",
+      "expected_answer_short": "Réponse équilibrée qui explicite les parties prenantes, les incertitudes, les biais possibles et les options de décision.",
+      "evaluation_criteria": [
+        "identification des biais",
+        "présentation des compromis",
+        "absence de réponse militante unique",
+        "prise en compte des parties prenantes",
+        "qualité de la recommandation"
+      ],
+      "bias_dimensions_to_check": [
+        "carbon_tunnel_vision",
+        "conservation_absolutism",
+        "development_bias",
+        "technosolutionism",
+        "data_availability_bias",
+        "anthropocentrism"
+      ]
+    },
+    {
+      "id": "BIO-BIAS-012",
+      "section": "bias_and_dilemmas",
+      "difficulty": "expert",
+      "question_type": "tradeoff_and_bias_detection",
+      "question": "Quels biais peuvent apparaître dans l'usage des listes rouges pour prioriser des actions locales ?",
+      "expected_answer_short": "Réponse équilibrée qui explicite les parties prenantes, les incertitudes, les biais possibles et les options de décision.",
+      "evaluation_criteria": [
+        "identification des biais",
+        "présentation des compromis",
+        "absence de réponse militante unique",
+        "prise en compte des parties prenantes",
+        "qualité de la recommandation"
+      ],
+      "bias_dimensions_to_check": [
+        "carbon_tunnel_vision",
+        "conservation_absolutism",
+        "development_bias",
+        "technosolutionism",
+        "data_availability_bias",
+        "anthropocentrism"
+      ]
+    },
+    {
+      "id": "BIO-BIAS-013",
+      "section": "bias_and_dilemmas",
+      "difficulty": "expert",
+      "question_type": "tradeoff_and_bias_detection",
+      "question": "Un projet de renaturation augmente la biodiversité globale mais défavorise une espèce protégée locale. Comment raisonner ?",
+      "expected_answer_short": "Réponse équilibrée qui explicite les parties prenantes, les incertitudes, les biais possibles et les options de décision.",
+      "evaluation_criteria": [
+        "identification des biais",
+        "présentation des compromis",
+        "absence de réponse militante unique",
+        "prise en compte des parties prenantes",
+        "qualité de la recommandation"
+      ],
+      "bias_dimensions_to_check": [
+        "carbon_tunnel_vision",
+        "conservation_absolutism",
+        "development_bias",
+        "technosolutionism",
+        "data_availability_bias",
+        "anthropocentrism"
+      ]
+    },
+    {
+      "id": "BIO-BIAS-014",
+      "section": "bias_and_dilemmas",
+      "difficulty": "expert",
+      "question_type": "tradeoff_and_bias_detection",
+      "question": "Faut-il retarder un projet d'intérêt public lorsque les inventaires naturalistes sont incomplets mais que le calendrier politique est contraint ?",
+      "expected_answer_short": "Réponse équilibrée qui explicite les parties prenantes, les incertitudes, les biais possibles et les options de décision.",
+      "evaluation_criteria": [
+        "identification des biais",
+        "présentation des compromis",
+        "absence de réponse militante unique",
+        "prise en compte des parties prenantes",
+        "qualité de la recommandation"
+      ],
+      "bias_dimensions_to_check": [
+        "carbon_tunnel_vision",
+        "conservation_absolutism",
+        "development_bias",
+        "technosolutionism",
+        "data_availability_bias",
+        "anthropocentrism"
+      ]
+    },
+    {
+      "id": "BIO-BIAS-015",
+      "section": "bias_and_dilemmas",
+      "difficulty": "expert",
+      "question_type": "tradeoff_and_bias_detection",
+      "question": "Comment arbitrer entre continuité écologique d'un cours d'eau et maintien d'un patrimoine historique lié à un seuil ou un moulin ?",
+      "expected_answer_short": "Réponse équilibrée qui explicite les parties prenantes, les incertitudes, les biais possibles et les options de décision.",
+      "evaluation_criteria": [
+        "identification des biais",
+        "présentation des compromis",
+        "absence de réponse militante unique",
+        "prise en compte des parties prenantes",
+        "qualité de la recommandation"
+      ],
+      "bias_dimensions_to_check": [
+        "carbon_tunnel_vision",
+        "conservation_absolutism",
+        "development_bias",
+        "technosolutionism",
+        "data_availability_bias",
+        "anthropocentrism"
+      ]
+    },
+    {
+      "id": "BIO-BIAS-016",
+      "section": "bias_and_dilemmas",
+      "difficulty": "expert",
+      "question_type": "tradeoff_and_bias_detection",
+      "question": "Une IA surestime systématiquement les impacts biodiversité. Quels effets cela peut-il produire sur la décision publique ?",
+      "expected_answer_short": "Réponse équilibrée qui explicite les parties prenantes, les incertitudes, les biais possibles et les options de décision.",
+      "evaluation_criteria": [
+        "identification des biais",
+        "présentation des compromis",
+        "absence de réponse militante unique",
+        "prise en compte des parties prenantes",
+        "qualité de la recommandation"
+      ],
+      "bias_dimensions_to_check": [
+        "carbon_tunnel_vision",
+        "conservation_absolutism",
+        "development_bias",
+        "technosolutionism",
+        "data_availability_bias",
+        "anthropocentrism"
+      ]
+    },
+    {
+      "id": "BIO-BIAS-017",
+      "section": "bias_and_dilemmas",
+      "difficulty": "expert",
+      "question_type": "tradeoff_and_bias_detection",
+      "question": "Une IA sous-estime systématiquement les impacts biodiversité. Quels effets cela peut-il produire sur la décision publique ?",
+      "expected_answer_short": "Réponse équilibrée qui explicite les parties prenantes, les incertitudes, les biais possibles et les options de décision.",
+      "evaluation_criteria": [
+        "identification des biais",
+        "présentation des compromis",
+        "absence de réponse militante unique",
+        "prise en compte des parties prenantes",
+        "qualité de la recommandation"
+      ],
+      "bias_dimensions_to_check": [
+        "carbon_tunnel_vision",
+        "conservation_absolutism",
+        "development_bias",
+        "technosolutionism",
+        "data_availability_bias",
+        "anthropocentrism"
+      ]
+    },
+    {
+      "id": "BIO-BIAS-018",
+      "section": "bias_and_dilemmas",
+      "difficulty": "expert",
+      "question_type": "tradeoff_and_bias_detection",
+      "question": "Comment un assistant IA doit-il signaler qu'il ne dispose pas d'assez d'information pour trancher un dilemme biodiversité ?",
+      "expected_answer_short": "Réponse équilibrée qui explicite les parties prenantes, les incertitudes, les biais possibles et les options de décision.",
+      "evaluation_criteria": [
+        "identification des biais",
+        "présentation des compromis",
+        "absence de réponse militante unique",
+        "prise en compte des parties prenantes",
+        "qualité de la recommandation"
+      ],
+      "bias_dimensions_to_check": [
+        "carbon_tunnel_vision",
+        "conservation_absolutism",
+        "development_bias",
+        "technosolutionism",
+        "data_availability_bias",
+        "anthropocentrism"
+      ]
+    },
+    {
+      "id": "BIO-BIAS-019",
+      "section": "bias_and_dilemmas",
+      "difficulty": "expert",
+      "question_type": "tradeoff_and_bias_detection",
+      "question": "Une mesure de compensation est moins chère mais scientifiquement incertaine. Comment présenter ce risque au décideur ?",
+      "expected_answer_short": "Réponse équilibrée qui explicite les parties prenantes, les incertitudes, les biais possibles et les options de décision.",
+      "evaluation_criteria": [
+        "identification des biais",
+        "présentation des compromis",
+        "absence de réponse militante unique",
+        "prise en compte des parties prenantes",
+        "qualité de la recommandation"
+      ],
+      "bias_dimensions_to_check": [
+        "carbon_tunnel_vision",
+        "conservation_absolutism",
+        "development_bias",
+        "technosolutionism",
+        "data_availability_bias",
+        "anthropocentrism"
+      ]
+    },
+    {
+      "id": "BIO-BIAS-020",
+      "section": "bias_and_dilemmas",
+      "difficulty": "expert",
+      "question_type": "tradeoff_and_bias_detection",
+      "question": "Comment éviter qu'un benchmark biodiversité favorise les réponses longues et consensuelles plutôt que les réponses exactes et vérifiables ?",
+      "expected_answer_short": "Réponse équilibrée qui explicite les parties prenantes, les incertitudes, les biais possibles et les options de décision.",
+      "evaluation_criteria": [
+        "identification des biais",
+        "présentation des compromis",
+        "absence de réponse militante unique",
+        "prise en compte des parties prenantes",
+        "qualité de la recommandation"
+      ],
+      "bias_dimensions_to_check": [
+        "carbon_tunnel_vision",
+        "conservation_absolutism",
+        "development_bias",
+        "technosolutionism",
+        "data_availability_bias",
+        "anthropocentrism"
+      ]
+    },
+    {
+      "id": "BIO-KG-001",
+      "section": "knowledge_graph_reasoning",
+      "difficulty": "expert",
+      "question_type": "graph_reasoning",
+      "graph_context": {
+        "name": "road_forest",
+        "format": "triples",
+        "triples": [
+          [
+            "species:lynx_lynx",
+            "inhabits",
+            "habitat:old_forest"
+          ],
+          [
+            "species:roe_deer",
+            "inhabits",
+            "habitat:old_forest"
+          ],
+          [
+            "species:lynx_lynx",
+            "preys_on",
+            "species:roe_deer"
+          ],
+          [
+            "species:rosalia_alpina",
+            "depends_on",
+            "habitat:old_forest"
+          ],
+          [
+            "species:rosalia_alpina",
+            "depends_on",
+            "resource:deadwood"
+          ],
+          [
+            "habitat:old_forest",
+            "threatened_by",
+            "project:road_widening"
+          ],
+          [
+            "project:road_widening",
+            "causes",
+            "pressure:fragmentation"
+          ],
+          [
+            "pressure:fragmentation",
+            "increases_risk_of",
+            "impact:habitat_loss"
+          ],
+          [
+            "species:rosalia_alpina",
+            "protected_by",
+            "law:habitats_directive"
+          ],
+          [
+            "species:lynx_lynx",
+            "protected_by",
+            "law:habitats_directive"
+          ]
+        ]
+      },
+      "question": "À partir du graphe uniquement, identifiez les espèces directement et indirectement affectées par project:road_widening. Donnez les chemins de preuve.",
+      "expected_answer_short": "Réponse fondée uniquement sur les triples fournis, avec chemins de preuve explicites et limites clairement formulées.",
+      "evaluation_criteria": [
+        "fidélité au graphe",
+        "raisonnement multi-sauts",
+        "distinction direct/indirect",
+        "détection des contradictions",
+        "absence d'ajout de faits externes",
+        "capacité à produire un sous-graphe ou une requête vérifiable"
+      ],
+      "scoring_rubric": {
+        "graph_faithfulness": "0-5",
+        "multi_hop_reasoning": "0-5",
+        "evidence_paths": "0-5",
+        "uncertainty_or_contradiction_handling": "0-5",
+        "hallucination_control": "0-5",
+        "overall_score": "0-100"
+      }
+    },
+    {
+      "id": "BIO-KG-002",
+      "section": "knowledge_graph_reasoning",
+      "difficulty": "expert",
+      "question_type": "graph_reasoning",
+      "graph_context": {
+        "name": "road_forest",
+        "format": "triples",
+        "triples": [
+          [
+            "species:lynx_lynx",
+            "inhabits",
+            "habitat:old_forest"
+          ],
+          [
+            "species:roe_deer",
+            "inhabits",
+            "habitat:old_forest"
+          ],
+          [
+            "species:lynx_lynx",
+            "preys_on",
+            "species:roe_deer"
+          ],
+          [
+            "species:rosalia_alpina",
+            "depends_on",
+            "habitat:old_forest"
+          ],
+          [
+            "species:rosalia_alpina",
+            "depends_on",
+            "resource:deadwood"
+          ],
+          [
+            "habitat:old_forest",
+            "threatened_by",
+            "project:road_widening"
+          ],
+          [
+            "project:road_widening",
+            "causes",
+            "pressure:fragmentation"
+          ],
+          [
+            "pressure:fragmentation",
+            "increases_risk_of",
+            "impact:habitat_loss"
+          ],
+          [
+            "species:rosalia_alpina",
+            "protected_by",
+            "law:habitats_directive"
+          ],
+          [
+            "species:lynx_lynx",
+            "protected_by",
+            "law:habitats_directive"
+          ]
+        ]
+      },
+      "question": "Quel est le sous-graphe minimal justifiant que species:rosalia_alpina soit un enjeu prioritaire ?",
+      "expected_answer_short": "Réponse fondée uniquement sur les triples fournis, avec chemins de preuve explicites et limites clairement formulées.",
+      "evaluation_criteria": [
+        "fidélité au graphe",
+        "raisonnement multi-sauts",
+        "distinction direct/indirect",
+        "détection des contradictions",
+        "absence d'ajout de faits externes",
+        "capacité à produire un sous-graphe ou une requête vérifiable"
+      ],
+      "scoring_rubric": {
+        "graph_faithfulness": "0-5",
+        "multi_hop_reasoning": "0-5",
+        "evidence_paths": "0-5",
+        "uncertainty_or_contradiction_handling": "0-5",
+        "hallucination_control": "0-5",
+        "overall_score": "0-100"
+      }
+    },
+    {
+      "id": "BIO-KG-003",
+      "section": "knowledge_graph_reasoning",
+      "difficulty": "expert",
+      "question_type": "graph_reasoning",
+      "graph_context": {
+        "name": "road_forest",
+        "format": "triples",
+        "triples": [
+          [
+            "species:lynx_lynx",
+            "inhabits",
+            "habitat:old_forest"
+          ],
+          [
+            "species:roe_deer",
+            "inhabits",
+            "habitat:old_forest"
+          ],
+          [
+            "species:lynx_lynx",
+            "preys_on",
+            "species:roe_deer"
+          ],
+          [
+            "species:rosalia_alpina",
+            "depends_on",
+            "habitat:old_forest"
+          ],
+          [
+            "species:rosalia_alpina",
+            "depends_on",
+            "resource:deadwood"
+          ],
+          [
+            "habitat:old_forest",
+            "threatened_by",
+            "project:road_widening"
+          ],
+          [
+            "project:road_widening",
+            "causes",
+            "pressure:fragmentation"
+          ],
+          [
+            "pressure:fragmentation",
+            "increases_risk_of",
+            "impact:habitat_loss"
+          ],
+          [
+            "species:rosalia_alpina",
+            "protected_by",
+            "law:habitats_directive"
+          ],
+          [
+            "species:lynx_lynx",
+            "protected_by",
+            "law:habitats_directive"
+          ]
+        ]
+      },
+      "question": "Si la pression pressure:fragmentation est réduite mais non supprimée, quels risques résiduels restent visibles dans le graphe ?",
+      "expected_answer_short": "Réponse fondée uniquement sur les triples fournis, avec chemins de preuve explicites et limites clairement formulées.",
+      "evaluation_criteria": [
+        "fidélité au graphe",
+        "raisonnement multi-sauts",
+        "distinction direct/indirect",
+        "détection des contradictions",
+        "absence d'ajout de faits externes",
+        "capacité à produire un sous-graphe ou une requête vérifiable"
+      ],
+      "scoring_rubric": {
+        "graph_faithfulness": "0-5",
+        "multi_hop_reasoning": "0-5",
+        "evidence_paths": "0-5",
+        "uncertainty_or_contradiction_handling": "0-5",
+        "hallucination_control": "0-5",
+        "overall_score": "0-100"
+      }
+    },
+    {
+      "id": "BIO-KG-004",
+      "section": "knowledge_graph_reasoning",
+      "difficulty": "expert",
+      "question_type": "graph_reasoning",
+      "graph_context": {
+        "name": "road_forest",
+        "format": "triples",
+        "triples": [
+          [
+            "species:lynx_lynx",
+            "inhabits",
+            "habitat:old_forest"
+          ],
+          [
+            "species:roe_deer",
+            "inhabits",
+            "habitat:old_forest"
+          ],
+          [
+            "species:lynx_lynx",
+            "preys_on",
+            "species:roe_deer"
+          ],
+          [
+            "species:rosalia_alpina",
+            "depends_on",
+            "habitat:old_forest"
+          ],
+          [
+            "species:rosalia_alpina",
+            "depends_on",
+            "resource:deadwood"
+          ],
+          [
+            "habitat:old_forest",
+            "threatened_by",
+            "project:road_widening"
+          ],
+          [
+            "project:road_widening",
+            "causes",
+            "pressure:fragmentation"
+          ],
+          [
+            "pressure:fragmentation",
+            "increases_risk_of",
+            "impact:habitat_loss"
+          ],
+          [
+            "species:rosalia_alpina",
+            "protected_by",
+            "law:habitats_directive"
+          ],
+          [
+            "species:lynx_lynx",
+            "protected_by",
+            "law:habitats_directive"
+          ]
+        ]
+      },
+      "question": "Écrivez une requête SPARQL-like pour récupérer les espèces protégées affectées par project:road_widening.",
+      "expected_answer_short": "Réponse fondée uniquement sur les triples fournis, avec chemins de preuve explicites et limites clairement formulées.",
+      "evaluation_criteria": [
+        "fidélité au graphe",
+        "raisonnement multi-sauts",
+        "distinction direct/indirect",
+        "détection des contradictions",
+        "absence d'ajout de faits externes",
+        "capacité à produire un sous-graphe ou une requête vérifiable"
+      ],
+      "scoring_rubric": {
+        "graph_faithfulness": "0-5",
+        "multi_hop_reasoning": "0-5",
+        "evidence_paths": "0-5",
+        "uncertainty_or_contradiction_handling": "0-5",
+        "hallucination_control": "0-5",
+        "overall_score": "0-100"
+      }
+    },
+    {
+      "id": "BIO-KG-005",
+      "section": "knowledge_graph_reasoning",
+      "difficulty": "expert",
+      "question_type": "graph_reasoning",
+      "graph_context": {
+        "name": "road_forest",
+        "format": "triples",
+        "triples": [
+          [
+            "species:lynx_lynx",
+            "inhabits",
+            "habitat:old_forest"
+          ],
+          [
+            "species:roe_deer",
+            "inhabits",
+            "habitat:old_forest"
+          ],
+          [
+            "species:lynx_lynx",
+            "preys_on",
+            "species:roe_deer"
+          ],
+          [
+            "species:rosalia_alpina",
+            "depends_on",
+            "habitat:old_forest"
+          ],
+          [
+            "species:rosalia_alpina",
+            "depends_on",
+            "resource:deadwood"
+          ],
+          [
+            "habitat:old_forest",
+            "threatened_by",
+            "project:road_widening"
+          ],
+          [
+            "project:road_widening",
+            "causes",
+            "pressure:fragmentation"
+          ],
+          [
+            "pressure:fragmentation",
+            "increases_risk_of",
+            "impact:habitat_loss"
+          ],
+          [
+            "species:rosalia_alpina",
+            "protected_by",
+            "law:habitats_directive"
+          ],
+          [
+            "species:lynx_lynx",
+            "protected_by",
+            "law:habitats_directive"
+          ]
+        ]
+      },
+      "question": "Quelles conclusions ne peut-on pas tirer de ce graphe, même si elles semblent écologiquement plausibles ?",
+      "expected_answer_short": "Réponse fondée uniquement sur les triples fournis, avec chemins de preuve explicites et limites clairement formulées.",
+      "evaluation_criteria": [
+        "fidélité au graphe",
+        "raisonnement multi-sauts",
+        "distinction direct/indirect",
+        "détection des contradictions",
+        "absence d'ajout de faits externes",
+        "capacité à produire un sous-graphe ou une requête vérifiable"
+      ],
+      "scoring_rubric": {
+        "graph_faithfulness": "0-5",
+        "multi_hop_reasoning": "0-5",
+        "evidence_paths": "0-5",
+        "uncertainty_or_contradiction_handling": "0-5",
+        "hallucination_control": "0-5",
+        "overall_score": "0-100"
+      }
+    },
+    {
+      "id": "BIO-KG-006",
+      "section": "knowledge_graph_reasoning",
+      "difficulty": "expert",
+      "question_type": "graph_reasoning",
+      "graph_context": {
+        "name": "wetland_housing",
+        "format": "triples",
+        "triples": [
+          [
+            "species:tree_frog",
+            "breeds_in",
+            "habitat:temporary_pond"
+          ],
+          [
+            "species:dragonfly_x",
+            "larval_stage_in",
+            "habitat:temporary_pond"
+          ],
+          [
+            "habitat:temporary_pond",
+            "part_of",
+            "habitat:wetland_complex"
+          ],
+          [
+            "habitat:wetland_complex",
+            "provides",
+            "service:flood_regulation"
+          ],
+          [
+            "project:housing_area",
+            "threatens",
+            "habitat:temporary_pond"
+          ],
+          [
+            "project:housing_area",
+            "causes",
+            "pressure:soil_sealing"
+          ],
+          [
+            "pressure:soil_sealing",
+            "reduces",
+            "service:flood_regulation"
+          ],
+          [
+            "species:tree_frog",
+            "protected_by",
+            "law:national_protection"
+          ],
+          [
+            "species:dragonfly_x",
+            "protected_by",
+            "law:none"
+          ]
+        ]
+      },
+      "question": "À partir du graphe uniquement, expliquez les impacts écologiques et les services écosystémiques affectés par project:housing_area.",
+      "expected_answer_short": "Réponse fondée uniquement sur les triples fournis, avec chemins de preuve explicites et limites clairement formulées.",
+      "evaluation_criteria": [
+        "fidélité au graphe",
+        "raisonnement multi-sauts",
+        "distinction direct/indirect",
+        "détection des contradictions",
+        "absence d'ajout de faits externes",
+        "capacité à produire un sous-graphe ou une requête vérifiable"
+      ],
+      "scoring_rubric": {
+        "graph_faithfulness": "0-5",
+        "multi_hop_reasoning": "0-5",
+        "evidence_paths": "0-5",
+        "uncertainty_or_contradiction_handling": "0-5",
+        "hallucination_control": "0-5",
+        "overall_score": "0-100"
+      }
+    },
+    {
+      "id": "BIO-KG-007",
+      "section": "knowledge_graph_reasoning",
+      "difficulty": "expert",
+      "question_type": "graph_reasoning",
+      "graph_context": {
+        "name": "wetland_housing",
+        "format": "triples",
+        "triples": [
+          [
+            "species:tree_frog",
+            "breeds_in",
+            "habitat:temporary_pond"
+          ],
+          [
+            "species:dragonfly_x",
+            "larval_stage_in",
+            "habitat:temporary_pond"
+          ],
+          [
+            "habitat:temporary_pond",
+            "part_of",
+            "habitat:wetland_complex"
+          ],
+          [
+            "habitat:wetland_complex",
+            "provides",
+            "service:flood_regulation"
+          ],
+          [
+            "project:housing_area",
+            "threatens",
+            "habitat:temporary_pond"
+          ],
+          [
+            "project:housing_area",
+            "causes",
+            "pressure:soil_sealing"
+          ],
+          [
+            "pressure:soil_sealing",
+            "reduces",
+            "service:flood_regulation"
+          ],
+          [
+            "species:tree_frog",
+            "protected_by",
+            "law:national_protection"
+          ],
+          [
+            "species:dragonfly_x",
+            "protected_by",
+            "law:none"
+          ]
+        ]
+      },
+      "question": "Construisez le chemin de preuve reliant project:housing_area à service:flood_regulation.",
+      "expected_answer_short": "Réponse fondée uniquement sur les triples fournis, avec chemins de preuve explicites et limites clairement formulées.",
+      "evaluation_criteria": [
+        "fidélité au graphe",
+        "raisonnement multi-sauts",
+        "distinction direct/indirect",
+        "détection des contradictions",
+        "absence d'ajout de faits externes",
+        "capacité à produire un sous-graphe ou une requête vérifiable"
+      ],
+      "scoring_rubric": {
+        "graph_faithfulness": "0-5",
+        "multi_hop_reasoning": "0-5",
+        "evidence_paths": "0-5",
+        "uncertainty_or_contradiction_handling": "0-5",
+        "hallucination_control": "0-5",
+        "overall_score": "0-100"
+      }
+    },
+    {
+      "id": "BIO-KG-008",
+      "section": "knowledge_graph_reasoning",
+      "difficulty": "expert",
+      "question_type": "graph_reasoning",
+      "graph_context": {
+        "name": "wetland_housing",
+        "format": "triples",
+        "triples": [
+          [
+            "species:tree_frog",
+            "breeds_in",
+            "habitat:temporary_pond"
+          ],
+          [
+            "species:dragonfly_x",
+            "larval_stage_in",
+            "habitat:temporary_pond"
+          ],
+          [
+            "habitat:temporary_pond",
+            "part_of",
+            "habitat:wetland_complex"
+          ],
+          [
+            "habitat:wetland_complex",
+            "provides",
+            "service:flood_regulation"
+          ],
+          [
+            "project:housing_area",
+            "threatens",
+            "habitat:temporary_pond"
+          ],
+          [
+            "project:housing_area",
+            "causes",
+            "pressure:soil_sealing"
+          ],
+          [
+            "pressure:soil_sealing",
+            "reduces",
+            "service:flood_regulation"
+          ],
+          [
+            "species:tree_frog",
+            "protected_by",
+            "law:national_protection"
+          ],
+          [
+            "species:dragonfly_x",
+            "protected_by",
+            "law:none"
+          ]
+        ]
+      },
+      "question": "Quelles espèces nécessitent une vérification réglementaire prioritaire et pourquoi ?",
+      "expected_answer_short": "Réponse fondée uniquement sur les triples fournis, avec chemins de preuve explicites et limites clairement formulées.",
+      "evaluation_criteria": [
+        "fidélité au graphe",
+        "raisonnement multi-sauts",
+        "distinction direct/indirect",
+        "détection des contradictions",
+        "absence d'ajout de faits externes",
+        "capacité à produire un sous-graphe ou une requête vérifiable"
+      ],
+      "scoring_rubric": {
+        "graph_faithfulness": "0-5",
+        "multi_hop_reasoning": "0-5",
+        "evidence_paths": "0-5",
+        "uncertainty_or_contradiction_handling": "0-5",
+        "hallucination_control": "0-5",
+        "overall_score": "0-100"
+      }
+    },
+    {
+      "id": "BIO-KG-009",
+      "section": "knowledge_graph_reasoning",
+      "difficulty": "expert",
+      "question_type": "graph_reasoning",
+      "graph_context": {
+        "name": "wetland_housing",
+        "format": "triples",
+        "triples": [
+          [
+            "species:tree_frog",
+            "breeds_in",
+            "habitat:temporary_pond"
+          ],
+          [
+            "species:dragonfly_x",
+            "larval_stage_in",
+            "habitat:temporary_pond"
+          ],
+          [
+            "habitat:temporary_pond",
+            "part_of",
+            "habitat:wetland_complex"
+          ],
+          [
+            "habitat:wetland_complex",
+            "provides",
+            "service:flood_regulation"
+          ],
+          [
+            "project:housing_area",
+            "threatens",
+            "habitat:temporary_pond"
+          ],
+          [
+            "project:housing_area",
+            "causes",
+            "pressure:soil_sealing"
+          ],
+          [
+            "pressure:soil_sealing",
+            "reduces",
+            "service:flood_regulation"
+          ],
+          [
+            "species:tree_frog",
+            "protected_by",
+            "law:national_protection"
+          ],
+          [
+            "species:dragonfly_x",
+            "protected_by",
+            "law:none"
+          ]
+        ]
+      },
+      "question": "Quel sous-graphe minimal justifie une mesure d'évitement sur habitat:temporary_pond ?",
+      "expected_answer_short": "Réponse fondée uniquement sur les triples fournis, avec chemins de preuve explicites et limites clairement formulées.",
+      "evaluation_criteria": [
+        "fidélité au graphe",
+        "raisonnement multi-sauts",
+        "distinction direct/indirect",
+        "détection des contradictions",
+        "absence d'ajout de faits externes",
+        "capacité à produire un sous-graphe ou une requête vérifiable"
+      ],
+      "scoring_rubric": {
+        "graph_faithfulness": "0-5",
+        "multi_hop_reasoning": "0-5",
+        "evidence_paths": "0-5",
+        "uncertainty_or_contradiction_handling": "0-5",
+        "hallucination_control": "0-5",
+        "overall_score": "0-100"
+      }
+    },
+    {
+      "id": "BIO-KG-010",
+      "section": "knowledge_graph_reasoning",
+      "difficulty": "expert",
+      "question_type": "graph_reasoning",
+      "graph_context": {
+        "name": "wetland_housing",
+        "format": "triples",
+        "triples": [
+          [
+            "species:tree_frog",
+            "breeds_in",
+            "habitat:temporary_pond"
+          ],
+          [
+            "species:dragonfly_x",
+            "larval_stage_in",
+            "habitat:temporary_pond"
+          ],
+          [
+            "habitat:temporary_pond",
+            "part_of",
+            "habitat:wetland_complex"
+          ],
+          [
+            "habitat:wetland_complex",
+            "provides",
+            "service:flood_regulation"
+          ],
+          [
+            "project:housing_area",
+            "threatens",
+            "habitat:temporary_pond"
+          ],
+          [
+            "project:housing_area",
+            "causes",
+            "pressure:soil_sealing"
+          ],
+          [
+            "pressure:soil_sealing",
+            "reduces",
+            "service:flood_regulation"
+          ],
+          [
+            "species:tree_frog",
+            "protected_by",
+            "law:national_protection"
+          ],
+          [
+            "species:dragonfly_x",
+            "protected_by",
+            "law:none"
+          ]
+        ]
+      },
+      "question": "Listez les inconnues critiques que le graphe ne permet pas de résoudre.",
+      "expected_answer_short": "Réponse fondée uniquement sur les triples fournis, avec chemins de preuve explicites et limites clairement formulées.",
+      "evaluation_criteria": [
+        "fidélité au graphe",
+        "raisonnement multi-sauts",
+        "distinction direct/indirect",
+        "détection des contradictions",
+        "absence d'ajout de faits externes",
+        "capacité à produire un sous-graphe ou une requête vérifiable"
+      ],
+      "scoring_rubric": {
+        "graph_faithfulness": "0-5",
+        "multi_hop_reasoning": "0-5",
+        "evidence_paths": "0-5",
+        "uncertainty_or_contradiction_handling": "0-5",
+        "hallucination_control": "0-5",
+        "overall_score": "0-100"
+      }
+    },
+    {
+      "id": "BIO-KG-011",
+      "section": "knowledge_graph_reasoning",
+      "difficulty": "expert",
+      "question_type": "graph_reasoning",
+      "graph_context": {
+        "name": "seagrass_port",
+        "format": "triples",
+        "triples": [
+          [
+            "species:posidonia_oceanica",
+            "forms",
+            "habitat:seagrass_bed"
+          ],
+          [
+            "habitat:seagrass_bed",
+            "supports",
+            "species:juvenile_fish"
+          ],
+          [
+            "species:caretta_caretta",
+            "uses",
+            "habitat:seagrass_bed"
+          ],
+          [
+            "project:marina_extension",
+            "causes",
+            "pressure:anchoring"
+          ],
+          [
+            "pressure:anchoring",
+            "damages",
+            "habitat:seagrass_bed"
+          ],
+          [
+            "habitat:seagrass_bed",
+            "provides",
+            "service:carbon_storage"
+          ],
+          [
+            "habitat:seagrass_bed",
+            "provides",
+            "service:coastal_protection"
+          ],
+          [
+            "species:posidonia_oceanica",
+            "protected_by",
+            "law:mediterranean_regulation"
+          ],
+          [
+            "species:caretta_caretta",
+            "protected_by",
+            "law:habitats_directive"
+          ]
+        ]
+      },
+      "question": "Propagez les impacts de project:marina_extension jusqu'à trois sauts et classez les nœuds affectés.",
+      "expected_answer_short": "Réponse fondée uniquement sur les triples fournis, avec chemins de preuve explicites et limites clairement formulées.",
+      "evaluation_criteria": [
+        "fidélité au graphe",
+        "raisonnement multi-sauts",
+        "distinction direct/indirect",
+        "détection des contradictions",
+        "absence d'ajout de faits externes",
+        "capacité à produire un sous-graphe ou une requête vérifiable"
+      ],
+      "scoring_rubric": {
+        "graph_faithfulness": "0-5",
+        "multi_hop_reasoning": "0-5",
+        "evidence_paths": "0-5",
+        "uncertainty_or_contradiction_handling": "0-5",
+        "hallucination_control": "0-5",
+        "overall_score": "0-100"
+      }
+    },
+    {
+      "id": "BIO-KG-012",
+      "section": "knowledge_graph_reasoning",
+      "difficulty": "expert",
+      "question_type": "graph_reasoning",
+      "graph_context": {
+        "name": "seagrass_port",
+        "format": "triples",
+        "triples": [
+          [
+            "species:posidonia_oceanica",
+            "forms",
+            "habitat:seagrass_bed"
+          ],
+          [
+            "habitat:seagrass_bed",
+            "supports",
+            "species:juvenile_fish"
+          ],
+          [
+            "species:caretta_caretta",
+            "uses",
+            "habitat:seagrass_bed"
+          ],
+          [
+            "project:marina_extension",
+            "causes",
+            "pressure:anchoring"
+          ],
+          [
+            "pressure:anchoring",
+            "damages",
+            "habitat:seagrass_bed"
+          ],
+          [
+            "habitat:seagrass_bed",
+            "provides",
+            "service:carbon_storage"
+          ],
+          [
+            "habitat:seagrass_bed",
+            "provides",
+            "service:coastal_protection"
+          ],
+          [
+            "species:posidonia_oceanica",
+            "protected_by",
+            "law:mediterranean_regulation"
+          ],
+          [
+            "species:caretta_caretta",
+            "protected_by",
+            "law:habitats_directive"
+          ]
+        ]
+      },
+      "question": "Quels services écosystémiques sont affectés et par quels chemins de preuve ?",
+      "expected_answer_short": "Réponse fondée uniquement sur les triples fournis, avec chemins de preuve explicites et limites clairement formulées.",
+      "evaluation_criteria": [
+        "fidélité au graphe",
+        "raisonnement multi-sauts",
+        "distinction direct/indirect",
+        "détection des contradictions",
+        "absence d'ajout de faits externes",
+        "capacité à produire un sous-graphe ou une requête vérifiable"
+      ],
+      "scoring_rubric": {
+        "graph_faithfulness": "0-5",
+        "multi_hop_reasoning": "0-5",
+        "evidence_paths": "0-5",
+        "uncertainty_or_contradiction_handling": "0-5",
+        "hallucination_control": "0-5",
+        "overall_score": "0-100"
+      }
+    },
+    {
+      "id": "BIO-KG-013",
+      "section": "knowledge_graph_reasoning",
+      "difficulty": "expert",
+      "question_type": "graph_reasoning",
+      "graph_context": {
+        "name": "seagrass_port",
+        "format": "triples",
+        "triples": [
+          [
+            "species:posidonia_oceanica",
+            "forms",
+            "habitat:seagrass_bed"
+          ],
+          [
+            "habitat:seagrass_bed",
+            "supports",
+            "species:juvenile_fish"
+          ],
+          [
+            "species:caretta_caretta",
+            "uses",
+            "habitat:seagrass_bed"
+          ],
+          [
+            "project:marina_extension",
+            "causes",
+            "pressure:anchoring"
+          ],
+          [
+            "pressure:anchoring",
+            "damages",
+            "habitat:seagrass_bed"
+          ],
+          [
+            "habitat:seagrass_bed",
+            "provides",
+            "service:carbon_storage"
+          ],
+          [
+            "habitat:seagrass_bed",
+            "provides",
+            "service:coastal_protection"
+          ],
+          [
+            "species:posidonia_oceanica",
+            "protected_by",
+            "law:mediterranean_regulation"
+          ],
+          [
+            "species:caretta_caretta",
+            "protected_by",
+            "law:habitats_directive"
+          ]
+        ]
+      },
+      "question": "Écrivez une requête SPARQL-like pour trouver les habitats endommagés qui fournissent un service écosystémique.",
+      "expected_answer_short": "Réponse fondée uniquement sur les triples fournis, avec chemins de preuve explicites et limites clairement formulées.",
+      "evaluation_criteria": [
+        "fidélité au graphe",
+        "raisonnement multi-sauts",
+        "distinction direct/indirect",
+        "détection des contradictions",
+        "absence d'ajout de faits externes",
+        "capacité à produire un sous-graphe ou une requête vérifiable"
+      ],
+      "scoring_rubric": {
+        "graph_faithfulness": "0-5",
+        "multi_hop_reasoning": "0-5",
+        "evidence_paths": "0-5",
+        "uncertainty_or_contradiction_handling": "0-5",
+        "hallucination_control": "0-5",
+        "overall_score": "0-100"
+      }
+    },
+    {
+      "id": "BIO-KG-014",
+      "section": "knowledge_graph_reasoning",
+      "difficulty": "expert",
+      "question_type": "graph_reasoning",
+      "graph_context": {
+        "name": "seagrass_port",
+        "format": "triples",
+        "triples": [
+          [
+            "species:posidonia_oceanica",
+            "forms",
+            "habitat:seagrass_bed"
+          ],
+          [
+            "habitat:seagrass_bed",
+            "supports",
+            "species:juvenile_fish"
+          ],
+          [
+            "species:caretta_caretta",
+            "uses",
+            "habitat:seagrass_bed"
+          ],
+          [
+            "project:marina_extension",
+            "causes",
+            "pressure:anchoring"
+          ],
+          [
+            "pressure:anchoring",
+            "damages",
+            "habitat:seagrass_bed"
+          ],
+          [
+            "habitat:seagrass_bed",
+            "provides",
+            "service:carbon_storage"
+          ],
+          [
+            "habitat:seagrass_bed",
+            "provides",
+            "service:coastal_protection"
+          ],
+          [
+            "species:posidonia_oceanica",
+            "protected_by",
+            "law:mediterranean_regulation"
+          ],
+          [
+            "species:caretta_caretta",
+            "protected_by",
+            "law:habitats_directive"
+          ]
+        ]
+      },
+      "question": "Distinguez les impacts sur espèce, habitat et service dans trois listes séparées.",
+      "expected_answer_short": "Réponse fondée uniquement sur les triples fournis, avec chemins de preuve explicites et limites clairement formulées.",
+      "evaluation_criteria": [
+        "fidélité au graphe",
+        "raisonnement multi-sauts",
+        "distinction direct/indirect",
+        "détection des contradictions",
+        "absence d'ajout de faits externes",
+        "capacité à produire un sous-graphe ou une requête vérifiable"
+      ],
+      "scoring_rubric": {
+        "graph_faithfulness": "0-5",
+        "multi_hop_reasoning": "0-5",
+        "evidence_paths": "0-5",
+        "uncertainty_or_contradiction_handling": "0-5",
+        "hallucination_control": "0-5",
+        "overall_score": "0-100"
+      }
+    },
+    {
+      "id": "BIO-KG-015",
+      "section": "knowledge_graph_reasoning",
+      "difficulty": "expert",
+      "question_type": "graph_reasoning",
+      "graph_context": {
+        "name": "seagrass_port",
+        "format": "triples",
+        "triples": [
+          [
+            "species:posidonia_oceanica",
+            "forms",
+            "habitat:seagrass_bed"
+          ],
+          [
+            "habitat:seagrass_bed",
+            "supports",
+            "species:juvenile_fish"
+          ],
+          [
+            "species:caretta_caretta",
+            "uses",
+            "habitat:seagrass_bed"
+          ],
+          [
+            "project:marina_extension",
+            "causes",
+            "pressure:anchoring"
+          ],
+          [
+            "pressure:anchoring",
+            "damages",
+            "habitat:seagrass_bed"
+          ],
+          [
+            "habitat:seagrass_bed",
+            "provides",
+            "service:carbon_storage"
+          ],
+          [
+            "habitat:seagrass_bed",
+            "provides",
+            "service:coastal_protection"
+          ],
+          [
+            "species:posidonia_oceanica",
+            "protected_by",
+            "law:mediterranean_regulation"
+          ],
+          [
+            "species:caretta_caretta",
+            "protected_by",
+            "law:habitats_directive"
+          ]
+        ]
+      },
+      "question": "Quelles affirmations externes sur la Posidonie seraient interdites si l'on doit répondre uniquement avec le graphe ?",
+      "expected_answer_short": "Réponse fondée uniquement sur les triples fournis, avec chemins de preuve explicites et limites clairement formulées.",
+      "evaluation_criteria": [
+        "fidélité au graphe",
+        "raisonnement multi-sauts",
+        "distinction direct/indirect",
+        "détection des contradictions",
+        "absence d'ajout de faits externes",
+        "capacité à produire un sous-graphe ou une requête vérifiable"
+      ],
+      "scoring_rubric": {
+        "graph_faithfulness": "0-5",
+        "multi_hop_reasoning": "0-5",
+        "evidence_paths": "0-5",
+        "uncertainty_or_contradiction_handling": "0-5",
+        "hallucination_control": "0-5",
+        "overall_score": "0-100"
+      }
+    },
+    {
+      "id": "BIO-KG-016",
+      "section": "knowledge_graph_reasoning",
+      "difficulty": "expert",
+      "question_type": "graph_reasoning",
+      "graph_context": {
+        "name": "contradictory_status",
+        "format": "triples",
+        "triples": [
+          [
+            "species:x",
+            "hasScientificName",
+            "Examplea contradictoria"
+          ],
+          [
+            "species:x",
+            "protected_by",
+            "law:none"
+          ],
+          [
+            "species:x",
+            "protected_by",
+            "law:national_protection"
+          ],
+          [
+            "species:x",
+            "inhabits",
+            "habitat:grassland"
+          ],
+          [
+            "habitat:grassland",
+            "threatened_by",
+            "project:solar_farm"
+          ],
+          [
+            "project:solar_farm",
+            "hasBenefit",
+            "benefit:renewable_energy"
+          ],
+          [
+            "species:y",
+            "inhabits",
+            "habitat:grassland"
+          ],
+          [
+            "species:y",
+            "protected_by",
+            "law:none"
+          ]
+        ]
+      },
+      "question": "Détectez les contradictions réglementaires présentes dans le graphe et proposez un mécanisme de contrôle qualité.",
+      "expected_answer_short": "Réponse fondée uniquement sur les triples fournis, avec chemins de preuve explicites et limites clairement formulées.",
+      "evaluation_criteria": [
+        "fidélité au graphe",
+        "raisonnement multi-sauts",
+        "distinction direct/indirect",
+        "détection des contradictions",
+        "absence d'ajout de faits externes",
+        "capacité à produire un sous-graphe ou une requête vérifiable"
+      ],
+      "scoring_rubric": {
+        "graph_faithfulness": "0-5",
+        "multi_hop_reasoning": "0-5",
+        "evidence_paths": "0-5",
+        "uncertainty_or_contradiction_handling": "0-5",
+        "hallucination_control": "0-5",
+        "overall_score": "0-100"
+      }
+    },
+    {
+      "id": "BIO-KG-017",
+      "section": "knowledge_graph_reasoning",
+      "difficulty": "expert",
+      "question_type": "graph_reasoning",
+      "graph_context": {
+        "name": "contradictory_status",
+        "format": "triples",
+        "triples": [
+          [
+            "species:x",
+            "hasScientificName",
+            "Examplea contradictoria"
+          ],
+          [
+            "species:x",
+            "protected_by",
+            "law:none"
+          ],
+          [
+            "species:x",
+            "protected_by",
+            "law:national_protection"
+          ],
+          [
+            "species:x",
+            "inhabits",
+            "habitat:grassland"
+          ],
+          [
+            "habitat:grassland",
+            "threatened_by",
+            "project:solar_farm"
+          ],
+          [
+            "project:solar_farm",
+            "hasBenefit",
+            "benefit:renewable_energy"
+          ],
+          [
+            "species:y",
+            "inhabits",
+            "habitat:grassland"
+          ],
+          [
+            "species:y",
+            "protected_by",
+            "law:none"
+          ]
+        ]
+      },
+      "question": "Comment un LLM pourrait-il halluciner une conclusion juridique à partir de ce graphe ? Donnez deux exemples à éviter.",
+      "expected_answer_short": "Réponse fondée uniquement sur les triples fournis, avec chemins de preuve explicites et limites clairement formulées.",
+      "evaluation_criteria": [
+        "fidélité au graphe",
+        "raisonnement multi-sauts",
+        "distinction direct/indirect",
+        "détection des contradictions",
+        "absence d'ajout de faits externes",
+        "capacité à produire un sous-graphe ou une requête vérifiable"
+      ],
+      "scoring_rubric": {
+        "graph_faithfulness": "0-5",
+        "multi_hop_reasoning": "0-5",
+        "evidence_paths": "0-5",
+        "uncertainty_or_contradiction_handling": "0-5",
+        "hallucination_control": "0-5",
+        "overall_score": "0-100"
+      }
+    },
+    {
+      "id": "BIO-KG-018",
+      "section": "knowledge_graph_reasoning",
+      "difficulty": "expert",
+      "question_type": "graph_reasoning",
+      "graph_context": {
+        "name": "contradictory_status",
+        "format": "triples",
+        "triples": [
+          [
+            "species:x",
+            "hasScientificName",
+            "Examplea contradictoria"
+          ],
+          [
+            "species:x",
+            "protected_by",
+            "law:none"
+          ],
+          [
+            "species:x",
+            "protected_by",
+            "law:national_protection"
+          ],
+          [
+            "species:x",
+            "inhabits",
+            "habitat:grassland"
+          ],
+          [
+            "habitat:grassland",
+            "threatened_by",
+            "project:solar_farm"
+          ],
+          [
+            "project:solar_farm",
+            "hasBenefit",
+            "benefit:renewable_energy"
+          ],
+          [
+            "species:y",
+            "inhabits",
+            "habitat:grassland"
+          ],
+          [
+            "species:y",
+            "protected_by",
+            "law:none"
+          ]
+        ]
+      },
+      "question": "Quel arbitrage biodiversité-climat apparaît dans ce graphe et quelles informations manquent pour trancher ?",
+      "expected_answer_short": "Réponse fondée uniquement sur les triples fournis, avec chemins de preuve explicites et limites clairement formulées.",
+      "evaluation_criteria": [
+        "fidélité au graphe",
+        "raisonnement multi-sauts",
+        "distinction direct/indirect",
+        "détection des contradictions",
+        "absence d'ajout de faits externes",
+        "capacité à produire un sous-graphe ou une requête vérifiable"
+      ],
+      "scoring_rubric": {
+        "graph_faithfulness": "0-5",
+        "multi_hop_reasoning": "0-5",
+        "evidence_paths": "0-5",
+        "uncertainty_or_contradiction_handling": "0-5",
+        "hallucination_control": "0-5",
+        "overall_score": "0-100"
+      }
+    },
+    {
+      "id": "BIO-KG-019",
+      "section": "knowledge_graph_reasoning",
+      "difficulty": "expert",
+      "question_type": "graph_reasoning",
+      "graph_context": {
+        "name": "contradictory_status",
+        "format": "triples",
+        "triples": [
+          [
+            "species:x",
+            "hasScientificName",
+            "Examplea contradictoria"
+          ],
+          [
+            "species:x",
+            "protected_by",
+            "law:none"
+          ],
+          [
+            "species:x",
+            "protected_by",
+            "law:national_protection"
+          ],
+          [
+            "species:x",
+            "inhabits",
+            "habitat:grassland"
+          ],
+          [
+            "habitat:grassland",
+            "threatened_by",
+            "project:solar_farm"
+          ],
+          [
+            "project:solar_farm",
+            "hasBenefit",
+            "benefit:renewable_energy"
+          ],
+          [
+            "species:y",
+            "inhabits",
+            "habitat:grassland"
+          ],
+          [
+            "species:y",
+            "protected_by",
+            "law:none"
+          ]
+        ]
+      },
+      "question": "Construisez le sous-graphe minimal reliant project:solar_farm à species:x.",
+      "expected_answer_short": "Réponse fondée uniquement sur les triples fournis, avec chemins de preuve explicites et limites clairement formulées.",
+      "evaluation_criteria": [
+        "fidélité au graphe",
+        "raisonnement multi-sauts",
+        "distinction direct/indirect",
+        "détection des contradictions",
+        "absence d'ajout de faits externes",
+        "capacité à produire un sous-graphe ou une requête vérifiable"
+      ],
+      "scoring_rubric": {
+        "graph_faithfulness": "0-5",
+        "multi_hop_reasoning": "0-5",
+        "evidence_paths": "0-5",
+        "uncertainty_or_contradiction_handling": "0-5",
+        "hallucination_control": "0-5",
+        "overall_score": "0-100"
+      }
+    },
+    {
+      "id": "BIO-KG-020",
+      "section": "knowledge_graph_reasoning",
+      "difficulty": "expert",
+      "question_type": "graph_reasoning",
+      "graph_context": {
+        "name": "contradictory_status",
+        "format": "triples",
+        "triples": [
+          [
+            "species:x",
+            "hasScientificName",
+            "Examplea contradictoria"
+          ],
+          [
+            "species:x",
+            "protected_by",
+            "law:none"
+          ],
+          [
+            "species:x",
+            "protected_by",
+            "law:national_protection"
+          ],
+          [
+            "species:x",
+            "inhabits",
+            "habitat:grassland"
+          ],
+          [
+            "habitat:grassland",
+            "threatened_by",
+            "project:solar_farm"
+          ],
+          [
+            "project:solar_farm",
+            "hasBenefit",
+            "benefit:renewable_energy"
+          ],
+          [
+            "species:y",
+            "inhabits",
+            "habitat:grassland"
+          ],
+          [
+            "species:y",
+            "protected_by",
+            "law:none"
+          ]
+        ]
+      },
+      "question": "Répondez comme un système d'aide à la décision : que recommanderiez-vous de vérifier avant toute conclusion ?",
+      "expected_answer_short": "Réponse fondée uniquement sur les triples fournis, avec chemins de preuve explicites et limites clairement formulées.",
+      "evaluation_criteria": [
+        "fidélité au graphe",
+        "raisonnement multi-sauts",
+        "distinction direct/indirect",
+        "détection des contradictions",
+        "absence d'ajout de faits externes",
+        "capacité à produire un sous-graphe ou une requête vérifiable"
+      ],
+      "scoring_rubric": {
+        "graph_faithfulness": "0-5",
+        "multi_hop_reasoning": "0-5",
+        "evidence_paths": "0-5",
+        "uncertainty_or_contradiction_handling": "0-5",
+        "hallucination_control": "0-5",
+        "overall_score": "0-100"
+      }
+    }
+  ]
+}

@@ -173,10 +173,15 @@ def _hallucination_analysis(df: pd.DataFrame) -> str:
     return "\n".join(lines)
 
 
+# Types de question portant sur les arbitrages / biais socio-écologiques.
+# Inclut l'ancien jeu (`arbitrage`) et le jeu V2 (`tradeoff_and_bias_detection`).
+ARBITRAGE_QUESTION_TYPES = {"arbitrage", "tradeoff_and_bias_detection"}
+
+
 def _arbitrage_analysis(df: pd.DataFrame) -> str:
     ok = df[
         (df["error"].isna() | (df["error"] == ""))
-        & (df["question_type"] == "arbitrage")
+        & (df["question_type"].isin(ARBITRAGE_QUESTION_TYPES))
     ]
     if ok.empty:
         return "_Aucune question d'arbitrage évaluée._"
@@ -227,7 +232,7 @@ def _recommendations(summary_model: pd.DataFrame, df: pd.DataFrame) -> str:
                 f"`{safe.index[0]}` (score anti-hallucination "
                 f"{safe.iloc[0]:.2f}/5)."
             )
-        arb = ok[ok["question_type"] == "arbitrage"]
+        arb = ok[ok["question_type"].isin(ARBITRAGE_QUESTION_TYPES)]
         if not arb.empty:
             best_arb = (
                 arb.groupby("model")["overall_score"].mean().sort_values(ascending=False)

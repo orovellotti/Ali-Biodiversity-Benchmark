@@ -62,3 +62,26 @@ must label it so higher always reads as better.
   RESULTS READ TIME (results.ts summarizeModels), so historical runs get it free.
   Rule ORDER matters: more-specific substrings (gpt-4o-mini) must come before
   broader ones (gpt-4o) or minis get mislabeled Grand.
+
+## Dataset taxonomy & swaps (V2 Discriminant)
+The active dataset is a single JSON file (`{metadata, questions}`) chosen by
+`datasetPath()` (TS) and the `--input` default in `main.py`. Swapping datasets =
+change BOTH of those to the new filename.
+
+- **topic vs section:** newer datasets (e.g. "V2 Discriminant" 80q) have no
+  `topic` field — they use `section`. Both layers treat the grouping dimension as
+  `topic ?? section`: TS `topicOf(q)` in `dataset.ts` (topics/difficulties/
+  questionTypes derived dynamically from the file — no hardcoded list; `config.ts`
+  exposes `topics()`, `runner.ts` validates against it). Python `topic_of(q)` in
+  `main.py`, and the record's `topic` field is WRITTEN as `topic_of(q)` so the UI
+  filters and `summaryByTopic` (which key off row-level `topic`) keep working.
+- **Taxonomy coupling trap:** any per-`question_type` analysis must match a SET
+  covering all datasets, not a single literal. `report.py` had hardcoded
+  `question_type == "arbitrage"`; V2 uses `tradeoff_and_bias_detection` →
+  introduced `ARBITRAGE_QUESTION_TYPES`. On a dataset swap, grep `report.py` and
+  `format.ts` for old taxonomy literals before assuming it works.
+- **Knowledge-graph questions:** KG items carry `graph_context.triples`.
+  `config.py.build_user_prompt(q)` takes the FULL question dict and injects the
+  formatted triples + "répondre uniquement à partir du graphe" instruction;
+  `build_judge_prompt` also embeds the graph for fidelity scoring.
+  `format_graph_context` is defensive (non-dict / malformed → "").
