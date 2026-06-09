@@ -21,7 +21,14 @@ import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocation } from "wouter";
-import { Trash2, AlertCircle, Lock, LogOut } from "lucide-react";
+import {
+  Trash2,
+  AlertCircle,
+  Lock,
+  LogOut,
+  ArrowRight,
+  BarChart3,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   getAdminToken,
@@ -67,6 +74,11 @@ export function Home() {
   const createRun = useCreateRun();
   const deleteRun = useDeleteRun();
   const verifyAdmin = useVerifyAdmin();
+
+  // Most recent completed run with real results to feature prominently.
+  const latestCompleted = runs?.find(
+    (r) => r.status === "completed" && !r.dryRun,
+  );
 
   // --- Admin login ---------------------------------------------------------
   // Browsing results and questions is public. Launching (and deleting) a run is
@@ -200,6 +212,48 @@ export function Home() {
               </span>
             )}
           </div>
+
+          {latestCompleted && (
+            <Link href={`/runs/${latestCompleted.id}`}>
+              <div className="group mb-8 block rounded-2xl border border-primary/30 bg-primary/[0.04] p-6 sm:p-7 hover:border-primary/60 hover:shadow-lg transition-all cursor-pointer">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+                  <div className="min-w-0">
+                    <div className="eyebrow mb-2 flex items-center gap-2 !text-primary">
+                      <BarChart3 className="w-3.5 h-3.5" /> Dernier résultat
+                    </div>
+                    <h3 className="font-display text-2xl font-semibold tracking-tight">
+                      Évaluation {latestCompleted.id.split("-").pop()}
+                    </h3>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      <span className="font-medium text-foreground">
+                        {latestCompleted.models.length} modèles
+                      </span>{" "}
+                      comparés sur{" "}
+                      <span className="font-medium text-foreground">
+                        {latestCompleted.completed} questions
+                      </span>{" "}
+                      · {formatDateTime(latestCompleted.createdAt)}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1 truncate">
+                      {latestCompleted.models.join(", ")}
+                    </p>
+                  </div>
+                  <div className="shrink-0">
+                    <Button size="lg" className="w-full sm:w-auto">
+                      Voir les résultats
+                      <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-0.5 transition-transform" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </Link>
+          )}
+
+          {latestCompleted && runs && runs.length > 1 && (
+            <div className="eyebrow mb-4 !text-foreground/60">
+              Historique complet
+            </div>
+          )}
 
           {runsLoading ? (
             <div className="space-y-3">
