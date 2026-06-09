@@ -28,6 +28,7 @@ import {
   setAdminToken,
   clearAdminToken,
   isAuthError,
+  isAdminDisabledError,
 } from "@/lib/admin";
 
 const runSchema = z.object({
@@ -91,9 +92,11 @@ export function Home() {
         clearAdminToken();
         setAuthed(false);
         setLoginError(
-          isAuthError(err)
-            ? "Mot de passe incorrect."
-            : "Connexion impossible. Réessayez.",
+          isAdminDisabledError(err)
+            ? "Le lancement d'évaluations est désactivé sur ce serveur."
+            : isAuthError(err)
+              ? "Mot de passe incorrect."
+              : "Connexion impossible. Réessayez.",
         );
       },
     });

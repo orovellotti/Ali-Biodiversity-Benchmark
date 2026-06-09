@@ -12,7 +12,16 @@ export function clearAdminToken(): void {
   sessionStorage.removeItem(ADMIN_TOKEN_KEY);
 }
 
+function errStatus(err: unknown): number | undefined {
+  return (err as { status?: number } | null)?.status;
+}
+
 export function isAuthError(err: unknown): boolean {
-  const status = (err as { status?: number } | null)?.status;
+  const status = errStatus(err);
   return status === 401 || status === 503;
+}
+
+/** 503 = no admin password configured server-side (launching is disabled). */
+export function isAdminDisabledError(err: unknown): boolean {
+  return errStatus(err) === 503;
 }

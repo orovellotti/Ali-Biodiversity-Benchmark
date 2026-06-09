@@ -92,3 +92,9 @@ change BOTH of those to the new filename.
   formatted triples + "répondre uniquement à partir du graphe" instruction;
   `build_judge_prompt` also embeds the graph for fidelity scoring.
   `format_graph_context` is defensive (non-dict / malformed → "").
+
+## Admin auth (launch/delete gating)
+- Browsing (results/history/questions) is public; only POST/DELETE `/benchmark/runs` (+ `POST /benchmark/admin/session` verify route) are gated by `requireAdmin`.
+- `requireAdmin` returns **503 when `BENCHMARK_ADMIN_PASSWORD` is unset** (writes disabled by default — do NOT "fix" this to allow unauthenticated writes), **401** on missing/wrong Bearer token.
+- **Why timing-safe needs hashing:** comparing raw buffers with a `length===` short-circuit leaks password length via timing. Always SHA-256 both sides to fixed length, then `timingSafeEqual`.
+- Frontend: password kept in `sessionStorage` (admin.ts), attached as Bearer by the transport getter registered in App.tsx; UI distinguishes 503 (disabled) vs 401 (wrong pw).

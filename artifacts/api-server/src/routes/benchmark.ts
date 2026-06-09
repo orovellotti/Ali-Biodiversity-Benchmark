@@ -41,9 +41,12 @@ const requireAdmin: RequestHandler = (req, res, next) => {
   const header = req.get("authorization") ?? "";
   const provided = header.startsWith("Bearer ") ? header.slice(7).trim() : "";
 
-  const a = Buffer.from(provided);
-  const b = Buffer.from(configured);
-  const ok = a.length === b.length && timingSafeEqual(a, b);
+  // Hash both sides to fixed-length digests so the comparison does constant
+  // work regardless of input length (no length short-circuit that could leak
+  // the configured password's length through timing).
+  const a = createHash("sha256").update(provided).digest();
+  const b = createHash("sha256").update(configured).digest();
+  const ok = timingSafeEqual(a, b);
 
   if (!ok) {
     res.status(401).json({
