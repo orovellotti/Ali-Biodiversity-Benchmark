@@ -316,7 +316,7 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
               <Button 
                 variant="outline"
                 className="w-full md:w-auto"
-                onClick={() => exportToCSV("drill-down.csv", filteredRows, ["questionId", "model", "topic", "difficulty", "overallScore", "accuracy", "uncertaintyHandling", "justificationQuality", "sourceAwareness", "regulatoryHallucinationRisk", "error"])}
+                onClick={() => exportToCSV("drill-down.csv", filteredRows, ["questionId", "question", "model", "topic", "difficulty", "overallScore", "accuracy", "uncertaintyHandling", "justificationQuality", "sourceAwareness", "regulatoryHallucinationRisk", "error"])}
               >
                 <Download className="w-4 h-4 mr-2" /> Exporter CSV
               </Button>
@@ -332,6 +332,7 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-24">ID</TableHead>
+                  <TableHead className="min-w-[18rem]">Question</TableHead>
                   <TableHead>Modèle</TableHead>
                   <TableHead>Topic / Diff.</TableHead>
                   <TableHead>Score</TableHead>
@@ -343,6 +344,11 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
                 {filteredRows.slice(0, 100).map((row, i) => (
                   <TableRow key={`${row.questionId}-${row.model}-${i}`}>
                     <TableCell className="font-mono text-xs">{row.questionId}</TableCell>
+                    <TableCell className="max-w-md">
+                      <span className="block text-sm line-clamp-2" title={row.question ?? undefined}>
+                        {row.question}
+                      </span>
+                    </TableCell>
                     <TableCell className="font-medium">{row.model}</TableCell>
                     <TableCell>
                       <div className="text-sm">{t(row.topic)}</div>
