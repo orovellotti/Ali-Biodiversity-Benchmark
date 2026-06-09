@@ -12,7 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Button } from "@/components/ui/button";
 import { t } from "@/lib/format";
 import { Run, RunResults } from "@workspace/api-client-react";
-import { Download, CheckCircle2, AlertTriangle } from "lucide-react";
+import { Download, CheckCircle2, AlertTriangle, Award, ShieldCheck, Compass } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const CHART_COLORS = [
@@ -32,6 +32,36 @@ const SCORE_LABELS = {
   sourceAwareness: t("sourceAwareness"),
   regulatoryHallucinationRisk: "Risque d'hallucination (5 = aucun)",
 };
+
+// Plain-language descriptions of each scoring dimension, written for a
+// scientific (non-ML) audience. Each note is rated from 0 to 5.
+const DIMENSION_GLOSSARY: { label: string; description: string }[] = [
+  {
+    label: "Exactitude",
+    description:
+      "La réponse est-elle juste sur le fond, conforme aux connaissances écologiques et réglementaires ?",
+  },
+  {
+    label: "Gestion de l'incertitude",
+    description:
+      "Le modèle reconnaît-il ses limites et nuance-t-il quand la question est ambiguë, plutôt que d'affirmer à tort ?",
+  },
+  {
+    label: "Qualité de la justification",
+    description:
+      "Le raisonnement est-il clair, structuré et explicité, ou la réponse tombe-t-elle sans explication ?",
+  },
+  {
+    label: "Conscience des sources",
+    description:
+      "Le modèle s'appuie-t-il sur des références pertinentes (textes, protocoles) au lieu d'inventer ?",
+  },
+  {
+    label: "Risque d'hallucination (5 = aucun)",
+    description:
+      "Mesure inversée : une note élevée signifie que le modèle invente peu de faits ou de références. C'est le critère de prudence le plus important.",
+  },
+];
 
 function exportToCSV(filename: string, data: any[], headers: string[]) {
   if (data.length === 0) return;
@@ -88,6 +118,19 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
   const uniqueTopics = useMemo(() => [...new Set(results.rows.map(r => r.topic).filter(Boolean) as string[])], [results.rows]);
   const uniqueDifficulties = useMemo(() => [...new Set(results.rows.map(r => r.difficulty).filter(Boolean) as string[])], [results.rows]);
 
+  const showVerdict = !run.noEval && !run.dryRun && results.summaryByModel.length > 0;
+
+  // Best overall = first ranked model. Best at prudence = highest (inverted)
+  // hallucination score, since that is the dimension an ecologist cares about
+  // most when relying on the answers.
+  const bestOverall = showVerdict ? results.summaryByModel[0] : null;
+  const safestModel = useMemo(() => {
+    if (!showVerdict) return null;
+    return results.summaryByModel.reduce((best, m) =>
+      (m.regulatoryHallucinationRisk ?? -1) > (best.regulatoryHallucinationRisk ?? -1) ? m : best
+    );
+  }, [results.summaryByModel, showVerdict]);
+
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (!active || !payload || payload.length === 0) return null;
     return (
@@ -108,6 +151,100 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
 
   return (
     <div className="space-y-8">
+      {/* Reading guide & verdict — for a non-technical, scientific audience */}
+      {showVerdict && bestOverall && (
+        <Card className="hairline-top border-primary/40 bg-primary/[0.03]">
+          <CardContent className="p-6">
+            <div className="eyebrow mb-1.5 flex items-center gap-1.5">
+              <Compass className="w-3.5 h-3.5" />
+              Comment lire ces résultats
+            </div>
+            <h2 className="font-display text-2xl font-semibold tracking-tight mb-3">
+              Synthèse de l'évaluation
+            </h2>
+            <p className="text-[15px] text-muted-foreground max-w-3xl leading-relaxed">
+              Chaque modèle d'IA a répondu à un échantillon de questions du jeu
+              de données « jugement biodiversité ». Un modèle juge indépendant a
+              ensuite noté les réponses sur cinq critères, de 0 à 5. Le{" "}
+              <strong className="text-foreground">score global</strong> (sur 100)
+              combine ces critères : plus il est élevé, plus le modèle est
+              fiable. En matière d'écologie, l'essentiel n'est pas seulement
+              d'avoir raison, mais de{" "}
+              <strong className="text-foreground">
+                ne pas inventer
+              </strong>{" "}
+              et de signaler ses incertitudes.
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-5">
+              <div className="flex items-start gap-3 rounded-lg border border-border bg-card p-4">
+                <Award className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                <div>
+                  <div className="text-xs text-muted-foreground">
+                    Modèle le plus fiable
+                  </div>
+                  <div className="font-display font-semibold text-lg leading-tight">
+                    {bestOverall.model}
+                  </div>
+                  <div className="text-sm text-muted-foreground mt-0.5">
+                    Meilleur score global
+                    {bestOverall.overallScore != null && (
+                      <span className="font-mono text-foreground">
+                        {" "}
+                        — {bestOverall.overallScore.toFixed(1)}/100
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {safestModel && (
+                <div className="flex items-start gap-3 rounded-lg border border-border bg-card p-4">
+                  <ShieldCheck className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                  <div>
+                    <div className="text-xs text-muted-foreground">
+                      Le plus prudent (anti-hallucination)
+                    </div>
+                    <div className="font-display font-semibold text-lg leading-tight">
+                      {safestModel.model}
+                    </div>
+                    <div className="text-sm text-muted-foreground mt-0.5">
+                      Invente le moins de faits
+                      {safestModel.regulatoryHallucinationRisk != null && (
+                        <span className="font-mono text-foreground">
+                          {" "}
+                          — {safestModel.regulatoryHallucinationRisk.toFixed(1)}/5
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="mt-6">
+              <div className="text-sm font-medium mb-3">
+                Les cinq critères de notation (chacun de 0 à 5)
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
+                {DIMENSION_GLOSSARY.map((dim) => (
+                  <div key={dim.label} className="flex items-start gap-2.5">
+                    <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                    <div>
+                      <span className="text-sm font-medium">{dim.label}</span>
+                      <span className="text-sm text-muted-foreground">
+                        {" — "}
+                        {dim.description}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Overview Rankings — specimen cards */}
       <div>
         <div className="eyebrow mb-1.5">Classement</div>
@@ -160,7 +297,7 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
                 <div className="space-y-1.5 pt-3 border-t border-border">
                   <div className="flex justify-between items-center">
                     <span className="text-xs text-muted-foreground">
-                      Erreurs API
+                      Réponses en échec
                     </span>
                     <span
                       className={`text-xs font-mono font-medium tabular-nums ${modelSummary.nErrors > 0 ? "text-destructive" : ""}`}
@@ -170,7 +307,7 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-xs text-muted-foreground">
-                      Latence moy.
+                      Temps de réponse moy.
                     </span>
                     <span className="text-xs font-mono font-medium tabular-nums">
                       {modelSummary.avgLatency != null

@@ -1,3 +1,4 @@
+import { useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
 import {
@@ -12,6 +13,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { SiteHeader } from "@/components/site-header";
 import { QuestionsPreview } from "@/components/questions-preview";
 import { t, formatDateTime } from "@/lib/format";
@@ -19,8 +28,14 @@ import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocation } from "wouter";
-import { Play, Trash2, AlertCircle } from "lucide-react";
+import { Play, Trash2, AlertCircle, Lock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import {
+  getAdminToken,
+  setAdminToken,
+  clearAdminToken,
+  isAuthError,
+} from "@/lib/admin";
 
 const runSchema = z.object({
   models: z.array(z.string()).min(1, "Sélectionnez au moins un modèle"),
@@ -58,6 +73,44 @@ export function Home() {
   const createRun = useCreateRun();
   const deleteRun = useDeleteRun();
 
+  // --- Admin password gate -------------------------------------------------
+  // Browsing is public; launching or deleting a run requires the admin
+  // password. We collect it once (per tab) in a dialog, then retry the action.
+  const [gateOpen, setGateOpen] = useState(false);
+  const [pwInput, setPwInput] = useState("");
+  const [gateError, setGateError] = useState<string | null>(null);
+  const pendingAction = useRef<(() => void) | null>(null);
+
+  const withAdmin = (action: () => void) => {
+    if (getAdminToken()) {
+      action();
+    } else {
+      pendingAction.current = action;
+      setGateError(null);
+      setPwInput("");
+      setGateOpen(true);
+    }
+  };
+
+  const submitGate = (e: React.FormEvent) => {
+    e.preventDefault();
+    const value = pwInput.trim();
+    if (!value) return;
+    setAdminToken(value);
+    setGateOpen(false);
+    const action = pendingAction.current;
+    pendingAction.current = null;
+    action?.();
+  };
+
+  const handleAuthFailure = (retry: () => void) => {
+    clearAdminToken();
+    pendingAction.current = retry;
+    setPwInput("");
+    setGateError("Mot de passe incorrect. Réessayez.");
+    setGateOpen(true);
+  };
+
   const form = useForm<RunFormValues>({
     resolver: zodResolver(runSchema),
     defaultValues: {
@@ -76,13 +129,34 @@ export function Home() {
     ? selectedModels.length * (selectedLimit || config.totalQuestions)
     : 0;
 
-  const onSubmit = (values: RunFormValues) => {
+  const doCreate = (values: RunFormValues) => {
     createRun.mutate(
       { data: values },
       {
         onSuccess: (newRun) => {
           queryClient.invalidateQueries({ queryKey: getListRunsQueryKey() });
           setLocation(`/runs/${newRun.id}`);
+        },
+        onError: (err) => {
+          if (isAuthError(err)) handleAuthFailure(() => doCreate(values));
+        },
+      }
+    );
+  };
+
+  const onSubmit = (values: RunFormValues) => {
+    withAdmin(() => doCreate(values));
+  };
+
+  const doDelete = (id: string) => {
+    deleteRun.mutate(
+      { runId: id },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: getListRunsQueryKey() });
+        },
+        onError: (err) => {
+          if (isAuthError(err)) handleAuthFailure(() => doDelete(id));
         },
       }
     );
@@ -91,14 +165,7 @@ export function Home() {
   const handleDelete = (id: string, e: React.MouseEvent) => {
     e.preventDefault();
     if (confirm("Supprimer ce run ?")) {
-      deleteRun.mutate(
-        { runId: id },
-        {
-          onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: getListRunsQueryKey() });
-          },
-        }
-      );
+      withAdmin(() => doDelete(id));
     }
   };
 
@@ -121,6 +188,10 @@ export function Home() {
             Configurez une évaluation, lancez-la et suivez chaque run du carnet
             de terrain.
           </p>
+          <div className="mt-3 inline-flex items-center gap-2 text-xs text-muted-foreground">
+            <Lock className="w-3.5 h-3.5 text-primary" />
+            Le lancement d'une évaluation est protégé par un mot de passe.
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -343,7 +414,7 @@ export function Home() {
                           "Lancement..."
                         ) : (
                           <>
-                            <Play className="w-4 h-4 mr-2" /> Lancer
+                            <Lock className="w-3.5 h-3.5 mr-2" /> Lancer
                           </>
                         )}
                       </Button>
@@ -483,6 +554,48 @@ export function Home() {
           </div>
         </div>
       </div>
+
+      <Dialog open={gateOpen} onOpenChange={setGateOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-display flex items-center gap-2">
+              <Lock className="w-4 h-4 text-primary" />
+              Mot de passe requis
+            </DialogTitle>
+            <DialogDescription>
+              Le lancement et la suppression d'une évaluation sont réservés. La
+              consultation des résultats reste libre.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={submitGate} className="space-y-3">
+            <Input
+              type="password"
+              autoFocus
+              placeholder="Mot de passe administrateur"
+              value={pwInput}
+              onChange={(e) => setPwInput(e.target.value)}
+            />
+            {gateError && (
+              <p className="text-sm text-destructive flex items-center gap-1.5">
+                <AlertCircle className="w-3.5 h-3.5" />
+                {gateError}
+              </p>
+            )}
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => setGateOpen(false)}
+              >
+                Annuler
+              </Button>
+              <Button type="submit" disabled={!pwInput.trim()}>
+                Valider
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
