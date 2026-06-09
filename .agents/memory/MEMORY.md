@@ -1,1 +1,2 @@
 - [Biodiversity benchmark web app](benchmark-webapp.md) — React/Express UI wraps the Python CLI; local-subprocess polling (no 5min floor), inverted hallucination score, French UI, YAML description gotcha.
+- [benchmark-ui design system](benchmark-ui-design.md) — "Carnet de terrain" concept (Fraunces+Inter+mono, paper/green/ochre); ochre = inverted hallucination risk only.

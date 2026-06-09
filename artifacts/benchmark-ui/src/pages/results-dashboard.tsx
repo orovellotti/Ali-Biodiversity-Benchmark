@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { 
-  BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, 
-  Tooltip as RechartsTooltip, Legend, ResponsiveContainer, Cell 
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, 
+  Tooltip as RechartsTooltip, Legend, ResponsiveContainer 
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -11,17 +11,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { t } from "@/lib/format";
-import { Run, RunResults, ResultRow } from "@workspace/api-client-react";
-import { Download, Info, CheckCircle2, XCircle, AlertTriangle } from "lucide-react";
+import { Run, RunResults } from "@workspace/api-client-react";
+import { Download, CheckCircle2, AlertTriangle } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const CHART_COLORS = [
-  "#0079F2", // blue
-  "#795EFF", // purple
-  "#009118", // green
-  "#A60808", // red
-  "#ec4899", // pink
-  "#f59e0b", // amber
+  "#2f6b4f", // forest green
+  "#c98a2b", // ochre
+  "#c2603b", // terracotta
+  "#3f6b8f", // slate blue
+  "#7a5a93", // plum
+  "#5b8c6e", // sage
 ];
 
 const SCORE_LABELS = {
@@ -107,39 +107,76 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
   };
 
   return (
-    <div className="space-y-6">
-      {/* Overview Rankings */}
+    <div className="space-y-8">
+      {/* Overview Rankings — specimen cards */}
       <div>
-        <h2 className="text-2xl font-bold mb-4">Classement des modèles</h2>
+        <div className="eyebrow mb-1.5">Classement</div>
+        <h2 className="font-display text-2xl font-semibold tracking-tight mb-4">
+          Classement des modèles
+        </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {results.summaryByModel.map((modelSummary, index) => (
-            <Card key={modelSummary.model} className={index === 0 ? "border-primary shadow-sm" : ""}>
+            <Card
+              key={modelSummary.model}
+              className={`relative overflow-hidden hairline-top ${index === 0 ? "border-primary shadow-md" : ""}`}
+            >
+              {index === 0 && (
+                <div className="absolute top-0 left-0 right-0 h-1 bg-primary" />
+              )}
               <CardContent className="p-5">
-                <div className="flex justify-between items-start mb-2">
-                  <div className="font-bold text-lg">{modelSummary.model}</div>
-                  <Badge variant={index === 0 ? "default" : "secondary"}>#{index + 1}</Badge>
+                <div className="flex justify-between items-start mb-3">
+                  <span className="index-tag">
+                    rang {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <Badge variant={index === 0 ? "default" : "secondary"}>
+                    #{index + 1}
+                  </Badge>
                 </div>
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="text-sm text-muted-foreground">{modelSummary.provider}</span>
+                <div className="font-display font-semibold text-lg leading-tight">
+                  {modelSummary.model}
+                </div>
+                <div className="flex items-center gap-2 mb-4 mt-1">
+                  <span className="text-xs font-mono text-muted-foreground">
+                    {modelSummary.provider}
+                  </span>
                   {modelSummary.size && (
-                    <Badge variant="outline" className="text-xs">Taille : {modelSummary.size}</Badge>
+                    <Badge variant="outline" className="text-xs">
+                      {modelSummary.size}
+                    </Badge>
                   )}
                 </div>
-                
-                <div className="space-y-2">
+
+                <div className="font-display text-4xl font-semibold text-primary tabular-nums mb-4">
+                  {modelSummary.overallScore != null
+                    ? modelSummary.overallScore.toFixed(1)
+                    : "N/A"}
+                  {modelSummary.overallScore != null && (
+                    <span className="text-base text-muted-foreground font-sans font-normal">
+                      /100
+                    </span>
+                  )}
+                </div>
+
+                <div className="space-y-1.5 pt-3 border-t border-border">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm">Score Global</span>
-                    <span className="font-bold text-primary">{modelSummary.overallScore !== null ? `${modelSummary.overallScore?.toFixed(1)}/100` : "N/A"}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">Erreurs API</span>
-                    <span className={`text-sm font-medium ${modelSummary.nErrors > 0 ? "text-destructive" : ""}`}>
+                    <span className="text-xs text-muted-foreground">
+                      Erreurs API
+                    </span>
+                    <span
+                      className={`text-xs font-mono font-medium tabular-nums ${modelSummary.nErrors > 0 ? "text-destructive" : ""}`}
+                    >
                       {modelSummary.nErrors} / {modelSummary.nQuestions}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">Latence moy.</span>
-                    <span className="text-sm font-medium">{modelSummary.avgLatency !== null ? `${modelSummary.avgLatency?.toFixed(1)}s` : "N/A"}</span>
+                    <span className="text-xs text-muted-foreground">
+                      Latence moy.
+                    </span>
+                    <span className="text-xs font-mono font-medium tabular-nums">
+                      {modelSummary.avgLatency != null
+                        ? `${modelSummary.avgLatency.toFixed(1)}s`
+                        : "N/A"}
+                    </span>
                   </div>
                 </div>
               </CardContent>
@@ -153,7 +190,7 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
           {/* Detailed Scores Chart */}
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle>Dimensions d'évaluation (0-5)</CardTitle>
+              <CardTitle className="font-display tracking-tight">Dimensions d'évaluation (0-5)</CardTitle>
               <Button 
                 variant="ghost" 
                 size="icon" 
@@ -190,7 +227,7 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
             {/* By Topic */}
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle>Score par Topic</CardTitle>
+                <CardTitle className="font-display tracking-tight">Score par famille</CardTitle>
                 <Button 
                   variant="ghost" 
                   size="icon" 
@@ -235,7 +272,7 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
             {/* By Difficulty */}
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle>Score par Difficulté</CardTitle>
+                <CardTitle className="font-display tracking-tight">Score par difficulté</CardTitle>
                 <Button 
                   variant="ghost" 
                   size="icon" 
@@ -284,7 +321,7 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
       <Card>
         <CardHeader className="pb-4">
           <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
-            <CardTitle>Détail des questions</CardTitle>
+            <CardTitle className="font-display tracking-tight">Détail des questions</CardTitle>
             <div className="flex flex-wrap gap-3">
               <Input 
                 placeholder="Rechercher..." 
@@ -411,7 +448,7 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
                               )}
                             </div>
 
-                            {row.overallScore !== null && (
+                            {row.overallScore != null && (
                               <div>
                                 <h4 className="text-sm font-semibold mb-2">Évaluation par le juge ({run.judgeModel})</h4>
                                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4">

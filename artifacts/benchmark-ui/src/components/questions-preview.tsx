@@ -64,7 +64,7 @@ export function QuestionsPreview() {
       </DialogTrigger>
       <DialogContent className="max-w-4xl max-h-[85vh] flex flex-col">
         <DialogHeader>
-          <DialogTitle>Aperçu de la base de questions</DialogTitle>
+          <DialogTitle className="font-display tracking-tight text-xl">Aperçu de la base de questions</DialogTitle>
           <DialogDescription>
             Parcourir les questions du jeu de données de biodiversité avant de lancer un run.
           </DialogDescription>
@@ -126,9 +126,9 @@ export function QuestionsPreview() {
           ) : (
             <div className="space-y-3">
               {filtered.map((q) => (
-                <div key={q.id} className="border rounded-lg p-4">
+                <div key={q.id} className="border border-card-border rounded-lg p-4 bg-card">
                   <div className="flex flex-wrap items-center gap-2 mb-2">
-                    <span className="font-mono text-xs font-semibold">{q.id}</span>
+                    <span className="font-mono text-xs font-semibold text-primary">{q.id}</span>
                     {q.topic && <Badge variant="secondary">{t(q.topic)}</Badge>}
                     {q.difficulty && <Badge variant="outline">{t(q.difficulty)}</Badge>}
                     {q.questionType && <Badge variant="outline">{t(q.questionType)}</Badge>}

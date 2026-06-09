@@ -1,7 +1,7 @@
 import { Link } from "wouter";
 import { useGetBenchmarkConfig } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
-import { DarkModeToggle } from "@/components/controls";
+import { SiteHeader } from "@/components/site-header";
 import { t } from "@/lib/format";
 import {
   Leaf,
@@ -104,6 +104,16 @@ const DIMENSIONS: { key: string; description: string; inverted?: boolean }[] = [
   },
 ];
 
+function SectionLabel({ n, children }: { n: string; children: React.ReactNode }) {
+  return (
+    <div className="eyebrow mb-4">
+      <span className="text-primary">§{n}</span>
+      <span className="w-8 h-px bg-border" />
+      {children}
+    </div>
+  );
+}
+
 export function Landing() {
   const { data: config } = useGetBenchmarkConfig();
 
@@ -116,52 +126,35 @@ export function Landing() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/* Header */}
-      <header className="border-b bg-background/80 backdrop-blur sticky top-0 z-10">
-        <div className="max-w-[1100px] mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2 font-semibold">
-            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary text-primary-foreground">
-              <Leaf className="w-4 h-4" />
-            </span>
-            Biodiversity Benchmark
-          </div>
-          <div className="flex items-center gap-3">
-            <Button size="sm" asChild>
-              <Link href="/console">
-                <Play className="w-4 h-4 mr-2" /> Lancer un benchmark
-              </Link>
-            </Button>
-            <DarkModeToggle />
-          </div>
-        </div>
-      </header>
+      <SiteHeader maxWidth="max-w-[1180px]">
+        <Button size="sm" asChild>
+          <Link href="/console">
+            <Play className="w-4 h-4 mr-2" /> Lancer un benchmark
+          </Link>
+        </Button>
+      </SiteHeader>
 
       {/* Hero */}
-      <section className="relative overflow-hidden border-b">
-        <div
-          className="absolute inset-0 opacity-[0.07] pointer-events-none"
-          style={{
-            backgroundImage:
-              "radial-gradient(hsl(var(--primary)) 1px, transparent 1px)",
-            backgroundSize: "22px 22px",
-          }}
-        />
-        <div className="max-w-[1100px] mx-auto px-6 py-20 relative">
-          <div className="inline-flex items-center gap-2 text-xs font-medium px-3 py-1 rounded-full bg-secondary text-secondary-foreground mb-6">
-            <Leaf className="w-3.5 h-3.5" /> Évaluation rigoureuse des LLM sur la
-            biodiversité
+      <section className="relative overflow-hidden border-b border-border">
+        <div className="absolute inset-0 paper-grid opacity-70 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background pointer-events-none" />
+        <div className="max-w-[1180px] mx-auto px-6 py-20 md:py-28 relative">
+          <div className="eyebrow mb-6">
+            <Leaf className="w-3.5 h-3.5 text-primary" />
+            Évaluation rigoureuse des LLM · biodiversité
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight max-w-3xl leading-tight">
-            Quel modèle de langage juge le mieux les enjeux de biodiversité&nbsp;?
+          <h1 className="font-display text-[2.7rem] md:text-6xl font-semibold tracking-[-0.02em] max-w-4xl leading-[1.05]">
+            Quel modèle de langage juge le mieux les enjeux de{" "}
+            <span className="italic text-primary">biodiversité</span> ?
           </h1>
-          <p className="text-lg text-muted-foreground mt-6 max-w-2xl leading-relaxed">
+          <p className="text-lg text-muted-foreground mt-7 max-w-2xl leading-relaxed">
             Sur les sujets de biodiversité et de réglementation environnementale,
             une réponse fausse ou une règle inventée peut coûter cher. Ce
-            benchmark mesure, de façon comparable et reproductible, la fiabilité
-            des grands modèles de langage — leur exactitude, leur prudence et
-            leur résistance à l'hallucination.
+            carnet de terrain mesure, de façon comparable et reproductible, la
+            fiabilité des grands modèles de langage — leur exactitude, leur
+            prudence et leur résistance à l'hallucination.
           </p>
-          <div className="flex flex-wrap items-center gap-3 mt-8">
+          <div className="flex flex-wrap items-center gap-3 mt-9">
             <Button size="lg" asChild>
               <Link href="/console">
                 <Play className="w-4 h-4 mr-2" /> Lancer un benchmark
@@ -174,19 +167,21 @@ export function Landing() {
             </Button>
           </div>
 
-          {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-14">
+          {/* Stats — instrument readouts */}
+          <div className="grid grid-cols-2 md:grid-cols-4 mt-16 border border-border rounded-xl bg-card/60 backdrop-blur-sm overflow-hidden divide-x divide-y md:divide-y-0 divide-border">
             {[
               { value: totalQuestions, label: "questions évaluées" },
               { value: sections.length, label: "familles de questions" },
               { value: modelsCount, label: "modèles comparés" },
               { value: 5, label: "dimensions de notation" },
-            ].map((s) => (
-              <div
-                key={s.label}
-                className="rounded-xl border bg-card p-5 text-center"
-              >
-                <div className="text-3xl font-bold text-primary">{s.value}</div>
+            ].map((s, i) => (
+              <div key={s.label} className="p-6">
+                <div className="index-tag mb-2">
+                  {String(i + 1).padStart(2, "0")}
+                </div>
+                <div className="font-display text-4xl font-semibold text-primary tabular-nums">
+                  {s.value}
+                </div>
                 <div className="text-sm text-muted-foreground mt-1">
                   {s.label}
                 </div>
@@ -196,38 +191,36 @@ export function Landing() {
         </div>
       </section>
 
-      {/* Démarche / steps */}
-      <section
-        id="demarche"
-        className="max-w-[1100px] mx-auto px-6 py-20 scroll-mt-20"
-      >
+      {/* §01 Démarche */}
+      <section id="demarche" className="max-w-[1180px] mx-auto px-6 py-20 scroll-mt-20">
         <div className="max-w-2xl mb-12">
-          <h2 className="text-3xl font-bold">La démarche, en quatre étapes</h2>
-          <p className="text-muted-foreground mt-3 leading-relaxed">
-            Le protocole est volontairement simple et identique pour tous les
-            modèles, afin que les comparaisons soient justes et que les résultats
-            soient reproductibles.
+          <SectionLabel n="01">La démarche</SectionLabel>
+          <h2 className="font-display text-3xl md:text-4xl font-semibold tracking-tight">
+            Un protocole simple, identique pour tous
+          </h2>
+          <p className="text-muted-foreground mt-4 leading-relaxed">
+            Quatre étapes volontairement transparentes, pour que les comparaisons
+            soient justes et que les résultats soient reproductibles.
           </p>
         </div>
-        <div className="grid md:grid-cols-2 gap-5">
+        <div className="grid md:grid-cols-2 gap-px bg-border border border-border rounded-xl overflow-hidden">
           {STEPS.map((step, i) => {
             const Icon = step.icon;
             return (
-              <div
-                key={step.title}
-                className="rounded-xl border bg-card p-6 flex gap-4"
-              >
+              <div key={step.title} className="bg-card p-7 flex gap-5">
                 <div className="shrink-0">
                   <span className="flex items-center justify-center w-11 h-11 rounded-lg bg-primary/10 text-primary">
                     <Icon className="w-5 h-5" />
                   </span>
                 </div>
                 <div>
-                  <div className="text-xs font-semibold text-primary mb-1">
-                    Étape {i + 1}
+                  <div className="index-tag mb-1.5">
+                    Étape {String(i + 1).padStart(2, "0")}
                   </div>
-                  <h3 className="font-semibold text-lg">{step.title}</h3>
-                  <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">
+                  <h3 className="font-display font-semibold text-xl">
+                    {step.title}
+                  </h3>
+                  <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
                     {step.description}
                   </p>
                 </div>
@@ -237,27 +230,36 @@ export function Landing() {
         </div>
       </section>
 
-      {/* Familles de questions */}
-      <section className="border-y bg-muted/30">
-        <div className="max-w-[1100px] mx-auto px-6 py-20">
+      {/* §02 Familles de questions */}
+      <section className="border-y border-border bg-secondary/30">
+        <div className="max-w-[1180px] mx-auto px-6 py-20">
           <div className="max-w-2xl mb-12">
-            <h2 className="text-3xl font-bold">Les familles de questions</h2>
-            <p className="text-muted-foreground mt-3 leading-relaxed">
+            <SectionLabel n="02">Le jeu de questions</SectionLabel>
+            <h2 className="font-display text-3xl md:text-4xl font-semibold tracking-tight">
+              Les familles de questions
+            </h2>
+            <p className="text-muted-foreground mt-4 leading-relaxed">
               Chaque famille cible une compétence différente — de la simple
               restitution de connaissances jusqu'au jugement éthique sous
               contrainte.
             </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {sections.map((id) => {
+            {sections.map((id, i) => {
               const meta = SECTION_META[id];
               const Icon = meta?.icon ?? Leaf;
               return (
-                <div key={id} className="rounded-xl border bg-card p-6">
+                <div
+                  key={id}
+                  className="rounded-xl border border-card-border bg-card p-6 hairline-top relative"
+                >
+                  <span className="index-tag absolute top-5 right-5">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
                   <span className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10 text-primary mb-4">
                     <Icon className="w-5 h-5" />
                   </span>
-                  <h3 className="font-semibold">{t(id)}</h3>
+                  <h3 className="font-display font-semibold text-lg">{t(id)}</h3>
                   <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
                     {meta?.description ??
                       "Famille de questions du jeu de données."}
@@ -269,26 +271,32 @@ export function Landing() {
         </div>
       </section>
 
-      {/* Dimensions d'évaluation */}
-      <section className="max-w-[1100px] mx-auto px-6 py-20">
+      {/* §03 Dimensions */}
+      <section className="max-w-[1180px] mx-auto px-6 py-20">
         <div className="max-w-2xl mb-12">
-          <h2 className="text-3xl font-bold">Cinq dimensions de notation</h2>
-          <p className="text-muted-foreground mt-3 leading-relaxed">
+          <SectionLabel n="03">La notation</SectionLabel>
+          <h2 className="font-display text-3xl md:text-4xl font-semibold tracking-tight">
+            Cinq dimensions, sur 100
+          </h2>
+          <p className="text-muted-foreground mt-4 leading-relaxed">
             Chaque réponse est notée de 0 à 5 sur cinq axes, agrégés en un score
             global sur 100. L'accent est mis sur la prudence et l'absence
             d'hallucination, pas seulement sur la justesse.
           </p>
         </div>
-        <div className="space-y-3">
-          {DIMENSIONS.map((d) => (
+        <div className="border border-border rounded-xl overflow-hidden divide-y divide-border">
+          {DIMENSIONS.map((d, i) => (
             <div
               key={d.key}
-              className="rounded-xl border bg-card p-5 flex items-start gap-4"
+              className="bg-card p-5 flex items-start gap-4 hover:bg-secondary/30 transition-colors"
             >
+              <span className="index-tag pt-1 w-8 shrink-0">
+                {String(i + 1).padStart(2, "0")}
+              </span>
               <span
                 className={`flex items-center justify-center w-9 h-9 rounded-lg shrink-0 ${
                   d.inverted
-                    ? "bg-amber-100 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400"
+                    ? "bg-ochre/15 text-ochre"
                     : "bg-primary/10 text-primary"
                 }`}
               >
@@ -300,9 +308,9 @@ export function Landing() {
               </span>
               <div>
                 <div className="flex items-center gap-2 flex-wrap">
-                  <h3 className="font-semibold">{t(d.key)}</h3>
+                  <h3 className="font-display font-semibold text-lg">{t(d.key)}</h3>
                   {d.inverted && (
-                    <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400">
+                    <span className="text-[11px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full bg-ochre/15 text-ochre">
                       score inversé — 5 = idéal
                     </span>
                   )}
@@ -316,15 +324,16 @@ export function Landing() {
         </div>
       </section>
 
-      {/* Le juge */}
-      <section className="border-t bg-muted/30">
-        <div className="max-w-[1100px] mx-auto px-6 py-20">
-          <div className="rounded-2xl border bg-card p-8 md:p-10 flex flex-col md:flex-row gap-8 items-start">
+      {/* §04 Le juge */}
+      <section className="border-t border-border bg-secondary/30">
+        <div className="max-w-[1180px] mx-auto px-6 py-20">
+          <SectionLabel n="04">L'examen</SectionLabel>
+          <div className="rounded-2xl border border-card-border bg-card p-8 md:p-10 flex flex-col md:flex-row gap-8 items-start">
             <span className="flex items-center justify-center w-14 h-14 rounded-xl bg-primary text-primary-foreground shrink-0">
               <Gavel className="w-6 h-6" />
             </span>
             <div>
-              <h2 className="text-2xl font-bold">
+              <h2 className="font-display text-2xl md:text-3xl font-semibold tracking-tight">
                 Une notation par « LLM-as-judge »
               </h2>
               <p className="text-muted-foreground mt-3 leading-relaxed max-w-2xl">
@@ -341,15 +350,13 @@ export function Landing() {
                 )}
               </p>
               {models.length > 0 && (
-                <div className="mt-5">
-                  <div className="text-sm font-medium mb-2">
-                    Modèles évalués par défaut :
-                  </div>
+                <div className="mt-6">
+                  <div className="eyebrow mb-3">Modèles évalués par défaut</div>
                   <div className="flex flex-wrap gap-2">
                     {models.map((m) => (
                       <span
                         key={m.id}
-                        className="text-xs font-mono px-2.5 py-1 rounded-full border bg-background"
+                        className="text-xs font-mono px-2.5 py-1 rounded-full border border-border bg-background"
                       >
                         {m.defaultModel}
                       </span>
@@ -363,28 +370,34 @@ export function Landing() {
       </section>
 
       {/* Final CTA */}
-      <section className="max-w-[1100px] mx-auto px-6 py-24 text-center">
-        <h2 className="text-3xl md:text-4xl font-bold max-w-2xl mx-auto">
-          Prêt à comparer les modèles&nbsp;?
-        </h2>
-        <p className="text-muted-foreground mt-4 max-w-xl mx-auto leading-relaxed">
-          Configurez un run en quelques clics : choisissez vos modèles, une
-          famille de questions et un nombre de questions, puis suivez la
-          progression en direct.
-        </p>
-        <div className="mt-8">
-          <Button size="lg" asChild>
-            <Link href="/console">
-              <Play className="w-4 h-4 mr-2" /> Lancer un benchmark
-            </Link>
-          </Button>
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 paper-grid opacity-60 pointer-events-none" />
+        <div className="max-w-[1180px] mx-auto px-6 py-24 text-center relative">
+          <h2 className="font-display text-3xl md:text-5xl font-semibold tracking-tight max-w-2xl mx-auto leading-tight">
+            Prêt à comparer les modèles ?
+          </h2>
+          <p className="text-muted-foreground mt-5 max-w-xl mx-auto leading-relaxed">
+            Configurez un run en quelques clics : choisissez vos modèles, une
+            famille de questions et un nombre de questions, puis suivez la
+            progression en direct.
+          </p>
+          <div className="mt-9">
+            <Button size="lg" asChild>
+              <Link href="/console">
+                <Play className="w-4 h-4 mr-2" /> Lancer un benchmark
+              </Link>
+            </Button>
+          </div>
         </div>
       </section>
 
-      <footer className="border-t">
-        <div className="max-w-[1100px] mx-auto px-6 py-8 text-sm text-muted-foreground flex items-center gap-2">
-          <Leaf className="w-4 h-4 text-primary" />
-          Biodiversity Judgment Benchmark
+      <footer className="border-t border-border">
+        <div className="max-w-[1180px] mx-auto px-6 py-8 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Leaf className="w-4 h-4 text-primary" />
+            Biodiversity Judgment Benchmark
+          </div>
+          <div className="eyebrow">carnet de terrain · {totalQuestions} questions</div>
         </div>
       </footer>
     </div>

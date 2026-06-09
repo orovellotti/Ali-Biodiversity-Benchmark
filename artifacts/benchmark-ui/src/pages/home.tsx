@@ -7,19 +7,19 @@ import {
   useDeleteRun,
 } from "@workspace/api-client-react";
 import { getListRunsQueryKey } from "@workspace/api-client-react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
-import { DarkModeToggle } from "@/components/controls";
+import { SiteHeader } from "@/components/site-header";
 import { QuestionsPreview } from "@/components/questions-preview";
 import { t, formatDateTime } from "@/lib/format";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocation } from "wouter";
-import { Play, Trash2, Settings, AlertCircle, ChevronLeft } from "lucide-react";
+import { Play, Trash2, AlertCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 const runSchema = z.object({
@@ -31,6 +31,10 @@ const runSchema = z.object({
 });
 
 type RunFormValues = z.infer<typeof runSchema>;
+
+function FieldLabel({ children }: { children: React.ReactNode }) {
+  return <label className="eyebrow !text-foreground/70 mb-2 block">{children}</label>;
+}
 
 export function Home() {
   const queryClient = useQueryClient();
@@ -99,91 +103,115 @@ export function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-background px-5 py-4 pt-[32px] pb-[32px] pl-[24px] pr-[24px]">
-      <div className="max-w-[1200px] mx-auto">
-        <div className="mb-8 flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
-          <div className="pt-2">
-            <Link href="/" className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center transition-colors mb-1.5">
-              <ChevronLeft className="w-4 h-4" /> La démarche
-            </Link>
-            <h1 className="font-bold text-[32px]">Biodiversity Judgment Benchmark</h1>
-            <p className="text-muted-foreground mt-1.5 text-[14px]">
-              Contrôle et analyse des modèles de langage sur les questions de biodiversité.
-            </p>
+    <div className="min-h-screen bg-background">
+      <SiteHeader maxWidth="max-w-[1200px]">
+        <QuestionsPreview />
+      </SiteHeader>
+
+      <div className="max-w-[1200px] mx-auto px-6 py-10">
+        {/* Page intro */}
+        <div className="mb-10">
+          <div className="eyebrow mb-3">
+            <span className="text-primary">§</span> Poste de contrôle
           </div>
-          <div className="flex items-center gap-3 pt-2 print:hidden">
-            <QuestionsPreview />
-            <DarkModeToggle />
-          </div>
+          <h1 className="font-display text-4xl font-semibold tracking-tight">
+            Console de benchmark
+          </h1>
+          <p className="text-muted-foreground mt-2 text-[15px] max-w-2xl">
+            Configurez une évaluation, lancez-la et suivez chaque run du carnet
+            de terrain.
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Configuration Form */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Configuration Form — instrument panel */}
           <div className="lg:col-span-1">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-xl flex items-center gap-2">
-                  <Settings className="w-5 h-5" /> Nouveau Run
-                </CardTitle>
-                <CardDescription>Configurer une nouvelle évaluation</CardDescription>
-              </CardHeader>
-              <CardContent>
+            <Card className="overflow-hidden">
+              <div className="px-6 py-4 border-b border-card-border bg-secondary/40 flex items-center justify-between">
+                <div className="eyebrow !text-foreground/80">Nouveau run</div>
+                <span className="index-tag">config</span>
+              </div>
+              <CardContent className="p-6">
                 {configLoading ? (
                   <div className="space-y-4">
                     <Skeleton className="h-24 w-full" />
                     <Skeleton className="h-10 w-full" />
                   </div>
                 ) : !config ? (
-                  <div className="text-red-500">Erreur de chargement de la configuration</div>
+                  <div className="text-destructive text-sm">
+                    Erreur de chargement de la configuration
+                  </div>
                 ) : (
                   <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                    <div className="space-y-3">
-                      <label className="text-sm font-semibold">Modèles à évaluer</label>
+                    <div>
+                      <FieldLabel>Modèles à évaluer</FieldLabel>
                       <div className="space-y-2">
                         {config.providers.map((p) => (
-                          <div key={p.id} className="flex items-start gap-2">
-                            <Controller
-                              name="models"
-                              control={form.control}
-                              render={({ field }) => (
-                                <Checkbox
-                                  id={`model-${p.id}`}
-                                  disabled={!p.available}
-                                  checked={field.value.includes(p.id)}
-                                  onCheckedChange={(checked) => {
-                                    if (checked) {
-                                      field.onChange([...field.value, p.id]);
-                                    } else {
-                                      field.onChange(field.value.filter((v) => v !== p.id));
-                                    }
-                                  }}
-                                />
-                              )}
-                            />
-                            <div className="grid leading-none">
-                              <label
-                                htmlFor={`model-${p.id}`}
-                                className={`text-sm font-medium ${!p.available && 'text-muted-foreground opacity-50'}`}
-                              >
-                                {p.id} ({p.defaultModel})
-                              </label>
-                              {p.id === "openai-small" && (
-                                <span className="text-xs text-muted-foreground">Petit modèle « baseline » volontairement plus faible (comparaison)</span>
-                              )}
-                              {!p.available && (
-                                <span className="text-xs text-muted-foreground">Non disponible (clé API manquante ou serveur local hors ligne)</span>
-                              )}
-                            </div>
-                          </div>
+                          <Controller
+                            key={p.id}
+                            name="models"
+                            control={form.control}
+                            render={({ field }) => {
+                              const checked = field.value.includes(p.id);
+                              return (
+                                <label
+                                  htmlFor={`model-${p.id}`}
+                                  className={`flex items-start gap-3 rounded-lg border p-3 transition-colors cursor-pointer ${
+                                    !p.available
+                                      ? "opacity-50 cursor-not-allowed border-border"
+                                      : checked
+                                        ? "border-primary/60 bg-primary/5"
+                                        : "border-border hover:border-primary/40 hover:bg-secondary/40"
+                                  }`}
+                                >
+                                  <Checkbox
+                                    id={`model-${p.id}`}
+                                    disabled={!p.available}
+                                    checked={checked}
+                                    onCheckedChange={(c) => {
+                                      if (c) field.onChange([...field.value, p.id]);
+                                      else
+                                        field.onChange(
+                                          field.value.filter((v) => v !== p.id),
+                                        );
+                                    }}
+                                    className="mt-0.5"
+                                  />
+                                  <div className="grid leading-tight">
+                                    <span className="text-sm font-medium">
+                                      {p.id}
+                                    </span>
+                                    <span className="text-xs font-mono text-muted-foreground mt-0.5">
+                                      {p.defaultModel}
+                                    </span>
+                                    {p.id === "openai-small" && p.available && (
+                                      <span className="text-xs text-muted-foreground mt-1">
+                                        Petit modèle « baseline » volontairement
+                                        plus faible (comparaison)
+                                      </span>
+                                    )}
+                                    {!p.available && (
+                                      <span className="text-xs text-muted-foreground mt-1">
+                                        Non disponible (clé API manquante ou
+                                        serveur local hors ligne)
+                                      </span>
+                                    )}
+                                  </div>
+                                </label>
+                              );
+                            }}
+                          />
                         ))}
                       </div>
                       {form.formState.errors.models && (
-                        <p className="text-xs text-red-500">{form.formState.errors.models.message}</p>
+                        <p className="text-xs text-destructive mt-2">
+                          {form.formState.errors.models.message}
+                        </p>
                       )}
                     </div>
 
-                    <div className="space-y-2">
-                      <label className="text-sm font-semibold">Filtre par Topic (optionnel)</label>
+                    <div>
+                      <FieldLabel>Filtre par famille (optionnel)</FieldLabel>
                       <Controller
                         name="topic"
                         control={form.control}
@@ -191,19 +219,23 @@ export function Home() {
                           <select
                             className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                             value={field.value || ""}
-                            onChange={(e) => field.onChange(e.target.value || null)}
+                            onChange={(e) =>
+                              field.onChange(e.target.value || null)
+                            }
                           >
-                            <option value="">Tous les topics</option>
+                            <option value="">Toutes les familles</option>
                             {config.topics.map((t_id) => (
-                              <option key={t_id} value={t_id}>{t(t_id)}</option>
+                              <option key={t_id} value={t_id}>
+                                {t(t_id)}
+                              </option>
                             ))}
                           </select>
                         )}
                       />
                     </div>
 
-                    <div className="space-y-2">
-                      <label className="text-sm font-semibold">Limite de questions (optionnel)</label>
+                    <div>
+                      <FieldLabel>Limite de questions (optionnel)</FieldLabel>
                       <Controller
                         name="limit"
                         control={form.control}
@@ -212,7 +244,13 @@ export function Home() {
                             type="number"
                             placeholder={`Max ${config.totalQuestions}`}
                             value={field.value || ""}
-                            onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : null)}
+                            onChange={(e) =>
+                              field.onChange(
+                                e.target.value
+                                  ? parseInt(e.target.value)
+                                  : null,
+                              )
+                            }
                             min={1}
                             max={config.totalQuestions}
                           />
@@ -220,49 +258,94 @@ export function Home() {
                       />
                     </div>
 
-                    <div className="space-y-4 pt-2 border-t">
-                      <div className="flex items-start gap-2">
+                    <div className="space-y-3 pt-4 border-t border-border">
+                      <label
+                        htmlFor="dryRun"
+                        className="flex items-start gap-3 cursor-pointer"
+                      >
                         <Controller
                           name="dryRun"
                           control={form.control}
                           render={({ field }) => (
-                            <Checkbox id="dryRun" checked={field.value} onCheckedChange={field.onChange} />
+                            <Checkbox
+                              id="dryRun"
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              className="mt-0.5"
+                            />
                           )}
                         />
-                        <div className="grid gap-1.5 leading-none">
-                          <label htmlFor="dryRun" className="text-sm font-medium">Simulation (dry-run)</label>
-                          <p className="text-xs text-muted-foreground">Aucun appel API réel ne sera effectué.</p>
+                        <div className="grid gap-0.5 leading-none">
+                          <span className="text-sm font-medium">
+                            Simulation (dry-run)
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            Aucun appel API réel ne sera effectué.
+                          </span>
                         </div>
-                      </div>
+                      </label>
 
-                      <div className="flex items-start gap-2">
+                      <label
+                        htmlFor="noEval"
+                        className="flex items-start gap-3 cursor-pointer"
+                      >
                         <Controller
                           name="noEval"
                           control={form.control}
                           render={({ field }) => (
-                            <Checkbox id="noEval" checked={field.value} onCheckedChange={field.onChange} />
+                            <Checkbox
+                              id="noEval"
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              className="mt-0.5"
+                            />
                           )}
                         />
-                        <div className="grid gap-1.5 leading-none">
-                          <label htmlFor="noEval" className="text-sm font-medium">Sauter l'évaluation</label>
-                          <p className="text-xs text-muted-foreground">Les réponses seront générées mais non notées par le juge.</p>
+                        <div className="grid gap-0.5 leading-none">
+                          <span className="text-sm font-medium">
+                            Sauter l'évaluation
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            Les réponses seront générées mais non notées par le
+                            juge.
+                          </span>
                         </div>
-                      </div>
+                      </label>
                     </div>
 
-                    {!config.judgeAvailable && !form.watch("noEval") && !form.watch("dryRun") && (
-                      <div className="p-3 bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-900 rounded-md flex items-start gap-2 text-amber-800 dark:text-amber-200">
-                        <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
-                        <p className="text-xs">Le modèle juge ({config.judgeModel}) n'est pas disponible. L'évaluation sera sautée sauf si une clé API est fournie.</p>
-                      </div>
-                    )}
+                    {!config.judgeAvailable &&
+                      !form.watch("noEval") &&
+                      !form.watch("dryRun") && (
+                        <div className="p-3 bg-ochre/10 border border-ochre/30 rounded-md flex items-start gap-2 text-ochre">
+                          <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+                          <p className="text-xs">
+                            Le modèle juge ({config.judgeModel}) n'est pas
+                            disponible. L'évaluation sera sautée sauf si une clé
+                            API est fournie.
+                          </p>
+                        </div>
+                      )}
 
-                    <div className="pt-4 flex items-center justify-between border-t">
-                      <div className="text-sm text-muted-foreground">
-                        Est. requêtes: <span className="font-bold">{estimatedRequests}</span>
+                    <div className="pt-4 flex items-center justify-between border-t border-border">
+                      <div className="text-xs text-muted-foreground">
+                        Est. requêtes
+                        <span className="font-mono font-bold text-foreground ml-1.5 tabular-nums">
+                          {estimatedRequests}
+                        </span>
                       </div>
-                      <Button type="submit" disabled={createRun.isPending || selectedModels.length === 0}>
-                        {createRun.isPending ? "Lancement..." : <><Play className="w-4 h-4 mr-2" /> Lancer</>}
+                      <Button
+                        type="submit"
+                        disabled={
+                          createRun.isPending || selectedModels.length === 0
+                        }
+                      >
+                        {createRun.isPending ? (
+                          "Lancement..."
+                        ) : (
+                          <>
+                            <Play className="w-4 h-4 mr-2" /> Lancer
+                          </>
+                        )}
                       </Button>
                     </div>
                   </form>
@@ -271,92 +354,132 @@ export function Home() {
             </Card>
           </div>
 
-          {/* Runs History */}
+          {/* Runs History — logbook */}
           <div className="lg:col-span-2">
-            <Card className="h-full border-none shadow-none bg-transparent">
-              <CardHeader className="px-0 pt-0">
-                <CardTitle className="text-xl">Historique des Runs</CardTitle>
-                <CardDescription>Liste des benchmarks passés et en cours</CardDescription>
-              </CardHeader>
-              <CardContent className="px-0">
-                {runsLoading ? (
-                  <div className="space-y-3">
-                    <Skeleton className="h-20 w-full rounded-lg" />
-                    <Skeleton className="h-20 w-full rounded-lg" />
-                  </div>
-                ) : !runs || runs.length === 0 ? (
-                  <div className="p-8 text-center border rounded-lg border-dashed bg-muted/20">
-                    <p className="text-muted-foreground">Aucun run n'a été lancé pour le moment.</p>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {runs.map((r) => {
-                      const isActive = r.status === "queued" || r.status === "running";
-                      const progress = r.total > 0 ? Math.round((r.completed / r.total) * 100) : 0;
-                      
-                      return (
-                        <Link key={r.id} href={`/runs/${r.id}`}>
-                          <div className="block border rounded-lg p-4 hover:border-primary/50 hover:bg-muted/10 transition-all cursor-pointer group relative">
-                            <div className="flex items-start justify-between mb-2">
-                              <div>
-                                <div className="flex items-center gap-2 mb-1">
-                                  <span className="font-mono text-sm font-semibold">{r.id.split('-').pop()}</span>
-                                  <Badge variant={isActive ? "default" : r.status === "completed" ? "secondary" : "destructive"}>
-                                    {t(r.status)}
-                                  </Badge>
-                                  {r.dryRun && <Badge variant="outline">Simulation</Badge>}
-                                  {r.noEval && <Badge variant="outline">Sans évaluation</Badge>}
-                                </div>
-                                <p className="text-xs text-muted-foreground">
-                                  Modèles: {r.models.join(', ')}
-                                </p>
-                              </div>
-                              <div className="text-right">
-                                <p className="text-xs text-muted-foreground">{formatDateTime(r.createdAt)}</p>
-                              </div>
-                            </div>
-                            
-                            {isActive ? (
-                              <div className="mt-4 space-y-1">
-                                <div className="flex justify-between text-xs mb-1">
-                                  <span>{t(r.phase)}</span>
-                                  <span className="font-medium">{r.completed} / {r.total}</span>
-                                </div>
-                                <div className="w-full bg-secondary rounded-full h-1.5">
-                                  <div 
-                                    className="bg-primary h-1.5 rounded-full transition-all duration-500" 
-                                    style={{ width: `${progress}%` }}
-                                  />
-                                </div>
-                              </div>
-                            ) : (
-                              <div className="mt-2 text-xs">
-                                {r.status === "completed" ? (
-                                  <span className="text-primary font-medium">{r.completed} questions traitées</span>
-                                ) : (
-                                  <span className="text-red-500 truncate block max-w-full">{r.error || "Erreur inconnue"}</span>
-                                )}
-                              </div>
-                            )}
+            <div className="flex items-baseline justify-between mb-5">
+              <div>
+                <div className="eyebrow mb-1.5">Journal</div>
+                <h2 className="font-display text-2xl font-semibold tracking-tight">
+                  Historique des runs
+                </h2>
+              </div>
+              {runs && runs.length > 0 && (
+                <span className="index-tag">
+                  {String(runs.length).padStart(2, "0")} entrées
+                </span>
+              )}
+            </div>
 
-                            <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8 text-destructive hover:bg-destructive/10"
-                                onClick={(e) => handleDelete(r.id, e)}
+            {runsLoading ? (
+              <div className="space-y-3">
+                <Skeleton className="h-24 w-full rounded-xl" />
+                <Skeleton className="h-24 w-full rounded-xl" />
+              </div>
+            ) : !runs || runs.length === 0 ? (
+              <div className="p-12 text-center border border-dashed border-border rounded-xl bg-card/40">
+                <p className="text-muted-foreground">
+                  Aucun run n'a été lancé pour le moment.
+                </p>
+                <p className="text-sm text-muted-foreground/70 mt-1">
+                  Configurez une évaluation à gauche pour commencer.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {runs.map((r, i) => {
+                  const isActive =
+                    r.status === "queued" || r.status === "running";
+                  const progress =
+                    r.total > 0
+                      ? Math.round((r.completed / r.total) * 100)
+                      : 0;
+
+                  return (
+                    <Link key={r.id} href={`/runs/${r.id}`}>
+                      <div className="block rounded-xl border border-card-border bg-card p-5 hover:border-primary/50 hover:shadow-md transition-all cursor-pointer group relative">
+                        <div className="flex items-start justify-between gap-4 mb-2">
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                              <span className="index-tag">
+                                {String(runs.length - i).padStart(2, "0")}
+                              </span>
+                              <span className="font-mono text-sm font-semibold">
+                                {r.id.split("-").pop()}
+                              </span>
+                              <Badge
+                                variant={
+                                  isActive
+                                    ? "default"
+                                    : r.status === "completed"
+                                      ? "secondary"
+                                      : "destructive"
+                                }
                               >
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
+                                {t(r.status)}
+                              </Badge>
+                              {r.dryRun && (
+                                <Badge variant="outline">Simulation</Badge>
+                              )}
+                              {r.noEval && (
+                                <Badge variant="outline">Sans évaluation</Badge>
+                              )}
+                            </div>
+                            <p className="text-xs text-muted-foreground truncate">
+                              Modèles : {r.models.join(", ")}
+                            </p>
+                          </div>
+                          <p className="text-xs text-muted-foreground shrink-0 font-mono">
+                            {formatDateTime(r.createdAt)}
+                          </p>
+                        </div>
+
+                        {isActive ? (
+                          <div className="mt-4 space-y-1.5">
+                            <div className="flex justify-between text-xs">
+                              <span className="text-muted-foreground">
+                                {t(r.phase)}
+                              </span>
+                              <span className="font-mono font-medium tabular-nums">
+                                {r.completed} / {r.total}
+                              </span>
+                            </div>
+                            <div className="w-full bg-secondary rounded-full h-1.5 overflow-hidden">
+                              <div
+                                className="bg-primary h-full rounded-full transition-all duration-500"
+                                style={{ width: `${progress}%` }}
+                              />
                             </div>
                           </div>
-                        </Link>
-                      );
-                    })}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+                        ) : (
+                          <div className="mt-2 text-xs">
+                            {r.status === "completed" ? (
+                              <span className="text-primary font-medium">
+                                {r.completed} questions traitées
+                              </span>
+                            ) : (
+                              <span className="text-destructive truncate block max-w-full">
+                                {r.error || "Erreur inconnue"}
+                              </span>
+                            )}
+                          </div>
+                        )}
+
+                        <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-destructive hover:bg-destructive/10"
+                            onClick={(e) => handleDelete(r.id, e)}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
       </div>
