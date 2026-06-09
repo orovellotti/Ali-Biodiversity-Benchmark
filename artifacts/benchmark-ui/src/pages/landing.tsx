@@ -14,7 +14,6 @@ import {
   MessageSquare,
   Gavel,
   BarChart3,
-  Play,
   ArrowRight,
   CheckCircle2,
   AlertTriangle,
@@ -129,7 +128,7 @@ export function Landing() {
       <SiteHeader maxWidth="max-w-[1180px]">
         <Button size="sm" asChild>
           <Link href="/console">
-            <Play className="w-4 h-4 mr-2" /> Lancer un benchmark
+            <BarChart3 className="w-4 h-4 mr-2" /> Voir les résultats
           </Link>
         </Button>
       </SiteHeader>
@@ -157,7 +156,7 @@ export function Landing() {
           <div className="flex flex-wrap items-center gap-3 mt-9">
             <Button size="lg" asChild>
               <Link href="/console">
-                <Play className="w-4 h-4 mr-2" /> Lancer un benchmark
+                <BarChart3 className="w-4 h-4 mr-2" /> Voir les résultats
               </Link>
             </Button>
             <Button size="lg" variant="outline" asChild>
@@ -382,14 +381,19 @@ export function Landing() {
             Prêt à comparer les modèles ?
           </h2>
           <p className="text-muted-foreground mt-5 max-w-xl mx-auto leading-relaxed">
-            Configurez un run en quelques clics : choisissez vos modèles, une
-            famille de questions et un nombre de questions, puis suivez la
-            progression en direct.
+            Explorez les classements des modèles, les graphiques comparatifs par
+            famille et difficulté, et le détail des réponses question par
+            question.
           </p>
-          <div className="mt-9">
+          <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
             <Button size="lg" asChild>
               <Link href="/console">
-                <Play className="w-4 h-4 mr-2" /> Lancer un benchmark
+                <BarChart3 className="w-4 h-4 mr-2" /> Voir les résultats
+              </Link>
+            </Button>
+            <Button size="lg" variant="outline" asChild>
+              <Link href="/console#questions">
+                <BookOpen className="w-4 h-4 mr-2" /> Voir les questions
               </Link>
             </Button>
           </div>
