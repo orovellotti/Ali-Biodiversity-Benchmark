@@ -7,6 +7,8 @@
  */
 
 export * from './benchmarkConfig';
+export * from './contactInput';
+export * from './contactResult';
 export * from './error';
 export * from './groupSummary';
 export * from './healthStatus';

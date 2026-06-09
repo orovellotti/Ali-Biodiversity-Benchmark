@@ -35,6 +35,13 @@ export function runsDir(): string {
   return dir;
 }
 
+/** JSONL file where contact messages to Natural Solutions are appended. */
+export function contactFilePath(): string {
+  const dir = path.join(benchmarkDir(), "messages");
+  fs.mkdirSync(dir, { recursive: true });
+  return path.join(dir, "contact.jsonl");
+}
+
 const RUN_ID_RE = /^[A-Za-z0-9_-]+$/;
 
 /** Validate a runId and resolve its directory, guarding against path traversal. */

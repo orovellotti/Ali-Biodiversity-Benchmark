@@ -6,6 +6,8 @@ import { DarkModeToggle } from "@/components/controls";
 const NAV = [
   { href: "/", label: "La démarche" },
   { href: "/console", label: "Console" },
+  { href: "/questions", label: "Questions" },
+  { href: "/contact", label: "Contact" },
 ];
 
 export function SiteHeader({

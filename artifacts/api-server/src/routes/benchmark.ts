@@ -7,9 +7,12 @@ import {
   GetRunResultsResponse,
   ListRunsResponse,
   ListQuestionsResponse,
+  SubmitContactBody,
 } from "@workspace/api-zod";
+import { appendFileSync } from "node:fs";
 import { getBenchmarkConfig } from "../lib/benchmark/config";
 import { listQuestions } from "../lib/benchmark/dataset";
+import { contactFilePath } from "../lib/benchmark/paths";
 import {
   createRun,
   deleteRun,
@@ -121,6 +124,29 @@ router.get("/benchmark/runs/:runId/results", (req, res) => {
     return;
   }
   res.json(GetRunResultsResponse.parse(results));
+});
+
+router.post("/benchmark/contact", (req, res) => {
+  const parsed = SubmitContactBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({
+      error: parsed.error.issues[0]?.message ?? "Message invalide",
+    });
+    return;
+  }
+  try {
+    const entry = {
+      ...parsed.data,
+      receivedAt: new Date().toISOString(),
+    };
+    appendFileSync(contactFilePath(), JSON.stringify(entry) + "\n", "utf-8");
+    res.status(201).json({ ok: true });
+  } catch (err) {
+    req.log.error({ err }, "Échec de l'enregistrement du message de contact");
+    res.status(500).json({
+      error: "Erreur interne lors de l'envoi du message.",
+    });
+  }
 });
 
 export default router;

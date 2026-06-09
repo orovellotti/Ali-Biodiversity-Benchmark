@@ -7,6 +7,8 @@ import NotFound from "@/pages/not-found";
 import { Home } from "@/pages/home";
 import { Landing } from "@/pages/landing";
 import { RunDetail } from "@/pages/run-detail";
+import { Questions } from "@/pages/questions";
+import { Contact } from "@/pages/contact";
 import { ADMIN_TOKEN_KEY } from "@/lib/admin";
 
 // Attach the admin password (when present) as a Bearer token on every request.
@@ -27,6 +29,8 @@ function Router() {
     <Switch>
       <Route path="/" component={Landing} />
       <Route path="/console" component={Home} />
+      <Route path="/questions" component={Questions} />
+      <Route path="/contact" component={Contact} />
       <Route path="/runs/:id" component={RunDetail} />
       <Route component={NotFound} />
     </Switch>

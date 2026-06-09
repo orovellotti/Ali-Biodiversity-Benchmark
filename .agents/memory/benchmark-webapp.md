@@ -110,3 +110,11 @@ change BOTH of those to the new filename.
 - `requireAdmin` returns **503 when `BENCHMARK_ADMIN_PASSWORD` is unset** (writes disabled by default — do NOT "fix" this to allow unauthenticated writes), **401** on missing/wrong Bearer token.
 - **Why timing-safe needs hashing:** comparing raw buffers with a `length===` short-circuit leaks password length via timing. Always SHA-256 both sides to fixed length, then `timingSafeEqual`.
 - Frontend: password kept in `sessionStorage` (admin.ts), attached as Bearer by the transport getter registered in App.tsx; UI distinguishes 503 (disabled) vs 401 (wrong pw).
+
+## Orval codegen gotcha (mid-write reads lie)
+- Right after `pnpm --filter @workspace/api-spec run codegen`, a quick `rg` over the generated files can catch them **mid-write** and show garbled identifiers (e.g. an op named `submitContact` momentarily appearing as `SubmitnBody`/`nInput`/`sn`). This is NOT a real naming bug.
+- **How to apply:** if generated names look mangled, just re-read after codegen fully settles (or run a separate read step) before "fixing" anything. Convention holds: operationId `submitContact` → hook `useSubmitContact`, body Zod `SubmitContactBody`, types `ContactInput`/`ContactResult`, all re-exported from `@workspace/api-zod` / `@workspace/api-client-react`.
+
+## Contact endpoint (public write)
+- `POST /benchmark/contact` is intentionally **public/unauthenticated** (anyone can leave a message); validated by generated `SubmitContactBody` (Zod length caps), appended as JSONL via `contactFilePath()` to `biodiversity-benchmark/messages/` (gitignored, like `runs/`).
+- Known follow-up (not yet done): no rate-limiting/anti-spam. Per-IP limiting is unreliable here because all traffic arrives via the shared proxy unless `trust proxy` + XFF parsing is set up.

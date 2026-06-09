@@ -6,3 +6,4 @@ outputs/*.csv
 outputs/report.md
 !outputs/.gitkeep
 runs/
+messages/

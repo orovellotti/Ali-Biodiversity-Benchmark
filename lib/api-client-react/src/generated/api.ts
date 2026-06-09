@@ -21,6 +21,8 @@ import type {
 
 import type {
   BenchmarkConfig,
+  ContactInput,
+  ContactResult,
   Error,
   HealthStatus,
   QuestionPreview,
@@ -715,4 +717,75 @@ export function useListQuestions<TData = Awaited<ReturnType<typeof listQuestions
 
 
 
+
+export const getSubmitContactUrl = () => {
+
+
+
+
+  return `/api/benchmark/contact`
+}
+
+/**
+ * @summary Send a message to Natural Solutions
+ */
+export const submitContact = async (contactInput: ContactInput, options?: RequestInit): Promise<ContactResult> => {
+
+  return customFetch<ContactResult>(getSubmitContactUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      contactInput,)
+  }
+);}
+
+
+
+
+export const getSubmitContactMutationOptions = <TError = ErrorType<Error>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof submitContact>>, TError,{data: BodyType<ContactInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof submitContact>>, TError,{data: BodyType<ContactInput>}, TContext> => {
+
+const mutationKey = ['submitContact'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof submitContact>>, {data: BodyType<ContactInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  submitContact(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SubmitContactMutationResult = NonNullable<Awaited<ReturnType<typeof submitContact>>>
+    export type SubmitContactMutationBody = BodyType<ContactInput>
+    export type SubmitContactMutationError = ErrorType<Error>
+
+    /**
+ * @summary Send a message to Natural Solutions
+ */
+export const useSubmitContact = <TError = ErrorType<Error>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof submitContact>>, TError,{data: BodyType<ContactInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof submitContact>>,
+        TError,
+        {data: BodyType<ContactInput>},
+        TContext
+      > => {
+      return useMutation(getSubmitContactMutationOptions(options));
+    }
 

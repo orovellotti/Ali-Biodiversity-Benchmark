@@ -177,6 +177,30 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/QuestionPreview"
+  /benchmark/contact:
+    post:
+      operationId: submitContact
+      tags: [benchmark]
+      summary: Send a message to Natural Solutions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContactInput"
+      responses:
+        "201":
+          description: Message received
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContactResult"
+        "400":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   schemas:
     HealthStatus:
@@ -213,6 +237,28 @@ components:
           type: string
         expectedAnswerShort:
           type: ["string", "null"]
+    ContactInput:
+      type: object
+      required: [name, email, message]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+        email:
+          type: string
+          format: email
+          maxLength: 200
+        message:
+          type: string
+          minLength: 1
+          maxLength: 5000
+    ContactResult:
+      type: object
+      required: [ok]
+      properties:
+        ok:
+          type: boolean
     Provider:
       type: object
       required: [id, defaultModel, available, requiresKey]

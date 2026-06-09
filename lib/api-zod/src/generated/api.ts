@@ -216,3 +216,21 @@ export const ListQuestionsResponseItem = zod.object({
 export const ListQuestionsResponse = zod.array(ListQuestionsResponseItem)
 
 
+/**
+ * @summary Send a message to Natural Solutions
+ */
+export const submitContactBodyNameMax = 120;
+
+export const submitContactBodyEmailMax = 200;
+
+export const submitContactBodyMessageMax = 5000;
+
+
+
+export const SubmitContactBody = zod.object({
+  "name": zod.string().min(1).max(submitContactBodyNameMax),
+  "email": zod.string().email().max(submitContactBodyEmailMax),
+  "message": zod.string().min(1).max(submitContactBodyMessageMax)
+})
+
+

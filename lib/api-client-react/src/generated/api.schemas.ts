@@ -30,6 +30,25 @@ export interface QuestionPreview {
   expectedAnswerShort?: string | null;
 }
 
+export interface ContactInput {
+  /**
+     * @minLength 1
+     * @maxLength 120
+     */
+  name: string;
+  /** @maxLength 200 */
+  email: string;
+  /**
+     * @minLength 1
+     * @maxLength 5000
+     */
+  message: string;
+}
+
+export interface ContactResult {
+  ok: boolean;
+}
+
 export interface Provider {
   id: string;
   defaultModel: string;
