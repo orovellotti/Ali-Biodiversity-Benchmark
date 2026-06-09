@@ -397,7 +397,17 @@ export function Landing() {
             <Leaf className="w-4 h-4 text-primary" />
             Biodiversity Judgment Benchmark
           </div>
-          <div className="eyebrow">carnet de terrain · {totalQuestions} questions</div>
+          <div className="flex items-center gap-4">
+            <a
+              href="https://www.natural-solutions.eu"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-muted-foreground hover:text-primary transition-colors underline-offset-4 hover:underline"
+            >
+              Natural Solutions
+            </a>
+            <div className="eyebrow">carnet de terrain · {totalQuestions} questions</div>
+          </div>
         </div>
       </footer>
     </div>
