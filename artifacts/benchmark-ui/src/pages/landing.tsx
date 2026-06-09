@@ -127,7 +127,7 @@ export function Landing() {
     <div className="min-h-screen bg-background text-foreground">
       <SiteHeader maxWidth="max-w-[1180px]">
         <Button size="sm" asChild>
-          <Link href="/console">
+          <Link href="/resultats">
             <BarChart3 className="w-4 h-4 mr-2" /> Voir les résultats
           </Link>
         </Button>
@@ -155,7 +155,7 @@ export function Landing() {
           </p>
           <div className="flex flex-wrap items-center gap-3 mt-9">
             <Button size="lg" asChild>
-              <Link href="/console">
+              <Link href="/resultats">
                 <BarChart3 className="w-4 h-4 mr-2" /> Voir les résultats
               </Link>
             </Button>
@@ -387,7 +387,7 @@ export function Landing() {
           </p>
           <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
             <Button size="lg" asChild>
-              <Link href="/console">
+              <Link href="/resultats">
                 <BarChart3 className="w-4 h-4 mr-2" /> Voir les résultats
               </Link>
             </Button>

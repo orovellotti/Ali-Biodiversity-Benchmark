@@ -7,6 +7,7 @@ import NotFound from "@/pages/not-found";
 import { Home } from "@/pages/home";
 import { Landing } from "@/pages/landing";
 import { RunDetail } from "@/pages/run-detail";
+import { Results } from "@/pages/results";
 import { Questions } from "@/pages/questions";
 import { Contact } from "@/pages/contact";
 import { ADMIN_TOKEN_KEY } from "@/lib/admin";
@@ -28,6 +29,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Landing} />
+      <Route path="/resultats" component={Results} />
       <Route path="/console" component={Home} />
       <Route path="/questions" component={Questions} />
       <Route path="/contact" component={Contact} />

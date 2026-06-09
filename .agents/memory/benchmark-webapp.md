@@ -9,10 +9,20 @@ A web UI (artifact `benchmark-ui` at `/`) + shared Express `api-server` wrap the
 standalone Python CLI in `biodiversity-benchmark/`. UI/content is French (dataset
 and CLI are French).
 
-## Routes (wouter)
-- `/` = explanatory landing page ("la démarche"), `/console` = the run config +
-  history console, `/runs/:id` = run detail. The console used to live at `/`; if
-  adding internal links to the console, point to `/console` (not `/`).
+## Routes (wouter) & nav IA
+- 5 nav items (order matters, set in `site-header.tsx` NAV): Démarche `/` →
+  Résultats `/resultats` → Questions `/questions` → Console `/console` → Contact
+  `/contact`. Plus `/runs/:id` = run detail.
+- **Results vs Console are deliberately two pages** (user decision): `/resultats`
+  is PUBLIC read-only (featured latest + history grid, no delete); `/console` is
+  ADMIN-gated (login + launch form + a "Gérer les analyses" section with delete
+  that only renders when `authed`). Do NOT re-merge them.
+- The run history grid + featured hero is a shared component `RunHistory`
+  (`components/run-history.tsx`): self-fetches runs with 2s-while-active polling,
+  `featured` toggles the hero, passing `onDelete` enables the delete buttons.
+  Reuse it rather than duplicating run-card markup.
+- Internal "view results" links (landing CTAs, run-detail "Retour") point to
+  `/resultats`; "launch" intent points to `/console`.
 - Buttons that navigate must use `<Button asChild><Link/></Button>` (or `<a>`),
   never `<Link><Button/></Button>` — the latter nests interactive elements.
 

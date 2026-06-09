@@ -1,9 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
 import {
   useGetBenchmarkConfig,
-  useListRuns,
   useCreateRun,
   useDeleteRun,
   useVerifyAdmin,
@@ -15,21 +14,14 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SiteHeader } from "@/components/site-header";
-import { QuestionsPreview } from "@/components/questions-preview";
-import { t, formatDateTime } from "@/lib/format";
+import { RunHistory } from "@/components/run-history";
+import { t } from "@/lib/format";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocation } from "wouter";
-import {
-  Trash2,
-  AlertCircle,
-  Lock,
-  LogOut,
-  ArrowRight,
-  BarChart3,
-} from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { AlertCircle, Lock, LogOut, BarChart3 } from "lucide-react";
+
 import {
   getAdminToken,
   setAdminToken,
@@ -58,40 +50,13 @@ export function Home() {
 
   const { data: config, isLoading: configLoading } = useGetBenchmarkConfig();
 
-  // Poll the runs list every 2s only while at least one run is active.
-  const { data: runs, isLoading: runsLoading } = useListRuns({
-    query: {
-      queryKey: getListRunsQueryKey(),
-      refetchInterval: (query) => {
-        const hasActive = query.state.data?.some(
-          (r) => r.status === "queued" || r.status === "running",
-        );
-        return hasActive ? 2000 : false;
-      },
-    },
-  });
-
   const createRun = useCreateRun();
   const deleteRun = useDeleteRun();
   const verifyAdmin = useVerifyAdmin();
 
-  // Most recent completed run with real results to feature prominently.
-  const latestCompleted = runs?.find(
-    (r) => r.status === "completed" && !r.dryRun,
-  );
-
-  // Wouter does not scroll to the URL hash on navigation; do it ourselves so
-  // links like /console#questions land on the right section.
-  useEffect(() => {
-    if (window.location.hash !== "#questions") return;
-    const el = document.getElementById("questions");
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-  }, []);
-
   // --- Admin login ---------------------------------------------------------
-  // Browsing results and questions is public. Launching (and deleting) a run is
-  // gated behind a login: the password is verified server-side, then kept for
-  // the tab so the launch form is revealed.
+  // Launching (and deleting) a run is gated behind a login: the password is
+  // verified server-side, then kept for the tab so the console is revealed.
   const [authed, setAuthed] = useState<boolean>(() => !!getAdminToken());
   const [pwInput, setPwInput] = useState("");
   const [loginError, setLoginError] = useState<string | null>(null);
@@ -186,7 +151,13 @@ export function Home() {
 
   return (
     <div className="min-h-screen bg-background">
-      <SiteHeader maxWidth="max-w-[1200px]" />
+      <SiteHeader maxWidth="max-w-[1200px]">
+        <Button variant="outline" size="sm" asChild>
+          <Link href="/resultats">
+            <BarChart3 className="w-4 h-4 mr-2" /> Résultats
+          </Link>
+        </Button>
+      </SiteHeader>
 
       <div className="max-w-[1200px] mx-auto px-6 py-10">
         {/* Page intro */}
@@ -198,208 +169,20 @@ export function Home() {
             Console de benchmark
           </h1>
           <p className="text-muted-foreground mt-2 text-[15px] max-w-2xl">
-            Consultez les résultats et le jeu de questions librement. Le
-            lancement d'une nouvelle évaluation nécessite une connexion.
+            Lancez et gérez les évaluations. Cet espace est réservé : une
+            connexion est nécessaire. Pour consulter les résultats,{" "}
+            <Link href="/resultats" className="text-primary hover:underline">
+              rendez-vous sur la page Résultats
+            </Link>
+            .
           </p>
         </div>
 
-        {/* §01 Résultats — run history (public) */}
-        <section className="mb-14">
-          <div className="flex items-baseline justify-between mb-5">
-            <div>
-              <div className="eyebrow mb-1.5">
-                <span className="text-primary">§01</span> Résultats
-              </div>
-              <h2 className="font-display text-2xl font-semibold tracking-tight">
-                Résultats &amp; historique des runs
-              </h2>
-            </div>
-            {runs && runs.length > 0 && (
-              <span className="index-tag">
-                {String(runs.length).padStart(2, "0")} entrées
-              </span>
-            )}
-          </div>
-
-          {latestCompleted && (
-            <Link href={`/runs/${latestCompleted.id}`}>
-              <div className="group mb-8 block rounded-2xl border border-primary/30 bg-primary/[0.04] p-6 sm:p-7 hover:border-primary/60 hover:shadow-lg transition-all cursor-pointer">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
-                  <div className="min-w-0">
-                    <div className="eyebrow mb-2 flex items-center gap-2 !text-primary">
-                      <BarChart3 className="w-3.5 h-3.5" /> Dernier résultat
-                    </div>
-                    <h3 className="font-display text-2xl font-semibold tracking-tight">
-                      Évaluation {latestCompleted.id.split("-").pop()}
-                    </h3>
-                    <p className="text-sm text-muted-foreground mt-2">
-                      <span className="font-medium text-foreground">
-                        {latestCompleted.models.length} modèles
-                      </span>{" "}
-                      comparés sur{" "}
-                      <span className="font-medium text-foreground">
-                        {latestCompleted.completed} questions
-                      </span>{" "}
-                      · {formatDateTime(latestCompleted.createdAt)}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1 truncate">
-                      {latestCompleted.models.join(", ")}
-                    </p>
-                  </div>
-                  <div className="shrink-0">
-                    <Button size="lg" className="w-full sm:w-auto">
-                      Voir les résultats
-                      <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-0.5 transition-transform" />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </Link>
-          )}
-
-          {latestCompleted && runs && runs.length > 1 && (
-            <div className="eyebrow mb-4 !text-foreground/60">
-              Historique complet
-            </div>
-          )}
-
-          {runsLoading ? (
-            <div className="space-y-3">
-              <Skeleton className="h-24 w-full rounded-xl" />
-              <Skeleton className="h-24 w-full rounded-xl" />
-            </div>
-          ) : !runs || runs.length === 0 ? (
-            <div className="p-12 text-center border border-dashed border-border rounded-xl bg-card/40">
-              <p className="text-muted-foreground">
-                Aucun run n'a été lancé pour le moment.
-              </p>
-              <p className="text-sm text-muted-foreground/70 mt-1">
-                Connectez-vous plus bas pour lancer une première évaluation.
-              </p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {runs.map((r, i) => {
-                const isActive =
-                  r.status === "queued" || r.status === "running";
-                const progress =
-                  r.total > 0 ? Math.round((r.completed / r.total) * 100) : 0;
-
-                return (
-                  <Link key={r.id} href={`/runs/${r.id}`}>
-                    <div className="block rounded-xl border border-card-border bg-card p-5 hover:border-primary/50 hover:shadow-md transition-all cursor-pointer group relative h-full">
-                      <div className="flex items-start justify-between gap-4 mb-2">
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                            <span className="index-tag">
-                              {String(runs.length - i).padStart(2, "0")}
-                            </span>
-                            <span className="font-mono text-sm font-semibold">
-                              {r.id.split("-").pop()}
-                            </span>
-                            <Badge
-                              variant={
-                                isActive
-                                  ? "default"
-                                  : r.status === "completed"
-                                    ? "secondary"
-                                    : "destructive"
-                              }
-                            >
-                              {t(r.status)}
-                            </Badge>
-                            {r.dryRun && (
-                              <Badge variant="outline">Simulation</Badge>
-                            )}
-                            {r.noEval && (
-                              <Badge variant="outline">Sans évaluation</Badge>
-                            )}
-                          </div>
-                          <p className="text-xs text-muted-foreground truncate">
-                            Modèles : {r.models.join(", ")}
-                          </p>
-                        </div>
-                        <p className="text-xs text-muted-foreground shrink-0 font-mono">
-                          {formatDateTime(r.createdAt)}
-                        </p>
-                      </div>
-
-                      {isActive ? (
-                        <div className="mt-4 space-y-1.5">
-                          <div className="flex justify-between text-xs">
-                            <span className="text-muted-foreground">
-                              {t(r.phase)}
-                            </span>
-                            <span className="font-mono font-medium tabular-nums">
-                              {r.completed} / {r.total}
-                            </span>
-                          </div>
-                          <div className="w-full bg-secondary rounded-full h-1.5 overflow-hidden">
-                            <div
-                              className="bg-primary h-full rounded-full transition-all duration-500"
-                              style={{ width: `${progress}%` }}
-                            />
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="mt-2 text-xs">
-                          {r.status === "completed" ? (
-                            <span className="text-primary font-medium">
-                              {r.completed} questions traitées
-                            </span>
-                          ) : (
-                            <span className="text-destructive truncate block max-w-full">
-                              {r.error || "Erreur inconnue"}
-                            </span>
-                          )}
-                        </div>
-                      )}
-
-                      {authed && (
-                        <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 text-destructive hover:bg-destructive/10"
-                            onClick={(e) => handleDelete(r.id, e)}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      )}
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-          )}
-        </section>
-
-        {/* §02 Questions — the dataset (public) */}
-        <section id="questions" className="mb-14 scroll-mt-24">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-5">
-            <div>
-              <div className="eyebrow mb-1.5">
-                <span className="text-primary">§02</span> Le jeu de données
-              </div>
-              <h2 className="font-display text-2xl font-semibold tracking-tight">
-                Les questions
-              </h2>
-              <p className="text-muted-foreground mt-2 text-[15px] max-w-2xl">
-                Parcourez l'ensemble des questions du jeu de données «&nbsp;jugement
-                biodiversité&nbsp;» — filtrez par famille, par difficulté ou par
-                mot-clé.
-              </p>
-            </div>
-            <QuestionsPreview />
-          </div>
-        </section>
-
-        {/* §03 Nouvelle analyse — login required */}
+        {/* Nouvelle analyse — login required */}
         <section>
           <div className="mb-5">
             <div className="eyebrow mb-1.5">
-              <span className="text-primary">§03</span> Espace réservé
+              <span className="text-primary">§01</span> Espace réservé
             </div>
             <h2 className="font-display text-2xl font-semibold tracking-tight">
               Lancer une nouvelle analyse
@@ -677,6 +460,29 @@ export function Home() {
             </Card>
           )}
         </section>
+
+        {/* §02 Gérer les analyses — visible once logged in */}
+        {authed && (
+          <section className="mt-14">
+            <div className="mb-5">
+              <div className="eyebrow mb-1.5">
+                <span className="text-primary">§02</span> Gestion
+              </div>
+              <h2 className="font-display text-2xl font-semibold tracking-tight">
+                Gérer les analyses
+              </h2>
+              <p className="text-muted-foreground mt-2 text-[15px] max-w-2xl">
+                Survolez un run pour le supprimer, ou cliquez pour ouvrir son
+                tableau de bord.
+              </p>
+            </div>
+            <RunHistory
+              featured={false}
+              onDelete={handleDelete}
+              emptyHint="Lancez une première évaluation ci-dessus."
+            />
+          </section>
+        )}
       </div>
     </div>
   );

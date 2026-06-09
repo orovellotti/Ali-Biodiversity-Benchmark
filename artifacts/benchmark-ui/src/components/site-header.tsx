@@ -4,9 +4,10 @@ import { Leaf } from "lucide-react";
 import { DarkModeToggle } from "@/components/controls";
 
 const NAV = [
-  { href: "/", label: "La démarche" },
-  { href: "/console", label: "Console" },
+  { href: "/", label: "Démarche" },
+  { href: "/resultats", label: "Résultats" },
   { href: "/questions", label: "Questions" },
+  { href: "/console", label: "Console" },
   { href: "/contact", label: "Contact" },
 ];
 

@@ -69,8 +69,8 @@ export function RunDetail() {
             <p className="text-muted-foreground">
               Le benchmark avec l'ID {runId} n'existe pas ou a été supprimé.
             </p>
-            <Link href="/console" className="text-primary hover:underline">
-              Retour à la console
+            <Link href="/resultats" className="text-primary hover:underline">
+              Retour aux résultats
             </Link>
           </div>
         </div>
@@ -90,10 +90,10 @@ export function RunDetail() {
 
       <div className="max-w-[1400px] mx-auto px-6 py-8">
         <Link
-          href="/console"
+          href="/resultats"
           className="eyebrow hover:text-foreground transition-colors mb-4 print:hidden"
         >
-          <ChevronLeft className="w-3.5 h-3.5" /> Retour à la console
+          <ChevronLeft className="w-3.5 h-3.5" /> Retour aux résultats
         </Link>
 
         <div className="mb-8 flex flex-wrap items-start justify-between gap-x-4 gap-y-3">
