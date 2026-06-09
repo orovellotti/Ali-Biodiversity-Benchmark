@@ -70,6 +70,10 @@ router.get("/benchmark/runs", (_req, res) => {
   res.json(data);
 });
 
+router.post("/benchmark/admin/session", requireAdmin, (_req, res) => {
+  res.status(204).end();
+});
+
 router.post("/benchmark/runs", requireAdmin, (req, res) => {
   const parsed = CreateRunBody.safeParse(req.body);
   if (!parsed.success) {

@@ -76,6 +76,26 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /benchmark/admin/session:
+    post:
+      operationId: verifyAdmin
+      tags: [benchmark]
+      summary: Verify the admin password (login) for launching/deleting runs
+      responses:
+        "204":
+          description: Password valid
+        "401":
+          description: Invalid or missing password
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Admin actions disabled (no password configured)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /benchmark/runs/{runId}:
     get:
       operationId: getRun

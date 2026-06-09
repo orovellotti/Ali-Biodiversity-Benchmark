@@ -345,6 +345,76 @@ export const useCreateRun = <TError = ErrorType<Error>,
       return useMutation(getCreateRunMutationOptions(options));
     }
 
+export const getVerifyAdminUrl = () => {
+
+
+
+
+  return `/api/benchmark/admin/session`
+}
+
+/**
+ * @summary Verify the admin password (login) for launching/deleting runs
+ */
+export const verifyAdmin = async ( options?: RequestInit): Promise<void> => {
+
+  return customFetch<void>(getVerifyAdminUrl(),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+export const getVerifyAdminMutationOptions = <TError = ErrorType<Error>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof verifyAdmin>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof verifyAdmin>>, TError,void, TContext> => {
+
+const mutationKey = ['verifyAdmin'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof verifyAdmin>>, void> = () => {
+
+
+          return  verifyAdmin(requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type VerifyAdminMutationResult = NonNullable<Awaited<ReturnType<typeof verifyAdmin>>>
+
+    export type VerifyAdminMutationError = ErrorType<Error>
+
+    /**
+ * @summary Verify the admin password (login) for launching/deleting runs
+ */
+export const useVerifyAdmin = <TError = ErrorType<Error>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof verifyAdmin>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof verifyAdmin>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getVerifyAdminMutationOptions(options));
+    }
+
 export const getGetRunUrl = (runId: string,) => {
 
 

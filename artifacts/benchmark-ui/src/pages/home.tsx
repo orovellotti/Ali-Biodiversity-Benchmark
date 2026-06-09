@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
 import {
@@ -6,6 +6,7 @@ import {
   useListRuns,
   useCreateRun,
   useDeleteRun,
+  useVerifyAdmin,
 } from "@workspace/api-client-react";
 import { getListRunsQueryKey } from "@workspace/api-client-react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -13,14 +14,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
 import { SiteHeader } from "@/components/site-header";
 import { QuestionsPreview } from "@/components/questions-preview";
 import { t, formatDateTime } from "@/lib/format";
@@ -28,7 +21,7 @@ import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocation } from "wouter";
-import { Play, Trash2, AlertCircle, Lock } from "lucide-react";
+import { Trash2, AlertCircle, Lock, LogOut } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   getAdminToken,
@@ -72,43 +65,51 @@ export function Home() {
 
   const createRun = useCreateRun();
   const deleteRun = useDeleteRun();
+  const verifyAdmin = useVerifyAdmin();
 
-  // --- Admin password gate -------------------------------------------------
-  // Browsing is public; launching or deleting a run requires the admin
-  // password. We collect it once (per tab) in a dialog, then retry the action.
-  const [gateOpen, setGateOpen] = useState(false);
+  // --- Admin login ---------------------------------------------------------
+  // Browsing results and questions is public. Launching (and deleting) a run is
+  // gated behind a login: the password is verified server-side, then kept for
+  // the tab so the launch form is revealed.
+  const [authed, setAuthed] = useState<boolean>(() => !!getAdminToken());
   const [pwInput, setPwInput] = useState("");
-  const [gateError, setGateError] = useState<string | null>(null);
-  const pendingAction = useRef<(() => void) | null>(null);
+  const [loginError, setLoginError] = useState<string | null>(null);
 
-  const withAdmin = (action: () => void) => {
-    if (getAdminToken()) {
-      action();
-    } else {
-      pendingAction.current = action;
-      setGateError(null);
-      setPwInput("");
-      setGateOpen(true);
-    }
-  };
-
-  const submitGate = (e: React.FormEvent) => {
+  const submitLogin = (e: React.FormEvent) => {
     e.preventDefault();
     const value = pwInput.trim();
     if (!value) return;
+    setLoginError(null);
+    // Store first so the request transport attaches it as a Bearer token.
     setAdminToken(value);
-    setGateOpen(false);
-    const action = pendingAction.current;
-    pendingAction.current = null;
-    action?.();
+    verifyAdmin.mutate(undefined, {
+      onSuccess: () => {
+        setAuthed(true);
+        setPwInput("");
+      },
+      onError: (err) => {
+        clearAdminToken();
+        setAuthed(false);
+        setLoginError(
+          isAuthError(err)
+            ? "Mot de passe incorrect."
+            : "Connexion impossible. Réessayez.",
+        );
+      },
+    });
   };
 
-  const handleAuthFailure = (retry: () => void) => {
+  const logout = () => {
     clearAdminToken();
-    pendingAction.current = retry;
+    setAuthed(false);
     setPwInput("");
-    setGateError("Mot de passe incorrect. Réessayez.");
-    setGateOpen(true);
+    setLoginError(null);
+  };
+
+  const handleAuthFailure = () => {
+    clearAdminToken();
+    setAuthed(false);
+    setLoginError("Session expirée. Reconnectez-vous.");
   };
 
   const form = useForm<RunFormValues>({
@@ -129,7 +130,7 @@ export function Home() {
     ? selectedModels.length * (selectedLimit || config.totalQuestions)
     : 0;
 
-  const doCreate = (values: RunFormValues) => {
+  const onSubmit = (values: RunFormValues) => {
     createRun.mutate(
       { data: values },
       {
@@ -138,25 +139,7 @@ export function Home() {
           setLocation(`/runs/${newRun.id}`);
         },
         onError: (err) => {
-          if (isAuthError(err)) handleAuthFailure(() => doCreate(values));
-        },
-      }
-    );
-  };
-
-  const onSubmit = (values: RunFormValues) => {
-    withAdmin(() => doCreate(values));
-  };
-
-  const doDelete = (id: string) => {
-    deleteRun.mutate(
-      { runId: id },
-      {
-        onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: getListRunsQueryKey() });
-        },
-        onError: (err) => {
-          if (isAuthError(err)) handleAuthFailure(() => doDelete(id));
+          if (isAuthError(err)) handleAuthFailure();
         },
       }
     );
@@ -164,16 +147,23 @@ export function Home() {
 
   const handleDelete = (id: string, e: React.MouseEvent) => {
     e.preventDefault();
-    if (confirm("Supprimer ce run ?")) {
-      withAdmin(() => doDelete(id));
-    }
+    if (!confirm("Supprimer ce run ?")) return;
+    deleteRun.mutate(
+      { runId: id },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: getListRunsQueryKey() });
+        },
+        onError: (err) => {
+          if (isAuthError(err)) handleAuthFailure();
+        },
+      }
+    );
   };
 
   return (
     <div className="min-h-screen bg-background">
-      <SiteHeader maxWidth="max-w-[1200px]">
-        <QuestionsPreview />
-      </SiteHeader>
+      <SiteHeader maxWidth="max-w-[1200px]" />
 
       <div className="max-w-[1200px] mx-auto px-6 py-10">
         {/* Page intro */}
@@ -185,22 +175,219 @@ export function Home() {
             Console de benchmark
           </h1>
           <p className="text-muted-foreground mt-2 text-[15px] max-w-2xl">
-            Configurez une évaluation, lancez-la et suivez chaque run du carnet
-            de terrain.
+            Consultez les résultats et le jeu de questions librement. Le
+            lancement d'une nouvelle évaluation nécessite une connexion.
           </p>
-          <div className="mt-3 inline-flex items-center gap-2 text-xs text-muted-foreground">
-            <Lock className="w-3.5 h-3.5 text-primary" />
-            Le lancement d'une évaluation est protégé par un mot de passe.
-          </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Configuration Form — instrument panel */}
-          <div className="lg:col-span-1">
+        {/* §01 Résultats — run history (public) */}
+        <section className="mb-14">
+          <div className="flex items-baseline justify-between mb-5">
+            <div>
+              <div className="eyebrow mb-1.5">
+                <span className="text-primary">§01</span> Résultats
+              </div>
+              <h2 className="font-display text-2xl font-semibold tracking-tight">
+                Résultats &amp; historique des runs
+              </h2>
+            </div>
+            {runs && runs.length > 0 && (
+              <span className="index-tag">
+                {String(runs.length).padStart(2, "0")} entrées
+              </span>
+            )}
+          </div>
+
+          {runsLoading ? (
+            <div className="space-y-3">
+              <Skeleton className="h-24 w-full rounded-xl" />
+              <Skeleton className="h-24 w-full rounded-xl" />
+            </div>
+          ) : !runs || runs.length === 0 ? (
+            <div className="p-12 text-center border border-dashed border-border rounded-xl bg-card/40">
+              <p className="text-muted-foreground">
+                Aucun run n'a été lancé pour le moment.
+              </p>
+              <p className="text-sm text-muted-foreground/70 mt-1">
+                Connectez-vous plus bas pour lancer une première évaluation.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {runs.map((r, i) => {
+                const isActive =
+                  r.status === "queued" || r.status === "running";
+                const progress =
+                  r.total > 0 ? Math.round((r.completed / r.total) * 100) : 0;
+
+                return (
+                  <Link key={r.id} href={`/runs/${r.id}`}>
+                    <div className="block rounded-xl border border-card-border bg-card p-5 hover:border-primary/50 hover:shadow-md transition-all cursor-pointer group relative h-full">
+                      <div className="flex items-start justify-between gap-4 mb-2">
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                            <span className="index-tag">
+                              {String(runs.length - i).padStart(2, "0")}
+                            </span>
+                            <span className="font-mono text-sm font-semibold">
+                              {r.id.split("-").pop()}
+                            </span>
+                            <Badge
+                              variant={
+                                isActive
+                                  ? "default"
+                                  : r.status === "completed"
+                                    ? "secondary"
+                                    : "destructive"
+                              }
+                            >
+                              {t(r.status)}
+                            </Badge>
+                            {r.dryRun && (
+                              <Badge variant="outline">Simulation</Badge>
+                            )}
+                            {r.noEval && (
+                              <Badge variant="outline">Sans évaluation</Badge>
+                            )}
+                          </div>
+                          <p className="text-xs text-muted-foreground truncate">
+                            Modèles : {r.models.join(", ")}
+                          </p>
+                        </div>
+                        <p className="text-xs text-muted-foreground shrink-0 font-mono">
+                          {formatDateTime(r.createdAt)}
+                        </p>
+                      </div>
+
+                      {isActive ? (
+                        <div className="mt-4 space-y-1.5">
+                          <div className="flex justify-between text-xs">
+                            <span className="text-muted-foreground">
+                              {t(r.phase)}
+                            </span>
+                            <span className="font-mono font-medium tabular-nums">
+                              {r.completed} / {r.total}
+                            </span>
+                          </div>
+                          <div className="w-full bg-secondary rounded-full h-1.5 overflow-hidden">
+                            <div
+                              className="bg-primary h-full rounded-full transition-all duration-500"
+                              style={{ width: `${progress}%` }}
+                            />
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="mt-2 text-xs">
+                          {r.status === "completed" ? (
+                            <span className="text-primary font-medium">
+                              {r.completed} questions traitées
+                            </span>
+                          ) : (
+                            <span className="text-destructive truncate block max-w-full">
+                              {r.error || "Erreur inconnue"}
+                            </span>
+                          )}
+                        </div>
+                      )}
+
+                      {authed && (
+                        <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-destructive hover:bg-destructive/10"
+                            onClick={(e) => handleDelete(r.id, e)}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+        </section>
+
+        {/* §02 Questions — the dataset (public) */}
+        <section className="mb-14">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-5">
+            <div>
+              <div className="eyebrow mb-1.5">
+                <span className="text-primary">§02</span> Le jeu de données
+              </div>
+              <h2 className="font-display text-2xl font-semibold tracking-tight">
+                Les questions
+              </h2>
+              <p className="text-muted-foreground mt-2 text-[15px] max-w-2xl">
+                Parcourez l'ensemble des questions du jeu de données «&nbsp;jugement
+                biodiversité&nbsp;» — filtrez par famille, par difficulté ou par
+                mot-clé.
+              </p>
+            </div>
+            <QuestionsPreview />
+          </div>
+        </section>
+
+        {/* §03 Nouvelle analyse — login required */}
+        <section>
+          <div className="mb-5">
+            <div className="eyebrow mb-1.5">
+              <span className="text-primary">§03</span> Espace réservé
+            </div>
+            <h2 className="font-display text-2xl font-semibold tracking-tight">
+              Lancer une nouvelle analyse
+            </h2>
+          </div>
+
+          {!authed ? (
+            <Card className="overflow-hidden max-w-md">
+              <div className="px-6 py-4 border-b border-card-border bg-secondary/40 flex items-center gap-2">
+                <Lock className="w-4 h-4 text-primary" />
+                <div className="eyebrow !text-foreground/80">Connexion</div>
+              </div>
+              <CardContent className="p-6">
+                <p className="text-sm text-muted-foreground mb-4">
+                  Le lancement d'une évaluation est réservé. Saisissez le mot de
+                  passe pour accéder au formulaire.
+                </p>
+                <form onSubmit={submitLogin} className="space-y-3">
+                  <Input
+                    type="password"
+                    placeholder="Mot de passe administrateur"
+                    value={pwInput}
+                    onChange={(e) => setPwInput(e.target.value)}
+                  />
+                  {loginError && (
+                    <p className="text-sm text-destructive flex items-center gap-1.5">
+                      <AlertCircle className="w-3.5 h-3.5" />
+                      {loginError}
+                    </p>
+                  )}
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={!pwInput.trim() || verifyAdmin.isPending}
+                  >
+                    {verifyAdmin.isPending ? "Connexion..." : "Se connecter"}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+          ) : (
             <Card className="overflow-hidden">
               <div className="px-6 py-4 border-b border-card-border bg-secondary/40 flex items-center justify-between">
                 <div className="eyebrow !text-foreground/80">Nouveau run</div>
-                <span className="index-tag">config</span>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 text-xs text-muted-foreground"
+                  onClick={logout}
+                >
+                  <LogOut className="w-3.5 h-3.5 mr-1.5" /> Déconnexion
+                </Button>
               </div>
               <CardContent className="p-6">
                 {configLoading ? (
@@ -423,179 +610,9 @@ export function Home() {
                 )}
               </CardContent>
             </Card>
-          </div>
-
-          {/* Runs History — logbook */}
-          <div className="lg:col-span-2">
-            <div className="flex items-baseline justify-between mb-5">
-              <div>
-                <div className="eyebrow mb-1.5">Journal</div>
-                <h2 className="font-display text-2xl font-semibold tracking-tight">
-                  Historique des runs
-                </h2>
-              </div>
-              {runs && runs.length > 0 && (
-                <span className="index-tag">
-                  {String(runs.length).padStart(2, "0")} entrées
-                </span>
-              )}
-            </div>
-
-            {runsLoading ? (
-              <div className="space-y-3">
-                <Skeleton className="h-24 w-full rounded-xl" />
-                <Skeleton className="h-24 w-full rounded-xl" />
-              </div>
-            ) : !runs || runs.length === 0 ? (
-              <div className="p-12 text-center border border-dashed border-border rounded-xl bg-card/40">
-                <p className="text-muted-foreground">
-                  Aucun run n'a été lancé pour le moment.
-                </p>
-                <p className="text-sm text-muted-foreground/70 mt-1">
-                  Configurez une évaluation à gauche pour commencer.
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {runs.map((r, i) => {
-                  const isActive =
-                    r.status === "queued" || r.status === "running";
-                  const progress =
-                    r.total > 0
-                      ? Math.round((r.completed / r.total) * 100)
-                      : 0;
-
-                  return (
-                    <Link key={r.id} href={`/runs/${r.id}`}>
-                      <div className="block rounded-xl border border-card-border bg-card p-5 hover:border-primary/50 hover:shadow-md transition-all cursor-pointer group relative">
-                        <div className="flex items-start justify-between gap-4 mb-2">
-                          <div className="min-w-0">
-                            <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                              <span className="index-tag">
-                                {String(runs.length - i).padStart(2, "0")}
-                              </span>
-                              <span className="font-mono text-sm font-semibold">
-                                {r.id.split("-").pop()}
-                              </span>
-                              <Badge
-                                variant={
-                                  isActive
-                                    ? "default"
-                                    : r.status === "completed"
-                                      ? "secondary"
-                                      : "destructive"
-                                }
-                              >
-                                {t(r.status)}
-                              </Badge>
-                              {r.dryRun && (
-                                <Badge variant="outline">Simulation</Badge>
-                              )}
-                              {r.noEval && (
-                                <Badge variant="outline">Sans évaluation</Badge>
-                              )}
-                            </div>
-                            <p className="text-xs text-muted-foreground truncate">
-                              Modèles : {r.models.join(", ")}
-                            </p>
-                          </div>
-                          <p className="text-xs text-muted-foreground shrink-0 font-mono">
-                            {formatDateTime(r.createdAt)}
-                          </p>
-                        </div>
-
-                        {isActive ? (
-                          <div className="mt-4 space-y-1.5">
-                            <div className="flex justify-between text-xs">
-                              <span className="text-muted-foreground">
-                                {t(r.phase)}
-                              </span>
-                              <span className="font-mono font-medium tabular-nums">
-                                {r.completed} / {r.total}
-                              </span>
-                            </div>
-                            <div className="w-full bg-secondary rounded-full h-1.5 overflow-hidden">
-                              <div
-                                className="bg-primary h-full rounded-full transition-all duration-500"
-                                style={{ width: `${progress}%` }}
-                              />
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="mt-2 text-xs">
-                            {r.status === "completed" ? (
-                              <span className="text-primary font-medium">
-                                {r.completed} questions traitées
-                              </span>
-                            ) : (
-                              <span className="text-destructive truncate block max-w-full">
-                                {r.error || "Erreur inconnue"}
-                              </span>
-                            )}
-                          </div>
-                        )}
-
-                        <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 text-destructive hover:bg-destructive/10"
-                            onClick={(e) => handleDelete(r.id, e)}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        </div>
+          )}
+        </section>
       </div>
-
-      <Dialog open={gateOpen} onOpenChange={setGateOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="font-display flex items-center gap-2">
-              <Lock className="w-4 h-4 text-primary" />
-              Mot de passe requis
-            </DialogTitle>
-            <DialogDescription>
-              Le lancement et la suppression d'une évaluation sont réservés. La
-              consultation des résultats reste libre.
-            </DialogDescription>
-          </DialogHeader>
-          <form onSubmit={submitGate} className="space-y-3">
-            <Input
-              type="password"
-              autoFocus
-              placeholder="Mot de passe administrateur"
-              value={pwInput}
-              onChange={(e) => setPwInput(e.target.value)}
-            />
-            {gateError && (
-              <p className="text-sm text-destructive flex items-center gap-1.5">
-                <AlertCircle className="w-3.5 h-3.5" />
-                {gateError}
-              </p>
-            )}
-            <DialogFooter>
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => setGateOpen(false)}
-              >
-                Annuler
-              </Button>
-              <Button type="submit" disabled={!pwInput.trim()}>
-                Valider
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
