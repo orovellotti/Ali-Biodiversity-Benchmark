@@ -1,7 +1,7 @@
 """Point d'entrée du benchmark biodiversité multi-LLM.
 
 Exemple :
-    python main.py --input biodiversity_benchmark_80_v2_discriminant.json \\
+    python main.py --input biodiversity_benchmark_100_v3.json \\
         --models openai,mistral,anthropic,gemini --limit 50
 """
 
@@ -291,7 +291,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--input",
-        default="biodiversity_benchmark_80_v2_discriminant.json",
+        default="biodiversity_benchmark_100_v3.json",
         help="Chemin du fichier JSON du benchmark.",
     )
     parser.add_argument(

@@ -68,7 +68,7 @@ The active dataset is a single JSON file (`{metadata, questions}`) chosen by
 `datasetPath()` (TS) and the `--input` default in `main.py`. Swapping datasets =
 change BOTH of those to the new filename.
 
-- **topic vs section:** newer datasets (e.g. "V2 Discriminant" 80q) have no
+- **topic vs section:** newer datasets (e.g. "V3 Discriminant" 100q (5 sections incl. moral_dilemmas)) have no
   `topic` field — they use `section`. Both layers treat the grouping dimension as
   `topic ?? section`: TS `topicOf(q)` in `dataset.ts` (topics/difficulties/
   questionTypes derived dynamically from the file — no hardcoded list; `config.ts`

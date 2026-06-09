@@ -174,8 +174,13 @@ def _hallucination_analysis(df: pd.DataFrame) -> str:
 
 
 # Types de question portant sur les arbitrages / biais socio-écologiques.
-# Inclut l'ancien jeu (`arbitrage`) et le jeu V2 (`tradeoff_and_bias_detection`).
-ARBITRAGE_QUESTION_TYPES = {"arbitrage", "tradeoff_and_bias_detection"}
+# Inclut l'ancien jeu (`arbitrage`), le jeu V2 (`tradeoff_and_bias_detection`)
+# et le jeu V3 (`ethical_tradeoff`, section dilemmes moraux).
+ARBITRAGE_QUESTION_TYPES = {
+    "arbitrage",
+    "tradeoff_and_bias_detection",
+    "ethical_tradeoff",
+}
 
 
 def _arbitrage_analysis(df: pd.DataFrame) -> str:

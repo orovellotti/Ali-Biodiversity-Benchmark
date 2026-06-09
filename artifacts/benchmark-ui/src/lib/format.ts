@@ -1,9 +1,10 @@
 export const TRANSLATIONS: Record<string, string> = {
-  // Sections (jeu V2 Discriminant)
+  // Sections (jeu V2/V3 Discriminant)
   factual_easy: "Factuel facile",
   factual_expert: "Factuel expert",
   bias_and_dilemmas: "Biais & dilemmes",
   knowledge_graph_reasoning: "Raisonnement sur graphe",
+  moral_dilemmas: "Dilemmes moraux",
 
   // Anciens topics (jeu 800 questions)
   taxonomie: "Taxonomie",
@@ -29,11 +30,12 @@ export const TRANSLATIONS: Record<string, string> = {
   hard: "Difficile",
   expert: "Expert",
 
-  // Question types (jeu V2 Discriminant)
+  // Question types (jeu V2/V3 Discriminant)
   domain_knowledge: "Connaissance du domaine",
   expert_domain_knowledge: "Expertise du domaine",
   graph_reasoning: "Raisonnement sur graphe",
   tradeoff_and_bias_detection: "Arbitrage & détection de biais",
+  ethical_tradeoff: "Arbitrage éthique",
 
   // Question types (ancien jeu)
   factuel: "Factuel",
