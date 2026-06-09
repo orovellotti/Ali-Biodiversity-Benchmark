@@ -60,8 +60,8 @@ export function RunDetail() {
           <AlertTriangle className="w-12 h-12 text-destructive mx-auto" />
           <h1 className="text-2xl font-bold">Run introuvable</h1>
           <p className="text-muted-foreground">Le benchmark avec l'ID {runId} n'existe pas ou a été supprimé.</p>
-          <Link href="/">
-            <a className="text-primary hover:underline">Retour à l'accueil</a>
+          <Link href="/console">
+            <a className="text-primary hover:underline">Retour à la console</a>
           </Link>
         </div>
       </div>
@@ -77,7 +77,7 @@ export function RunDetail() {
         <div className="mb-4 flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
           <div className="pt-2">
             <div className="flex items-center gap-2 mb-2 print:hidden">
-              <Link href="/" className="text-sm text-muted-foreground hover:text-foreground flex items-center transition-colors">
+              <Link href="/console" className="text-sm text-muted-foreground hover:text-foreground flex items-center transition-colors">
                 <ChevronLeft className="w-4 h-4" /> Retour
               </Link>
             </div>

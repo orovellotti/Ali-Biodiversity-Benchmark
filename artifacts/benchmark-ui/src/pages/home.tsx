@@ -19,7 +19,7 @@ import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocation } from "wouter";
-import { Play, Trash2, Settings, AlertCircle } from "lucide-react";
+import { Play, Trash2, Settings, AlertCircle, ChevronLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 const runSchema = z.object({
@@ -103,6 +103,9 @@ export function Home() {
       <div className="max-w-[1200px] mx-auto">
         <div className="mb-8 flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
           <div className="pt-2">
+            <Link href="/" className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center transition-colors mb-1.5">
+              <ChevronLeft className="w-4 h-4" /> La démarche
+            </Link>
             <h1 className="font-bold text-[32px]">Biodiversity Judgment Benchmark</h1>
             <p className="text-muted-foreground mt-1.5 text-[14px]">
               Contrôle et analyse des modèles de langage sur les questions de biodiversité.

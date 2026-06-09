@@ -9,6 +9,13 @@ A web UI (artifact `benchmark-ui` at `/`) + shared Express `api-server` wrap the
 standalone Python CLI in `biodiversity-benchmark/`. UI/content is French (dataset
 and CLI are French).
 
+## Routes (wouter)
+- `/` = explanatory landing page ("la démarche"), `/console` = the run config +
+  history console, `/runs/:id` = run detail. The console used to live at `/`; if
+  adding internal links to the console, point to `/console` (not `/`).
+- Buttons that navigate must use `<Button asChild><Link/></Button>` (or `<a>`),
+  never `<Link><Button/></Button>` — the latter nests interactive elements.
+
 ## How runs work
 - The api-server spawns `python3 main.py` (cwd = `biodiversity-benchmark/`) with
   `--output-dir runs/<id> --progress-file runs/<id>/status.json` and the chosen flags.
