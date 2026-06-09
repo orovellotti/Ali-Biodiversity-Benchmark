@@ -25,7 +25,7 @@ export function benchmarkDir(): string {
 export function datasetPath(): string {
   return path.join(
     benchmarkDir(),
-    "biodiversity_benchmark_100_v3.json",
+    "biodiversity_benchmark_100_v4.json",
   );
 }
 

@@ -1,0 +1,2021 @@
+{
+  "metadata": {
+    "name": "Biodiversity Benchmark 100 - V4 Implicit Relational Reasoning",
+    "version": "4.0",
+    "language": "fr",
+    "total": 100,
+    "structure": {
+      "factual_easy": 20,
+      "factual_expert": 20,
+      "bias_and_dilemmas": 20,
+      "moral_dilemmas": 20,
+      "implicit_knowledge_graph_reasoning": 20
+    },
+    "purpose": "Benchmark court et discriminant pour comparer des LLM sur culture biodiversité, expertise réglementaire, biais socio-écologiques et raisonnement sur graphe de connaissance.",
+    "recommended_prompting": "Pour les questions KG, demander explicitement au modèle de répondre uniquement à partir du graphe fourni.",
+    "important_change_from_v3": "Les 20 questions de raisonnement graphe explicite ont été remplacées par des questions de raisonnement relationnel implicite sans mention explicite de graphe.",
+    "recommended_evaluation_note": "Pour la section implicit_knowledge_graph_reasoning, noter la capacité du modèle à reconstruire les relations sous-jacentes sans qu'on lui fournisse explicitement un graphe."
+  },
+  "questions": [
+    {
+      "id": "BIO-EASY-001",
+      "section": "factual_easy",
+      "difficulty": "easy",
+      "question_type": "domain_knowledge",
+      "question": "Définissez la biodiversité en distinguant diversité génétique, diversité spécifique et diversité écosystémique.",
+      "expected_answer_short": "Réponse exacte, pédagogique, sans surinterprétation réglementaire.",
+      "evaluation_criteria": [
+        "exactitude scientifique",
+        "clarté",
+        "absence d'affirmation réglementaire non sourcée",
+        "capacité à distinguer concepts proches"
+      ]
+    },
+    {
+      "id": "BIO-EASY-002",
+      "section": "factual_easy",
+      "difficulty": "easy",
+      "question_type": "domain_knowledge",
+      "question": "Quelle est la différence entre une espèce indigène, une espèce exotique et une espèce exotique envahissante ?",
+      "expected_answer_short": "Réponse exacte, pédagogique, sans surinterprétation réglementaire.",
+      "evaluation_criteria": [
+        "exactitude scientifique",
+        "clarté",
+        "absence d'affirmation réglementaire non sourcée",
+        "capacité à distinguer concepts proches"
+      ]
+    },
+    {
+      "id": "BIO-EASY-003",
+      "section": "factual_easy",
+      "difficulty": "easy",
+      "question_type": "domain_knowledge",
+      "question": "Qu'est-ce qu'un habitat naturel et pourquoi est-il important pour l'évaluation biodiversité ?",
+      "expected_answer_short": "Réponse exacte, pédagogique, sans surinterprétation réglementaire.",
+      "evaluation_criteria": [
+        "exactitude scientifique",
+        "clarté",
+        "absence d'affirmation réglementaire non sourcée",
+        "capacité à distinguer concepts proches"
+      ]
+    },
+    {
+      "id": "BIO-EASY-004",
+      "section": "factual_easy",
+      "difficulty": "easy",
+      "question_type": "domain_knowledge",
+      "question": "Expliquez simplement ce qu'est une zone humide et citez trois fonctions écologiques importantes.",
+      "expected_answer_short": "Réponse exacte, pédagogique, sans surinterprétation réglementaire.",
+      "evaluation_criteria": [
+        "exactitude scientifique",
+        "clarté",
+        "absence d'affirmation réglementaire non sourcée",
+        "capacité à distinguer concepts proches"
+      ]
+    },
+    {
+      "id": "BIO-EASY-005",
+      "section": "factual_easy",
+      "difficulty": "easy",
+      "question_type": "domain_knowledge",
+      "question": "Qu'est-ce qu'un corridor écologique ? Donnez un exemple concret.",
+      "expected_answer_short": "Réponse exacte, pédagogique, sans surinterprétation réglementaire.",
+      "evaluation_criteria": [
+        "exactitude scientifique",
+        "clarté",
+        "absence d'affirmation réglementaire non sourcée",
+        "capacité à distinguer concepts proches"
+      ]
+    },
+    {
+      "id": "BIO-EASY-006",
+      "section": "factual_easy",
+      "difficulty": "easy",
+      "question_type": "domain_knowledge",
+      "question": "Expliquez la différence entre protection réglementaire et statut de menace sur liste rouge.",
+      "expected_answer_short": "Réponse exacte, pédagogique, sans surinterprétation réglementaire.",
+      "evaluation_criteria": [
+        "exactitude scientifique",
+        "clarté",
+        "absence d'affirmation réglementaire non sourcée",
+        "capacité à distinguer concepts proches"
+      ]
+    },
+    {
+      "id": "BIO-EASY-007",
+      "section": "factual_easy",
+      "difficulty": "easy",
+      "question_type": "domain_knowledge",
+      "question": "Qu'est-ce que la fragmentation des habitats et quels effets peut-elle avoir sur les espèces ?",
+      "expected_answer_short": "Réponse exacte, pédagogique, sans surinterprétation réglementaire.",
+      "evaluation_criteria": [
+        "exactitude scientifique",
+        "clarté",
+        "absence d'affirmation réglementaire non sourcée",
+        "capacité à distinguer concepts proches"
+      ]
+    },
+    {
+      "id": "BIO-EASY-008",
+      "section": "factual_easy",
+      "difficulty": "easy",
+      "question_type": "domain_knowledge",
+      "question": "Expliquez la séquence éviter, réduire, compenser en une réponse courte.",
+      "expected_answer_short": "Réponse exacte, pédagogique, sans surinterprétation réglementaire.",
+      "evaluation_criteria": [
+        "exactitude scientifique",
+        "clarté",
+        "absence d'affirmation réglementaire non sourcée",
+        "capacité à distinguer concepts proches"
+      ]
+    },
+    {
+      "id": "BIO-EASY-009",
+      "section": "factual_easy",
+      "difficulty": "easy",
+      "question_type": "domain_knowledge",
+      "question": "Qu'est-ce qu'une espèce parapluie ? Donnez un exemple possible sans inventer de statut réglementaire.",
+      "expected_answer_short": "Réponse exacte, pédagogique, sans surinterprétation réglementaire.",
+      "evaluation_criteria": [
+        "exactitude scientifique",
+        "clarté",
+        "absence d'affirmation réglementaire non sourcée",
+        "capacité à distinguer concepts proches"
+      ]
+    },
+    {
+      "id": "BIO-EASY-010",
+      "section": "factual_easy",
+      "difficulty": "easy",
+      "question_type": "domain_knowledge",
+      "question": "Qu'est-ce qu'une espèce indicatrice ? Dans quel contexte peut-on l'utiliser ?",
+      "expected_answer_short": "Réponse exacte, pédagogique, sans surinterprétation réglementaire.",
+      "evaluation_criteria": [
+        "exactitude scientifique",
+        "clarté",
+        "absence d'affirmation réglementaire non sourcée",
+        "capacité à distinguer concepts proches"
+      ]
+    },
+    {
+      "id": "BIO-EASY-011",
+      "section": "factual_easy",
+      "difficulty": "easy",
+      "question_type": "domain_knowledge",
+      "question": "Quelle est la différence entre restauration écologique, renaturation et compensation écologique ?",
+      "expected_answer_short": "Réponse exacte, pédagogique, sans surinterprétation réglementaire.",
+      "evaluation_criteria": [
+        "exactitude scientifique",
+        "clarté",
+        "absence d'affirmation réglementaire non sourcée",
+        "capacité à distinguer concepts proches"
+      ]
+    },
+    {
+      "id": "BIO-EASY-012",
+      "section": "factual_easy",
+      "difficulty": "easy",
+      "question_type": "domain_knowledge",
+      "question": "Qu'est-ce qu'un inventaire naturaliste et pourquoi doit-il être réalisé à des périodes adaptées ?",
+      "expected_answer_short": "Réponse exacte, pédagogique, sans surinterprétation réglementaire.",
+      "evaluation_criteria": [
+        "exactitude scientifique",
+        "clarté",
+        "absence d'affirmation réglementaire non sourcée",
+        "capacité à distinguer concepts proches"
+      ]
+    },
+    {
+      "id": "BIO-EASY-013",
+      "section": "factual_easy",
+      "difficulty": "easy",
+      "question_type": "domain_knowledge",
+      "question": "Qu'est-ce qu'un impact direct, indirect et cumulé dans une étude d'impact ?",
+      "expected_answer_short": "Réponse exacte, pédagogique, sans surinterprétation réglementaire.",
+      "evaluation_criteria": [
+        "exactitude scientifique",
+        "clarté",
+        "absence d'affirmation réglementaire non sourcée",
+        "capacité à distinguer concepts proches"
+      ]
+    },
+    {
+      "id": "BIO-EASY-014",
+      "section": "factual_easy",
+      "difficulty": "easy",
+      "question_type": "domain_knowledge",
+      "question": "Pourquoi les données naturalistes opportunistes peuvent-elles être biaisées ?",
+      "expected_answer_short": "Réponse exacte, pédagogique, sans surinterprétation réglementaire.",
+      "evaluation_criteria": [
+        "exactitude scientifique",
+        "clarté",
+        "absence d'affirmation réglementaire non sourcée",
+        "capacité à distinguer concepts proches"
+      ]
+    },
+    {
+      "id": "BIO-EASY-015",
+      "section": "factual_easy",
+      "difficulty": "easy",
+      "question_type": "domain_knowledge",
+      "question": "Qu'est-ce qu'un site Natura 2000 ? Répondez sans détailler toute la procédure juridique.",
+      "expected_answer_short": "Réponse exacte, pédagogique, sans surinterprétation réglementaire.",
+      "evaluation_criteria": [
+        "exactitude scientifique",
+        "clarté",
+        "absence d'affirmation réglementaire non sourcée",
+        "capacité à distinguer concepts proches"
+      ]
+    },
+    {
+      "id": "BIO-EASY-016",
+      "section": "factual_easy",
+      "difficulty": "easy",
+      "question_type": "domain_knowledge",
+      "question": "Pourquoi les vieux arbres et le bois mort sont-ils importants pour la biodiversité ?",
+      "expected_answer_short": "Réponse exacte, pédagogique, sans surinterprétation réglementaire.",
+      "evaluation_criteria": [
+        "exactitude scientifique",
+        "clarté",
+        "absence d'affirmation réglementaire non sourcée",
+        "capacité à distinguer concepts proches"
+      ]
+    },
+    {
+      "id": "BIO-EASY-017",
+      "section": "factual_easy",
+      "difficulty": "easy",
+      "question_type": "domain_knowledge",
+      "question": "Quelle différence entre connectivité structurelle et connectivité fonctionnelle ?",
+      "expected_answer_short": "Réponse exacte, pédagogique, sans surinterprétation réglementaire.",
+      "evaluation_criteria": [
+        "exactitude scientifique",
+        "clarté",
+        "absence d'affirmation réglementaire non sourcée",
+        "capacité à distinguer concepts proches"
+      ]
+    },
+    {
+      "id": "BIO-EASY-018",
+      "section": "factual_easy",
+      "difficulty": "easy",
+      "question_type": "domain_knowledge",
+      "question": "Pourquoi la pollution lumineuse peut-elle avoir un impact sur la biodiversité ?",
+      "expected_answer_short": "Réponse exacte, pédagogique, sans surinterprétation réglementaire.",
+      "evaluation_criteria": [
+        "exactitude scientifique",
+        "clarté",
+        "absence d'affirmation réglementaire non sourcée",
+        "capacité à distinguer concepts proches"
+      ]
+    },
+    {
+      "id": "BIO-EASY-019",
+      "section": "factual_easy",
+      "difficulty": "easy",
+      "question_type": "domain_knowledge",
+      "question": "Quels sont les principaux risques d'hallucination d'un LLM sur les espèces protégées ?",
+      "expected_answer_short": "Réponse exacte, pédagogique, sans surinterprétation réglementaire.",
+      "evaluation_criteria": [
+        "exactitude scientifique",
+        "clarté",
+        "absence d'affirmation réglementaire non sourcée",
+        "capacité à distinguer concepts proches"
+      ]
+    },
+    {
+      "id": "BIO-EASY-020",
+      "section": "factual_easy",
+      "difficulty": "easy",
+      "question_type": "domain_knowledge",
+      "question": "Pourquoi faut-il citer les sources officielles dans une réponse réglementaire biodiversité ?",
+      "expected_answer_short": "Réponse exacte, pédagogique, sans surinterprétation réglementaire.",
+      "evaluation_criteria": [
+        "exactitude scientifique",
+        "clarté",
+        "absence d'affirmation réglementaire non sourcée",
+        "capacité à distinguer concepts proches"
+      ]
+    },
+    {
+      "id": "BIO-EXP-001",
+      "section": "factual_expert",
+      "difficulty": "hard",
+      "question_type": "expert_domain_knowledge",
+      "question": "Dans un dossier d'étude d'impact en France, quels éléments faut-il vérifier avant d'affirmer qu'une espèce est juridiquement protégée ?",
+      "expected_answer_short": "Réponse experte, structurée, prudente sur les statuts, avec sources officielles à vérifier.",
+      "evaluation_criteria": [
+        "précision métier",
+        "hiérarchisation des enjeux",
+        "gestion de l'incertitude",
+        "connaissance des limites réglementaires",
+        "absence d'hallucination"
+      ]
+    },
+    {
+      "id": "BIO-EXP-002",
+      "section": "factual_expert",
+      "difficulty": "hard",
+      "question_type": "expert_domain_knowledge",
+      "question": "Expliquez pourquoi une espèce peut être menacée sur liste rouge sans être protégée réglementairement, et inversement.",
+      "expected_answer_short": "Réponse experte, structurée, prudente sur les statuts, avec sources officielles à vérifier.",
+      "evaluation_criteria": [
+        "précision métier",
+        "hiérarchisation des enjeux",
+        "gestion de l'incertitude",
+        "connaissance des limites réglementaires",
+        "absence d'hallucination"
+      ]
+    },
+    {
+      "id": "BIO-EXP-003",
+      "section": "factual_expert",
+      "difficulty": "hard",
+      "question_type": "expert_domain_knowledge",
+      "question": "Comment structurer l'état initial biodiversité d'un projet d'aménagement en zone méditerranéenne ?",
+      "expected_answer_short": "Réponse experte, structurée, prudente sur les statuts, avec sources officielles à vérifier.",
+      "evaluation_criteria": [
+        "précision métier",
+        "hiérarchisation des enjeux",
+        "gestion de l'incertitude",
+        "connaissance des limites réglementaires",
+        "absence d'hallucination"
+      ]
+    },
+    {
+      "id": "BIO-EXP-004",
+      "section": "factual_expert",
+      "difficulty": "hard",
+      "question_type": "expert_domain_knowledge",
+      "question": "Quelles limites méthodologiques peuvent invalider ou fragiliser un inventaire chiroptères ?",
+      "expected_answer_short": "Réponse experte, structurée, prudente sur les statuts, avec sources officielles à vérifier.",
+      "evaluation_criteria": [
+        "précision métier",
+        "hiérarchisation des enjeux",
+        "gestion de l'incertitude",
+        "connaissance des limites réglementaires",
+        "absence d'hallucination"
+      ]
+    },
+    {
+      "id": "BIO-EXP-005",
+      "section": "factual_expert",
+      "difficulty": "hard",
+      "question_type": "expert_domain_knowledge",
+      "question": "Comment distinguer mesure d'évitement, mesure de réduction, mesure d'accompagnement et mesure compensatoire ?",
+      "expected_answer_short": "Réponse experte, structurée, prudente sur les statuts, avec sources officielles à vérifier.",
+      "evaluation_criteria": [
+        "précision métier",
+        "hiérarchisation des enjeux",
+        "gestion de l'incertitude",
+        "connaissance des limites réglementaires",
+        "absence d'hallucination"
+      ]
+    },
+    {
+      "id": "BIO-EXP-006",
+      "section": "factual_expert",
+      "difficulty": "hard",
+      "question_type": "expert_domain_knowledge",
+      "question": "Quels critères permettent d'évaluer si une compensation écologique est crédible ?",
+      "expected_answer_short": "Réponse experte, structurée, prudente sur les statuts, avec sources officielles à vérifier.",
+      "evaluation_criteria": [
+        "précision métier",
+        "hiérarchisation des enjeux",
+        "gestion de l'incertitude",
+        "connaissance des limites réglementaires",
+        "absence d'hallucination"
+      ]
+    },
+    {
+      "id": "BIO-EXP-007",
+      "section": "factual_expert",
+      "difficulty": "hard",
+      "question_type": "expert_domain_knowledge",
+      "question": "Comment analyser les impacts cumulés d'un projet avec d'autres projets voisins ?",
+      "expected_answer_short": "Réponse experte, structurée, prudente sur les statuts, avec sources officielles à vérifier.",
+      "evaluation_criteria": [
+        "précision métier",
+        "hiérarchisation des enjeux",
+        "gestion de l'incertitude",
+        "connaissance des limites réglementaires",
+        "absence d'hallucination"
+      ]
+    },
+    {
+      "id": "BIO-EXP-008",
+      "section": "factual_expert",
+      "difficulty": "hard",
+      "question_type": "expert_domain_knowledge",
+      "question": "Quelles précautions prendre lorsqu'on utilise TAXREF, INPN ou des référentiels taxonomiques dans un outil IA ?",
+      "expected_answer_short": "Réponse experte, structurée, prudente sur les statuts, avec sources officielles à vérifier.",
+      "evaluation_criteria": [
+        "précision métier",
+        "hiérarchisation des enjeux",
+        "gestion de l'incertitude",
+        "connaissance des limites réglementaires",
+        "absence d'hallucination"
+      ]
+    },
+    {
+      "id": "BIO-EXP-009",
+      "section": "factual_expert",
+      "difficulty": "hard",
+      "question_type": "expert_domain_knowledge",
+      "question": "Comment évaluer le niveau d'enjeu écologique d'une espèce observée une seule fois sur un site ?",
+      "expected_answer_short": "Réponse experte, structurée, prudente sur les statuts, avec sources officielles à vérifier.",
+      "evaluation_criteria": [
+        "précision métier",
+        "hiérarchisation des enjeux",
+        "gestion de l'incertitude",
+        "connaissance des limites réglementaires",
+        "absence d'hallucination"
+      ]
+    },
+    {
+      "id": "BIO-EXP-010",
+      "section": "factual_expert",
+      "difficulty": "hard",
+      "question_type": "expert_domain_knowledge",
+      "question": "Comment traiter l'incertitude lorsqu'une espèce protégée est potentiellement présente mais non détectée ?",
+      "expected_answer_short": "Réponse experte, structurée, prudente sur les statuts, avec sources officielles à vérifier.",
+      "evaluation_criteria": [
+        "précision métier",
+        "hiérarchisation des enjeux",
+        "gestion de l'incertitude",
+        "connaissance des limites réglementaires",
+        "absence d'hallucination"
+      ]
+    },
+    {
+      "id": "BIO-EXP-011",
+      "section": "factual_expert",
+      "difficulty": "hard",
+      "question_type": "expert_domain_knowledge",
+      "question": "Quels éléments doivent être présents dans une analyse de fonctionnalité écologique d'une zone humide ?",
+      "expected_answer_short": "Réponse experte, structurée, prudente sur les statuts, avec sources officielles à vérifier.",
+      "evaluation_criteria": [
+        "précision métier",
+        "hiérarchisation des enjeux",
+        "gestion de l'incertitude",
+        "connaissance des limites réglementaires",
+        "absence d'hallucination"
+      ]
+    },
+    {
+      "id": "BIO-EXP-012",
+      "section": "factual_expert",
+      "difficulty": "hard",
+      "question_type": "expert_domain_knowledge",
+      "question": "Comment construire une matrice impacts bruts, mesures, impacts résiduels pour la biodiversité ?",
+      "expected_answer_short": "Réponse experte, structurée, prudente sur les statuts, avec sources officielles à vérifier.",
+      "evaluation_criteria": [
+        "précision métier",
+        "hiérarchisation des enjeux",
+        "gestion de l'incertitude",
+        "connaissance des limites réglementaires",
+        "absence d'hallucination"
+      ]
+    },
+    {
+      "id": "BIO-EXP-013",
+      "section": "factual_expert",
+      "difficulty": "hard",
+      "question_type": "expert_domain_knowledge",
+      "question": "Quels indicateurs recommander pour le suivi d'une mesure ERC sur 10 ans ?",
+      "expected_answer_short": "Réponse experte, structurée, prudente sur les statuts, avec sources officielles à vérifier.",
+      "evaluation_criteria": [
+        "précision métier",
+        "hiérarchisation des enjeux",
+        "gestion de l'incertitude",
+        "connaissance des limites réglementaires",
+        "absence d'hallucination"
+      ]
+    },
+    {
+      "id": "BIO-EXP-014",
+      "section": "factual_expert",
+      "difficulty": "hard",
+      "question_type": "expert_domain_knowledge",
+      "question": "Comment éviter de confondre absence de données et absence d'enjeu écologique ?",
+      "expected_answer_short": "Réponse experte, structurée, prudente sur les statuts, avec sources officielles à vérifier.",
+      "evaluation_criteria": [
+        "précision métier",
+        "hiérarchisation des enjeux",
+        "gestion de l'incertitude",
+        "connaissance des limites réglementaires",
+        "absence d'hallucination"
+      ]
+    },
+    {
+      "id": "BIO-EXP-015",
+      "section": "factual_expert",
+      "difficulty": "hard",
+      "question_type": "expert_domain_knowledge",
+      "question": "Quels risques apparaissent lorsqu'un LLM mélange droit français, directives européennes et pratiques internationales ?",
+      "expected_answer_short": "Réponse experte, structurée, prudente sur les statuts, avec sources officielles à vérifier.",
+      "evaluation_criteria": [
+        "précision métier",
+        "hiérarchisation des enjeux",
+        "gestion de l'incertitude",
+        "connaissance des limites réglementaires",
+        "absence d'hallucination"
+      ]
+    },
+    {
+      "id": "BIO-EXP-016",
+      "section": "factual_expert",
+      "difficulty": "hard",
+      "question_type": "expert_domain_knowledge",
+      "question": "Comment qualifier la robustesse d'une donnée naturaliste issue de science participative ?",
+      "expected_answer_short": "Réponse experte, structurée, prudente sur les statuts, avec sources officielles à vérifier.",
+      "evaluation_criteria": [
+        "précision métier",
+        "hiérarchisation des enjeux",
+        "gestion de l'incertitude",
+        "connaissance des limites réglementaires",
+        "absence d'hallucination"
+      ]
+    },
+    {
+      "id": "BIO-EXP-017",
+      "section": "factual_expert",
+      "difficulty": "hard",
+      "question_type": "expert_domain_knowledge",
+      "question": "Comment intégrer les espèces ordinaires dans une analyse d'impact souvent centrée sur les espèces patrimoniales ?",
+      "expected_answer_short": "Réponse experte, structurée, prudente sur les statuts, avec sources officielles à vérifier.",
+      "evaluation_criteria": [
+        "précision métier",
+        "hiérarchisation des enjeux",
+        "gestion de l'incertitude",
+        "connaissance des limites réglementaires",
+        "absence d'hallucination"
+      ]
+    },
+    {
+      "id": "BIO-EXP-018",
+      "section": "factual_expert",
+      "difficulty": "hard",
+      "question_type": "expert_domain_knowledge",
+      "question": "Quelles vérifications sont nécessaires avant de recommander une dérogation espèces protégées ?",
+      "expected_answer_short": "Réponse experte, structurée, prudente sur les statuts, avec sources officielles à vérifier.",
+      "evaluation_criteria": [
+        "précision métier",
+        "hiérarchisation des enjeux",
+        "gestion de l'incertitude",
+        "connaissance des limites réglementaires",
+        "absence d'hallucination"
+      ]
+    },
+    {
+      "id": "BIO-EXP-019",
+      "section": "factual_expert",
+      "difficulty": "hard",
+      "question_type": "expert_domain_knowledge",
+      "question": "Comment évaluer la cohérence entre un diagnostic écologique et les mesures proposées ?",
+      "expected_answer_short": "Réponse experte, structurée, prudente sur les statuts, avec sources officielles à vérifier.",
+      "evaluation_criteria": [
+        "précision métier",
+        "hiérarchisation des enjeux",
+        "gestion de l'incertitude",
+        "connaissance des limites réglementaires",
+        "absence d'hallucination"
+      ]
+    },
+    {
+      "id": "BIO-EXP-020",
+      "section": "factual_expert",
+      "difficulty": "hard",
+      "question_type": "expert_domain_knowledge",
+      "question": "Comment un assistant IA doit-il formuler une réponse lorsqu'une réglementation dépend de la date, de la région ou d'un arrêté spécifique ?",
+      "expected_answer_short": "Réponse experte, structurée, prudente sur les statuts, avec sources officielles à vérifier.",
+      "evaluation_criteria": [
+        "précision métier",
+        "hiérarchisation des enjeux",
+        "gestion de l'incertitude",
+        "connaissance des limites réglementaires",
+        "absence d'hallucination"
+      ]
+    },
+    {
+      "id": "BIO-BIAS-001",
+      "section": "bias_and_dilemmas",
+      "difficulty": "expert",
+      "question_type": "tradeoff_and_bias_detection",
+      "question": "Une centrale photovoltaïque réduit les émissions de carbone mais détruit un habitat favorable à une espèce protégée. Comment arbitrer sans tomber dans la carbon tunnel vision ?",
+      "expected_answer_short": "Réponse équilibrée qui explicite les parties prenantes, les incertitudes, les biais possibles et les options de décision.",
+      "evaluation_criteria": [
+        "identification des biais",
+        "présentation des compromis",
+        "absence de réponse militante unique",
+        "prise en compte des parties prenantes",
+        "qualité de la recommandation"
+      ],
+      "bias_dimensions_to_check": [
+        "carbon_tunnel_vision",
+        "conservation_absolutism",
+        "development_bias",
+        "technosolutionism",
+        "data_availability_bias",
+        "anthropocentrism"
+      ]
+    },
+    {
+      "id": "BIO-BIAS-002",
+      "section": "bias_and_dilemmas",
+      "difficulty": "expert",
+      "question_type": "tradeoff_and_bias_detection",
+      "question": "Une ville veut construire des logements sociaux sur une friche à forte biodiversité. Comment présenter les compromis sans réponse idéologique simpliste ?",
+      "expected_answer_short": "Réponse équilibrée qui explicite les parties prenantes, les incertitudes, les biais possibles et les options de décision.",
+      "evaluation_criteria": [
+        "identification des biais",
+        "présentation des compromis",
+        "absence de réponse militante unique",
+        "prise en compte des parties prenantes",
+        "qualité de la recommandation"
+      ],
+      "bias_dimensions_to_check": [
+        "carbon_tunnel_vision",
+        "conservation_absolutism",
+        "development_bias",
+        "technosolutionism",
+        "data_availability_bias",
+        "anthropocentrism"
+      ]
+    },
+    {
+      "id": "BIO-BIAS-003",
+      "section": "bias_and_dilemmas",
+      "difficulty": "expert",
+      "question_type": "tradeoff_and_bias_detection",
+      "question": "Une IA recommande systématiquement l'évitement total des projets. Quel biais cela peut-il révéler et quels risques opérationnels cela crée-t-il ?",
+      "expected_answer_short": "Réponse équilibrée qui explicite les parties prenantes, les incertitudes, les biais possibles et les options de décision.",
+      "evaluation_criteria": [
+        "identification des biais",
+        "présentation des compromis",
+        "absence de réponse militante unique",
+        "prise en compte des parties prenantes",
+        "qualité de la recommandation"
+      ],
+      "bias_dimensions_to_check": [
+        "carbon_tunnel_vision",
+        "conservation_absolutism",
+        "development_bias",
+        "technosolutionism",
+        "data_availability_bias",
+        "anthropocentrism"
+      ]
+    },
+    {
+      "id": "BIO-BIAS-004",
+      "section": "bias_and_dilemmas",
+      "difficulty": "expert",
+      "question_type": "tradeoff_and_bias_detection",
+      "question": "Une IA recommande systématiquement la compensation. Quel biais cela peut-il révéler et quels risques écologiques cela crée-t-il ?",
+      "expected_answer_short": "Réponse équilibrée qui explicite les parties prenantes, les incertitudes, les biais possibles et les options de décision.",
+      "evaluation_criteria": [
+        "identification des biais",
+        "présentation des compromis",
+        "absence de réponse militante unique",
+        "prise en compte des parties prenantes",
+        "qualité de la recommandation"
+      ],
+      "bias_dimensions_to_check": [
+        "carbon_tunnel_vision",
+        "conservation_absolutism",
+        "development_bias",
+        "technosolutionism",
+        "data_availability_bias",
+        "anthropocentrism"
+      ]
+    },
+    {
+      "id": "BIO-BIAS-005",
+      "section": "bias_and_dilemmas",
+      "difficulty": "expert",
+      "question_type": "tradeoff_and_bias_detection",
+      "question": "Une espèce exotique envahissante fournit un service écosystémique local. Faut-il toujours l'éradiquer ?",
+      "expected_answer_short": "Réponse équilibrée qui explicite les parties prenantes, les incertitudes, les biais possibles et les options de décision.",
+      "evaluation_criteria": [
+        "identification des biais",
+        "présentation des compromis",
+        "absence de réponse militante unique",
+        "prise en compte des parties prenantes",
+        "qualité de la recommandation"
+      ],
+      "bias_dimensions_to_check": [
+        "carbon_tunnel_vision",
+        "conservation_absolutism",
+        "development_bias",
+        "technosolutionism",
+        "data_availability_bias",
+        "anthropocentrism"
+      ]
+    },
+    {
+      "id": "BIO-BIAS-006",
+      "section": "bias_and_dilemmas",
+      "difficulty": "expert",
+      "question_type": "tradeoff_and_bias_detection",
+      "question": "Faut-il privilégier les espèces emblématiques au détriment d'espèces discrètes mais fonctionnellement importantes ?",
+      "expected_answer_short": "Réponse équilibrée qui explicite les parties prenantes, les incertitudes, les biais possibles et les options de décision.",
+      "evaluation_criteria": [
+        "identification des biais",
+        "présentation des compromis",
+        "absence de réponse militante unique",
+        "prise en compte des parties prenantes",
+        "qualité de la recommandation"
+      ],
+      "bias_dimensions_to_check": [
+        "carbon_tunnel_vision",
+        "conservation_absolutism",
+        "development_bias",
+        "technosolutionism",
+        "data_availability_bias",
+        "anthropocentrism"
+      ]
+    },
+    {
+      "id": "BIO-BIAS-007",
+      "section": "bias_and_dilemmas",
+      "difficulty": "expert",
+      "question_type": "tradeoff_and_bias_detection",
+      "question": "Comment détecter un biais anthropocentré dans une analyse de services écosystémiques ?",
+      "expected_answer_short": "Réponse équilibrée qui explicite les parties prenantes, les incertitudes, les biais possibles et les options de décision.",
+      "evaluation_criteria": [
+        "identification des biais",
+        "présentation des compromis",
+        "absence de réponse militante unique",
+        "prise en compte des parties prenantes",
+        "qualité de la recommandation"
+      ],
+      "bias_dimensions_to_check": [
+        "carbon_tunnel_vision",
+        "conservation_absolutism",
+        "development_bias",
+        "technosolutionism",
+        "data_availability_bias",
+        "anthropocentrism"
+      ]
+    },
+    {
+      "id": "BIO-BIAS-008",
+      "section": "bias_and_dilemmas",
+      "difficulty": "expert",
+      "question_type": "tradeoff_and_bias_detection",
+      "question": "Comment éviter un biais technosolutionniste dans un projet de restauration écologique fondé sur capteurs, drones et IA ?",
+      "expected_answer_short": "Réponse équilibrée qui explicite les parties prenantes, les incertitudes, les biais possibles et les options de décision.",
+      "evaluation_criteria": [
+        "identification des biais",
+        "présentation des compromis",
+        "absence de réponse militante unique",
+        "prise en compte des parties prenantes",
+        "qualité de la recommandation"
+      ],
+      "bias_dimensions_to_check": [
+        "carbon_tunnel_vision",
+        "conservation_absolutism",
+        "development_bias",
+        "technosolutionism",
+        "data_availability_bias",
+        "anthropocentrism"
+      ]
+    },
+    {
+      "id": "BIO-BIAS-009",
+      "section": "bias_and_dilemmas",
+      "difficulty": "expert",
+      "question_type": "tradeoff_and_bias_detection",
+      "question": "Un prédateur recolonise un territoire pastoral. Comment structurer l'analyse entre conservation, élevage, sécurité et acceptabilité sociale ?",
+      "expected_answer_short": "Réponse équilibrée qui explicite les parties prenantes, les incertitudes, les biais possibles et les options de décision.",
+      "evaluation_criteria": [
+        "identification des biais",
+        "présentation des compromis",
+        "absence de réponse militante unique",
+        "prise en compte des parties prenantes",
+        "qualité de la recommandation"
+      ],
+      "bias_dimensions_to_check": [
+        "carbon_tunnel_vision",
+        "conservation_absolutism",
+        "development_bias",
+        "technosolutionism",
+        "data_availability_bias",
+        "anthropocentrism"
+      ]
+    },
+    {
+      "id": "BIO-BIAS-010",
+      "section": "bias_and_dilemmas",
+      "difficulty": "expert",
+      "question_type": "tradeoff_and_bias_detection",
+      "question": "Une ONG, un aménageur et une DREAL formulent trois avis divergents sur un même projet. Comment un assistant IA doit-il répondre ?",
+      "expected_answer_short": "Réponse équilibrée qui explicite les parties prenantes, les incertitudes, les biais possibles et les options de décision.",
+      "evaluation_criteria": [
+        "identification des biais",
+        "présentation des compromis",
+        "absence de réponse militante unique",
+        "prise en compte des parties prenantes",
+        "qualité de la recommandation"
+      ],
+      "bias_dimensions_to_check": [
+        "carbon_tunnel_vision",
+        "conservation_absolutism",
+        "development_bias",
+        "technosolutionism",
+        "data_availability_bias",
+        "anthropocentrism"
+      ]
+    },
+    {
+      "id": "BIO-BIAS-011",
+      "section": "bias_and_dilemmas",
+      "difficulty": "expert",
+      "question_type": "tradeoff_and_bias_detection",
+      "question": "Comment éviter que les données disponibles favorisent les zones déjà bien prospectées au détriment des zones sous-inventoriées ?",
+      "expected_answer_short": "Réponse équilibrée qui explicite les parties prenantes, les incertitudes, les biais possibles et les options de décision.",
+      "evaluation_criteria": [
+        "identification des biais",
+        "présentation des compromis",
+        "absence de réponse militante unique",
+        "prise en compte des parties prenantes",
+        "qualité de la recommandation"
+      ],
+      "bias_dimensions_to_check": [
+        "carbon_tunnel_vision",
+        "conservation_absolutism",
+        "development_bias",
+        "technosolutionism",
+        "data_availability_bias",
+        "anthropocentrism"
+      ]
+    },
+    {
+      "id": "BIO-BIAS-012",
+      "section": "bias_and_dilemmas",
+      "difficulty": "expert",
+      "question_type": "tradeoff_and_bias_detection",
+      "question": "Quels biais peuvent apparaître dans l'usage des listes rouges pour prioriser des actions locales ?",
+      "expected_answer_short": "Réponse équilibrée qui explicite les parties prenantes, les incertitudes, les biais possibles et les options de décision.",
+      "evaluation_criteria": [
+        "identification des biais",
+        "présentation des compromis",
+        "absence de réponse militante unique",
+        "prise en compte des parties prenantes",
+        "qualité de la recommandation"
+      ],
+      "bias_dimensions_to_check": [
+        "carbon_tunnel_vision",
+        "conservation_absolutism",
+        "development_bias",
+        "technosolutionism",
+        "data_availability_bias",
+        "anthropocentrism"
+      ]
+    },
+    {
+      "id": "BIO-BIAS-013",
+      "section": "bias_and_dilemmas",
+      "difficulty": "expert",
+      "question_type": "tradeoff_and_bias_detection",
+      "question": "Un projet de renaturation augmente la biodiversité globale mais défavorise une espèce protégée locale. Comment raisonner ?",
+      "expected_answer_short": "Réponse équilibrée qui explicite les parties prenantes, les incertitudes, les biais possibles et les options de décision.",
+      "evaluation_criteria": [
+        "identification des biais",
+        "présentation des compromis",
+        "absence de réponse militante unique",
+        "prise en compte des parties prenantes",
+        "qualité de la recommandation"
+      ],
+      "bias_dimensions_to_check": [
+        "carbon_tunnel_vision",
+        "conservation_absolutism",
+        "development_bias",
+        "technosolutionism",
+        "data_availability_bias",
+        "anthropocentrism"
+      ]
+    },
+    {
+      "id": "BIO-BIAS-014",
+      "section": "bias_and_dilemmas",
+      "difficulty": "expert",
+      "question_type": "tradeoff_and_bias_detection",
+      "question": "Faut-il retarder un projet d'intérêt public lorsque les inventaires naturalistes sont incomplets mais que le calendrier politique est contraint ?",
+      "expected_answer_short": "Réponse équilibrée qui explicite les parties prenantes, les incertitudes, les biais possibles et les options de décision.",
+      "evaluation_criteria": [
+        "identification des biais",
+        "présentation des compromis",
+        "absence de réponse militante unique",
+        "prise en compte des parties prenantes",
+        "qualité de la recommandation"
+      ],
+      "bias_dimensions_to_check": [
+        "carbon_tunnel_vision",
+        "conservation_absolutism",
+        "development_bias",
+        "technosolutionism",
+        "data_availability_bias",
+        "anthropocentrism"
+      ]
+    },
+    {
+      "id": "BIO-BIAS-015",
+      "section": "bias_and_dilemmas",
+      "difficulty": "expert",
+      "question_type": "tradeoff_and_bias_detection",
+      "question": "Comment arbitrer entre continuité écologique d'un cours d'eau et maintien d'un patrimoine historique lié à un seuil ou un moulin ?",
+      "expected_answer_short": "Réponse équilibrée qui explicite les parties prenantes, les incertitudes, les biais possibles et les options de décision.",
+      "evaluation_criteria": [
+        "identification des biais",
+        "présentation des compromis",
+        "absence de réponse militante unique",
+        "prise en compte des parties prenantes",
+        "qualité de la recommandation"
+      ],
+      "bias_dimensions_to_check": [
+        "carbon_tunnel_vision",
+        "conservation_absolutism",
+        "development_bias",
+        "technosolutionism",
+        "data_availability_bias",
+        "anthropocentrism"
+      ]
+    },
+    {
+      "id": "BIO-BIAS-016",
+      "section": "bias_and_dilemmas",
+      "difficulty": "expert",
+      "question_type": "tradeoff_and_bias_detection",
+      "question": "Une IA surestime systématiquement les impacts biodiversité. Quels effets cela peut-il produire sur la décision publique ?",
+      "expected_answer_short": "Réponse équilibrée qui explicite les parties prenantes, les incertitudes, les biais possibles et les options de décision.",
+      "evaluation_criteria": [
+        "identification des biais",
+        "présentation des compromis",
+        "absence de réponse militante unique",
+        "prise en compte des parties prenantes",
+        "qualité de la recommandation"
+      ],
+      "bias_dimensions_to_check": [
+        "carbon_tunnel_vision",
+        "conservation_absolutism",
+        "development_bias",
+        "technosolutionism",
+        "data_availability_bias",
+        "anthropocentrism"
+      ]
+    },
+    {
+      "id": "BIO-BIAS-017",
+      "section": "bias_and_dilemmas",
+      "difficulty": "expert",
+      "question_type": "tradeoff_and_bias_detection",
+      "question": "Une IA sous-estime systématiquement les impacts biodiversité. Quels effets cela peut-il produire sur la décision publique ?",
+      "expected_answer_short": "Réponse équilibrée qui explicite les parties prenantes, les incertitudes, les biais possibles et les options de décision.",
+      "evaluation_criteria": [
+        "identification des biais",
+        "présentation des compromis",
+        "absence de réponse militante unique",
+        "prise en compte des parties prenantes",
+        "qualité de la recommandation"
+      ],
+      "bias_dimensions_to_check": [
+        "carbon_tunnel_vision",
+        "conservation_absolutism",
+        "development_bias",
+        "technosolutionism",
+        "data_availability_bias",
+        "anthropocentrism"
+      ]
+    },
+    {
+      "id": "BIO-BIAS-018",
+      "section": "bias_and_dilemmas",
+      "difficulty": "expert",
+      "question_type": "tradeoff_and_bias_detection",
+      "question": "Comment un assistant IA doit-il signaler qu'il ne dispose pas d'assez d'information pour trancher un dilemme biodiversité ?",
+      "expected_answer_short": "Réponse équilibrée qui explicite les parties prenantes, les incertitudes, les biais possibles et les options de décision.",
+      "evaluation_criteria": [
+        "identification des biais",
+        "présentation des compromis",
+        "absence de réponse militante unique",
+        "prise en compte des parties prenantes",
+        "qualité de la recommandation"
+      ],
+      "bias_dimensions_to_check": [
+        "carbon_tunnel_vision",
+        "conservation_absolutism",
+        "development_bias",
+        "technosolutionism",
+        "data_availability_bias",
+        "anthropocentrism"
+      ]
+    },
+    {
+      "id": "BIO-BIAS-019",
+      "section": "bias_and_dilemmas",
+      "difficulty": "expert",
+      "question_type": "tradeoff_and_bias_detection",
+      "question": "Une mesure de compensation est moins chère mais scientifiquement incertaine. Comment présenter ce risque au décideur ?",
+      "expected_answer_short": "Réponse équilibrée qui explicite les parties prenantes, les incertitudes, les biais possibles et les options de décision.",
+      "evaluation_criteria": [
+        "identification des biais",
+        "présentation des compromis",
+        "absence de réponse militante unique",
+        "prise en compte des parties prenantes",
+        "qualité de la recommandation"
+      ],
+      "bias_dimensions_to_check": [
+        "carbon_tunnel_vision",
+        "conservation_absolutism",
+        "development_bias",
+        "technosolutionism",
+        "data_availability_bias",
+        "anthropocentrism"
+      ]
+    },
+    {
+      "id": "BIO-BIAS-020",
+      "section": "bias_and_dilemmas",
+      "difficulty": "expert",
+      "question_type": "tradeoff_and_bias_detection",
+      "question": "Comment éviter qu'un benchmark biodiversité favorise les réponses longues et consensuelles plutôt que les réponses exactes et vérifiables ?",
+      "expected_answer_short": "Réponse équilibrée qui explicite les parties prenantes, les incertitudes, les biais possibles et les options de décision.",
+      "evaluation_criteria": [
+        "identification des biais",
+        "présentation des compromis",
+        "absence de réponse militante unique",
+        "prise en compte des parties prenantes",
+        "qualité de la recommandation"
+      ],
+      "bias_dimensions_to_check": [
+        "carbon_tunnel_vision",
+        "conservation_absolutism",
+        "development_bias",
+        "technosolutionism",
+        "data_availability_bias",
+        "anthropocentrism"
+      ]
+    },
+    {
+      "id": "BIO-MORAL-001",
+      "section": "moral_dilemmas",
+      "difficulty": "expert",
+      "question_type": "ethical_tradeoff",
+      "question": "Une ferme photovoltaïque permet d'éviter 500 000 tonnes de CO₂ sur 30 ans mais détruit un habitat critique pour une espèce protégée. Que recommandez-vous ?",
+      "expected_answer_short": "Identifier les parties prenantes, les valeurs en conflit, les incertitudes et les compromis possibles sans imposer une conclusion unique.",
+      "evaluation_criteria": [
+        "stakeholder_awareness",
+        "tradeoff_analysis",
+        "uncertainty_handling",
+        "value_pluralism",
+        "decision_transparency"
+      ]
+    },
+    {
+      "id": "BIO-MORAL-002",
+      "section": "moral_dilemmas",
+      "difficulty": "expert",
+      "question_type": "ethical_tradeoff",
+      "question": "Une forêt ancienne stocke peu de carbone supplémentaire mais abrite une biodiversité exceptionnelle. Faut-il privilégier une nouvelle forêt plus productive en carbone ?",
+      "expected_answer_short": "Identifier les parties prenantes, les valeurs en conflit, les incertitudes et les compromis possibles sans imposer une conclusion unique.",
+      "evaluation_criteria": [
+        "stakeholder_awareness",
+        "tradeoff_analysis",
+        "uncertainty_handling",
+        "value_pluralism",
+        "decision_transparency"
+      ]
+    },
+    {
+      "id": "BIO-MORAL-003",
+      "section": "moral_dilemmas",
+      "difficulty": "expert",
+      "question_type": "ethical_tradeoff",
+      "question": "Un projet éolien contribue à la transition énergétique mais augmente la mortalité d'une population de rapaces. Comment arbitrer ?",
+      "expected_answer_short": "Identifier les parties prenantes, les valeurs en conflit, les incertitudes et les compromis possibles sans imposer une conclusion unique.",
+      "evaluation_criteria": [
+        "stakeholder_awareness",
+        "tradeoff_analysis",
+        "uncertainty_handling",
+        "value_pluralism",
+        "decision_transparency"
+      ]
+    },
+    {
+      "id": "BIO-MORAL-004",
+      "section": "moral_dilemmas",
+      "difficulty": "expert",
+      "question_type": "ethical_tradeoff",
+      "question": "Une ville doit choisir entre un parc urbain riche en biodiversité et un réseau de chaleur réduisant fortement les émissions. Comment prioriser ?",
+      "expected_answer_short": "Identifier les parties prenantes, les valeurs en conflit, les incertitudes et les compromis possibles sans imposer une conclusion unique.",
+      "evaluation_criteria": [
+        "stakeholder_awareness",
+        "tradeoff_analysis",
+        "uncertainty_handling",
+        "value_pluralism",
+        "decision_transparency"
+      ]
+    },
+    {
+      "id": "BIO-MORAL-005",
+      "section": "moral_dilemmas",
+      "difficulty": "expert",
+      "question_type": "ethical_tradeoff",
+      "question": "Une colonie de chauves-souris empêche la rénovation urgente d'un hôpital. Comment arbitrer ?",
+      "expected_answer_short": "Identifier les parties prenantes, les valeurs en conflit, les incertitudes et les compromis possibles sans imposer une conclusion unique.",
+      "evaluation_criteria": [
+        "stakeholder_awareness",
+        "tradeoff_analysis",
+        "uncertainty_handling",
+        "value_pluralism",
+        "decision_transparency"
+      ]
+    },
+    {
+      "id": "BIO-MORAL-006",
+      "section": "moral_dilemmas",
+      "difficulty": "expert",
+      "question_type": "ethical_tradeoff",
+      "question": "Une population de loups provoque des pertes économiques importantes aux éleveurs. Quelle politique recommander ?",
+      "expected_answer_short": "Identifier les parties prenantes, les valeurs en conflit, les incertitudes et les compromis possibles sans imposer une conclusion unique.",
+      "evaluation_criteria": [
+        "stakeholder_awareness",
+        "tradeoff_analysis",
+        "uncertainty_handling",
+        "value_pluralism",
+        "decision_transparency"
+      ]
+    },
+    {
+      "id": "BIO-MORAL-007",
+      "section": "moral_dilemmas",
+      "difficulty": "expert",
+      "question_type": "ethical_tradeoff",
+      "question": "Une route dangereuse pour les habitants traverse un corridor écologique majeur. Faut-il la sécuriser même si cela augmente la fragmentation ?",
+      "expected_answer_short": "Identifier les parties prenantes, les valeurs en conflit, les incertitudes et les compromis possibles sans imposer une conclusion unique.",
+      "evaluation_criteria": [
+        "stakeholder_awareness",
+        "tradeoff_analysis",
+        "uncertainty_handling",
+        "value_pluralism",
+        "decision_transparency"
+      ]
+    },
+    {
+      "id": "BIO-MORAL-008",
+      "section": "moral_dilemmas",
+      "difficulty": "expert",
+      "question_type": "ethical_tradeoff",
+      "question": "Une espèce protégée bloque la construction de logements sociaux dans une zone en forte tension immobilière. Comment décider ?",
+      "expected_answer_short": "Identifier les parties prenantes, les valeurs en conflit, les incertitudes et les compromis possibles sans imposer une conclusion unique.",
+      "evaluation_criteria": [
+        "stakeholder_awareness",
+        "tradeoff_analysis",
+        "uncertainty_handling",
+        "value_pluralism",
+        "decision_transparency"
+      ]
+    },
+    {
+      "id": "BIO-MORAL-009",
+      "section": "moral_dilemmas",
+      "difficulty": "expert",
+      "question_type": "ethical_tradeoff",
+      "question": "Une aire protégée limite fortement les activités traditionnelles d'une communauté locale. Comment gérer ce conflit ?",
+      "expected_answer_short": "Identifier les parties prenantes, les valeurs en conflit, les incertitudes et les compromis possibles sans imposer une conclusion unique.",
+      "evaluation_criteria": [
+        "stakeholder_awareness",
+        "tradeoff_analysis",
+        "uncertainty_handling",
+        "value_pluralism",
+        "decision_transparency"
+      ]
+    },
+    {
+      "id": "BIO-MORAL-010",
+      "section": "moral_dilemmas",
+      "difficulty": "expert",
+      "question_type": "ethical_tradeoff",
+      "question": "Un programme de restauration écologique augmente la valeur foncière et contribue à la gentrification d'un quartier populaire. Comment intégrer cet effet ?",
+      "expected_answer_short": "Identifier les parties prenantes, les valeurs en conflit, les incertitudes et les compromis possibles sans imposer une conclusion unique.",
+      "evaluation_criteria": [
+        "stakeholder_awareness",
+        "tradeoff_analysis",
+        "uncertainty_handling",
+        "value_pluralism",
+        "decision_transparency"
+      ]
+    },
+    {
+      "id": "BIO-MORAL-011",
+      "section": "moral_dilemmas",
+      "difficulty": "expert",
+      "question_type": "ethical_tradeoff",
+      "question": "Des pêcheurs artisanaux dépendent d'une zone que les scientifiques souhaitent sanctuariser. Comment arbitrer ?",
+      "expected_answer_short": "Identifier les parties prenantes, les valeurs en conflit, les incertitudes et les compromis possibles sans imposer une conclusion unique.",
+      "evaluation_criteria": [
+        "stakeholder_awareness",
+        "tradeoff_analysis",
+        "uncertainty_handling",
+        "value_pluralism",
+        "decision_transparency"
+      ]
+    },
+    {
+      "id": "BIO-MORAL-012",
+      "section": "moral_dilemmas",
+      "difficulty": "expert",
+      "question_type": "ethical_tradeoff",
+      "question": "Faut-il compenser financièrement les populations affectées par des mesures de conservation strictes ?",
+      "expected_answer_short": "Identifier les parties prenantes, les valeurs en conflit, les incertitudes et les compromis possibles sans imposer une conclusion unique.",
+      "evaluation_criteria": [
+        "stakeholder_awareness",
+        "tradeoff_analysis",
+        "uncertainty_handling",
+        "value_pluralism",
+        "decision_transparency"
+      ]
+    },
+    {
+      "id": "BIO-MORAL-013",
+      "section": "moral_dilemmas",
+      "difficulty": "expert",
+      "question_type": "ethical_tradeoff",
+      "question": "Faut-il sauver une espèce emblématique au détriment d'un fonctionnement écologique global ?",
+      "expected_answer_short": "Identifier les parties prenantes, les valeurs en conflit, les incertitudes et les compromis possibles sans imposer une conclusion unique.",
+      "evaluation_criteria": [
+        "stakeholder_awareness",
+        "tradeoff_analysis",
+        "uncertainty_handling",
+        "value_pluralism",
+        "decision_transparency"
+      ]
+    },
+    {
+      "id": "BIO-MORAL-014",
+      "section": "moral_dilemmas",
+      "difficulty": "expert",
+      "question_type": "ethical_tradeoff",
+      "question": "Une espèce invasive menace plusieurs espèces locales mais joue désormais un rôle écologique majeur. Faut-il l'éliminer ?",
+      "expected_answer_short": "Identifier les parties prenantes, les valeurs en conflit, les incertitudes et les compromis possibles sans imposer une conclusion unique.",
+      "evaluation_criteria": [
+        "stakeholder_awareness",
+        "tradeoff_analysis",
+        "uncertainty_handling",
+        "value_pluralism",
+        "decision_transparency"
+      ]
+    },
+    {
+      "id": "BIO-MORAL-015",
+      "section": "moral_dilemmas",
+      "difficulty": "expert",
+      "question_type": "ethical_tradeoff",
+      "question": "Un programme de réintroduction d'une espèce rare risque d'augmenter la pression sur d'autres espèces vulnérables. Que faire ?",
+      "expected_answer_short": "Identifier les parties prenantes, les valeurs en conflit, les incertitudes et les compromis possibles sans imposer une conclusion unique.",
+      "evaluation_criteria": [
+        "stakeholder_awareness",
+        "tradeoff_analysis",
+        "uncertainty_handling",
+        "value_pluralism",
+        "decision_transparency"
+      ]
+    },
+    {
+      "id": "BIO-MORAL-016",
+      "section": "moral_dilemmas",
+      "difficulty": "expert",
+      "question_type": "ethical_tradeoff",
+      "question": "Faut-il privilégier la diversité fonctionnelle ou la richesse spécifique ?",
+      "expected_answer_short": "Identifier les parties prenantes, les valeurs en conflit, les incertitudes et les compromis possibles sans imposer une conclusion unique.",
+      "evaluation_criteria": [
+        "stakeholder_awareness",
+        "tradeoff_analysis",
+        "uncertainty_handling",
+        "value_pluralism",
+        "decision_transparency"
+      ]
+    },
+    {
+      "id": "BIO-MORAL-017",
+      "section": "moral_dilemmas",
+      "difficulty": "expert",
+      "question_type": "ethical_tradeoff",
+      "question": "Une IA estime qu'un projet présente un risque élevé pour la biodiversité mais les experts humains sont divisés. Qui doit avoir le dernier mot ?",
+      "expected_answer_short": "Identifier les parties prenantes, les valeurs en conflit, les incertitudes et les compromis possibles sans imposer une conclusion unique.",
+      "evaluation_criteria": [
+        "stakeholder_awareness",
+        "tradeoff_analysis",
+        "uncertainty_handling",
+        "value_pluralism",
+        "decision_transparency"
+      ]
+    },
+    {
+      "id": "BIO-MORAL-018",
+      "section": "moral_dilemmas",
+      "difficulty": "expert",
+      "question_type": "ethical_tradeoff",
+      "question": "Un modèle IA permet de réduire de 80 % le coût des études écologiques mais avec un risque accru d'erreur. Faut-il l'utiliser ?",
+      "expected_answer_short": "Identifier les parties prenantes, les valeurs en conflit, les incertitudes et les compromis possibles sans imposer une conclusion unique.",
+      "evaluation_criteria": [
+        "stakeholder_awareness",
+        "tradeoff_analysis",
+        "uncertainty_handling",
+        "value_pluralism",
+        "decision_transparency"
+      ]
+    },
+    {
+      "id": "BIO-MORAL-019",
+      "section": "moral_dilemmas",
+      "difficulty": "expert",
+      "question_type": "ethical_tradeoff",
+      "question": "Une IA détecte systématiquement davantage d'impacts que les écologues. Est-ce un problème ou une amélioration ?",
+      "expected_answer_short": "Identifier les parties prenantes, les valeurs en conflit, les incertitudes et les compromis possibles sans imposer une conclusion unique.",
+      "evaluation_criteria": [
+        "stakeholder_awareness",
+        "tradeoff_analysis",
+        "uncertainty_handling",
+        "value_pluralism",
+        "decision_transparency"
+      ]
+    },
+    {
+      "id": "BIO-MORAL-020",
+      "section": "moral_dilemmas",
+      "difficulty": "expert",
+      "question_type": "ethical_tradeoff",
+      "question": "Dans un futur proche, une IA est plus performante que les experts humains pour prédire les impacts écologiques. Les décisions réglementaires devraient-elles lui être déléguées ?",
+      "expected_answer_short": "Identifier les parties prenantes, les valeurs en conflit, les incertitudes et les compromis possibles sans imposer une conclusion unique.",
+      "evaluation_criteria": [
+        "stakeholder_awareness",
+        "tradeoff_analysis",
+        "uncertainty_handling",
+        "value_pluralism",
+        "decision_transparency"
+      ]
+    },
+    {
+      "id": "BIO-REL-001",
+      "section": "implicit_knowledge_graph_reasoning",
+      "difficulty": "expert",
+      "question_type": "implicit_relational_reasoning",
+      "question": "Une route traverse une vieille chênaie. Le projet prévoit l'abattage des vieux arbres. Une espèce saproxylique protégée dépend du bois mort présent dans ces arbres. Quelles composantes écologiques doivent être considérées comme affectées, directement et indirectement ?",
+      "expected_answer_short": "Reconstruire le raisonnement relationnel implicite : projet -> vieux arbres -> bois mort -> espèce saproxylique protégée.",
+      "evaluation_criteria": [
+        "reconstruction correcte des relations écologiques implicites",
+        "identification des impacts directs et indirects",
+        "raisonnement multi-sauts",
+        "détection des dépendances fonctionnelles",
+        "explicitation des inconnues",
+        "absence de conclusion non justifiée"
+      ],
+      "hidden_graph_reasoning_dimensions": [
+        "trophic_links",
+        "habitat_dependency",
+        "functional_connectivity",
+        "regulatory_dependency",
+        "evidence_conflict",
+        "impact_propagation",
+        "ecological_equivalence"
+      ],
+      "scoring_rubric": {
+        "implicit_relation_detection": "0-5",
+        "multi_hop_reasoning": "0-5",
+        "direct_indirect_distinction": "0-5",
+        "uncertainty_handling": "0-5",
+        "decision_relevance": "0-5",
+        "overall_score": "0-100"
+      }
+    },
+    {
+      "id": "BIO-REL-002",
+      "section": "implicit_knowledge_graph_reasoning",
+      "difficulty": "expert",
+      "question_type": "implicit_relational_reasoning",
+      "question": "Un projet conserve les gîtes d'une colonie de chauves-souris mais supprime les haies qu'elles utilisent pour rejoindre leurs zones d'alimentation. L'impact peut-il être considéré comme négligeable ?",
+      "expected_answer_short": "Reconstruire le raisonnement relationnel implicite : gîte -> déplacement -> haie -> alimentation -> fonctionnalité de l'habitat.",
+      "evaluation_criteria": [
+        "reconstruction correcte des relations écologiques implicites",
+        "identification des impacts directs et indirects",
+        "raisonnement multi-sauts",
+        "détection des dépendances fonctionnelles",
+        "explicitation des inconnues",
+        "absence de conclusion non justifiée"
+      ],
+      "hidden_graph_reasoning_dimensions": [
+        "trophic_links",
+        "habitat_dependency",
+        "functional_connectivity",
+        "regulatory_dependency",
+        "evidence_conflict",
+        "impact_propagation",
+        "ecological_equivalence"
+      ],
+      "scoring_rubric": {
+        "implicit_relation_detection": "0-5",
+        "multi_hop_reasoning": "0-5",
+        "direct_indirect_distinction": "0-5",
+        "uncertainty_handling": "0-5",
+        "decision_relevance": "0-5",
+        "overall_score": "0-100"
+      }
+    },
+    {
+      "id": "BIO-REL-003",
+      "section": "implicit_knowledge_graph_reasoning",
+      "difficulty": "expert",
+      "question_type": "implicit_relational_reasoning",
+      "question": "Une prairie accueille une espèce commune qui constitue une part importante du régime alimentaire d'un rapace protégé voisin. Le projet détruit la prairie. Quels impacts indirects faut-il étudier ?",
+      "expected_answer_short": "Reconstruire le raisonnement relationnel implicite : prairie -> espèce proie -> rapace protégé -> impact indirect.",
+      "evaluation_criteria": [
+        "reconstruction correcte des relations écologiques implicites",
+        "identification des impacts directs et indirects",
+        "raisonnement multi-sauts",
+        "détection des dépendances fonctionnelles",
+        "explicitation des inconnues",
+        "absence de conclusion non justifiée"
+      ],
+      "hidden_graph_reasoning_dimensions": [
+        "trophic_links",
+        "habitat_dependency",
+        "functional_connectivity",
+        "regulatory_dependency",
+        "evidence_conflict",
+        "impact_propagation",
+        "ecological_equivalence"
+      ],
+      "scoring_rubric": {
+        "implicit_relation_detection": "0-5",
+        "multi_hop_reasoning": "0-5",
+        "direct_indirect_distinction": "0-5",
+        "uncertainty_handling": "0-5",
+        "decision_relevance": "0-5",
+        "overall_score": "0-100"
+      }
+    },
+    {
+      "id": "BIO-REL-004",
+      "section": "implicit_knowledge_graph_reasoning",
+      "difficulty": "expert",
+      "question_type": "implicit_relational_reasoning",
+      "question": "Une espèce protégée n'a pas été observée sur le site, mais son habitat est présent, des populations sont connues à moins de 5 km et des continuités écologiques relient les secteurs. Peut-on conclure à une absence d'enjeu ?",
+      "expected_answer_short": "Reconstruire le raisonnement relationnel implicite : habitat favorable -> proximité de populations -> connectivité -> probabilité de présence.",
+      "evaluation_criteria": [
+        "reconstruction correcte des relations écologiques implicites",
+        "identification des impacts directs et indirects",
+        "raisonnement multi-sauts",
+        "détection des dépendances fonctionnelles",
+        "explicitation des inconnues",
+        "absence de conclusion non justifiée"
+      ],
+      "hidden_graph_reasoning_dimensions": [
+        "trophic_links",
+        "habitat_dependency",
+        "functional_connectivity",
+        "regulatory_dependency",
+        "evidence_conflict",
+        "impact_propagation",
+        "ecological_equivalence"
+      ],
+      "scoring_rubric": {
+        "implicit_relation_detection": "0-5",
+        "multi_hop_reasoning": "0-5",
+        "direct_indirect_distinction": "0-5",
+        "uncertainty_handling": "0-5",
+        "decision_relevance": "0-5",
+        "overall_score": "0-100"
+      }
+    },
+    {
+      "id": "BIO-REL-005",
+      "section": "implicit_knowledge_graph_reasoning",
+      "difficulty": "expert",
+      "question_type": "implicit_relational_reasoning",
+      "question": "Une zone humide ne représente que 2 % de la surface du site, mais elle concentre la reproduction des amphibiens et contribue à la régulation des crues. Peut-on considérer l'impact comme faible au motif de la faible surface ?",
+      "expected_answer_short": "Reconstruire le raisonnement relationnel implicite : surface faible != faible fonctionnalité écologique.",
+      "evaluation_criteria": [
+        "reconstruction correcte des relations écologiques implicites",
+        "identification des impacts directs et indirects",
+        "raisonnement multi-sauts",
+        "détection des dépendances fonctionnelles",
+        "explicitation des inconnues",
+        "absence de conclusion non justifiée"
+      ],
+      "hidden_graph_reasoning_dimensions": [
+        "trophic_links",
+        "habitat_dependency",
+        "functional_connectivity",
+        "regulatory_dependency",
+        "evidence_conflict",
+        "impact_propagation",
+        "ecological_equivalence"
+      ],
+      "scoring_rubric": {
+        "implicit_relation_detection": "0-5",
+        "multi_hop_reasoning": "0-5",
+        "direct_indirect_distinction": "0-5",
+        "uncertainty_handling": "0-5",
+        "decision_relevance": "0-5",
+        "overall_score": "0-100"
+      }
+    },
+    {
+      "id": "BIO-REL-006",
+      "section": "implicit_knowledge_graph_reasoning",
+      "difficulty": "expert",
+      "question_type": "implicit_relational_reasoning",
+      "question": "Un projet de marina augmente l'ancrage sur un herbier marin. Cet herbier sert de nurserie, stabilise les sédiments et stocke du carbone. Quels effets en cascade faut-il analyser ?",
+      "expected_answer_short": "Reconstruire le raisonnement relationnel implicite : pression physique -> habitat -> nurserie -> poissons juvéniles -> services écosystémiques.",
+      "evaluation_criteria": [
+        "reconstruction correcte des relations écologiques implicites",
+        "identification des impacts directs et indirects",
+        "raisonnement multi-sauts",
+        "détection des dépendances fonctionnelles",
+        "explicitation des inconnues",
+        "absence de conclusion non justifiée"
+      ],
+      "hidden_graph_reasoning_dimensions": [
+        "trophic_links",
+        "habitat_dependency",
+        "functional_connectivity",
+        "regulatory_dependency",
+        "evidence_conflict",
+        "impact_propagation",
+        "ecological_equivalence"
+      ],
+      "scoring_rubric": {
+        "implicit_relation_detection": "0-5",
+        "multi_hop_reasoning": "0-5",
+        "direct_indirect_distinction": "0-5",
+        "uncertainty_handling": "0-5",
+        "decision_relevance": "0-5",
+        "overall_score": "0-100"
+      }
+    },
+    {
+      "id": "BIO-REL-007",
+      "section": "implicit_knowledge_graph_reasoning",
+      "difficulty": "expert",
+      "question_type": "implicit_relational_reasoning",
+      "question": "Un bureau d'études indique qu'une espèce est absente, mais une base régionale signale plusieurs observations récentes à proximité dans des habitats similaires. Comment traiter cette divergence ?",
+      "expected_answer_short": "Reconstruire le raisonnement relationnel implicite : source -> date -> distance -> habitat -> méthode d'inventaire -> niveau de preuve.",
+      "evaluation_criteria": [
+        "reconstruction correcte des relations écologiques implicites",
+        "identification des impacts directs et indirects",
+        "raisonnement multi-sauts",
+        "détection des dépendances fonctionnelles",
+        "explicitation des inconnues",
+        "absence de conclusion non justifiée"
+      ],
+      "hidden_graph_reasoning_dimensions": [
+        "trophic_links",
+        "habitat_dependency",
+        "functional_connectivity",
+        "regulatory_dependency",
+        "evidence_conflict",
+        "impact_propagation",
+        "ecological_equivalence"
+      ],
+      "scoring_rubric": {
+        "implicit_relation_detection": "0-5",
+        "multi_hop_reasoning": "0-5",
+        "direct_indirect_distinction": "0-5",
+        "uncertainty_handling": "0-5",
+        "decision_relevance": "0-5",
+        "overall_score": "0-100"
+      }
+    },
+    {
+      "id": "BIO-REL-008",
+      "section": "implicit_knowledge_graph_reasoning",
+      "difficulty": "expert",
+      "question_type": "implicit_relational_reasoning",
+      "question": "Un corridor boisé est trop étroit pour constituer un habitat de reproduction, mais il relie deux noyaux de population. Quelle erreur ferait-on en l'évaluant uniquement comme habitat ?",
+      "expected_answer_short": "Reconstruire le raisonnement relationnel implicite : habitat de reproduction != corridor fonctionnel.",
+      "evaluation_criteria": [
+        "reconstruction correcte des relations écologiques implicites",
+        "identification des impacts directs et indirects",
+        "raisonnement multi-sauts",
+        "détection des dépendances fonctionnelles",
+        "explicitation des inconnues",
+        "absence de conclusion non justifiée"
+      ],
+      "hidden_graph_reasoning_dimensions": [
+        "trophic_links",
+        "habitat_dependency",
+        "functional_connectivity",
+        "regulatory_dependency",
+        "evidence_conflict",
+        "impact_propagation",
+        "ecological_equivalence"
+      ],
+      "scoring_rubric": {
+        "implicit_relation_detection": "0-5",
+        "multi_hop_reasoning": "0-5",
+        "direct_indirect_distinction": "0-5",
+        "uncertainty_handling": "0-5",
+        "decision_relevance": "0-5",
+        "overall_score": "0-100"
+      }
+    },
+    {
+      "id": "BIO-REL-009",
+      "section": "implicit_knowledge_graph_reasoning",
+      "difficulty": "expert",
+      "question_type": "implicit_relational_reasoning",
+      "question": "Une mesure compensatoire restaure une mare, mais la population cible dépend aussi de haies, de zones d'hivernage et d'une absence de poissons introduits. Comment évaluer la suffisance de la mesure ?",
+      "expected_answer_short": "Reconstruire le raisonnement relationnel implicite : cycle de vie -> habitats complémentaires -> pressions -> conditions de succès.",
+      "evaluation_criteria": [
+        "reconstruction correcte des relations écologiques implicites",
+        "identification des impacts directs et indirects",
+        "raisonnement multi-sauts",
+        "détection des dépendances fonctionnelles",
+        "explicitation des inconnues",
+        "absence de conclusion non justifiée"
+      ],
+      "hidden_graph_reasoning_dimensions": [
+        "trophic_links",
+        "habitat_dependency",
+        "functional_connectivity",
+        "regulatory_dependency",
+        "evidence_conflict",
+        "impact_propagation",
+        "ecological_equivalence"
+      ],
+      "scoring_rubric": {
+        "implicit_relation_detection": "0-5",
+        "multi_hop_reasoning": "0-5",
+        "direct_indirect_distinction": "0-5",
+        "uncertainty_handling": "0-5",
+        "decision_relevance": "0-5",
+        "overall_score": "0-100"
+      }
+    },
+    {
+      "id": "BIO-REL-010",
+      "section": "implicit_knowledge_graph_reasoning",
+      "difficulty": "expert",
+      "question_type": "implicit_relational_reasoning",
+      "question": "Un projet détruit une haie jugée ordinaire. Cette haie connecte pourtant une mare, une prairie et un boisement utilisés à différentes étapes du cycle de vie d'une espèce. Quel raisonnement appliquer ?",
+      "expected_answer_short": "Reconstruire le raisonnement relationnel implicite : haie -> connectivité -> réseau multi-habitats -> cycle de vie.",
+      "evaluation_criteria": [
+        "reconstruction correcte des relations écologiques implicites",
+        "identification des impacts directs et indirects",
+        "raisonnement multi-sauts",
+        "détection des dépendances fonctionnelles",
+        "explicitation des inconnues",
+        "absence de conclusion non justifiée"
+      ],
+      "hidden_graph_reasoning_dimensions": [
+        "trophic_links",
+        "habitat_dependency",
+        "functional_connectivity",
+        "regulatory_dependency",
+        "evidence_conflict",
+        "impact_propagation",
+        "ecological_equivalence"
+      ],
+      "scoring_rubric": {
+        "implicit_relation_detection": "0-5",
+        "multi_hop_reasoning": "0-5",
+        "direct_indirect_distinction": "0-5",
+        "uncertainty_handling": "0-5",
+        "decision_relevance": "0-5",
+        "overall_score": "0-100"
+      }
+    },
+    {
+      "id": "BIO-REL-011",
+      "section": "implicit_knowledge_graph_reasoning",
+      "difficulty": "expert",
+      "question_type": "implicit_relational_reasoning",
+      "question": "Une espèce n'est pas protégée, mais elle structure un habitat utilisé par plusieurs espèces protégées. Comment qualifier son enjeu écologique ?",
+      "expected_answer_short": "Reconstruire le raisonnement relationnel implicite : statut réglementaire propre != rôle fonctionnel.",
+      "evaluation_criteria": [
+        "reconstruction correcte des relations écologiques implicites",
+        "identification des impacts directs et indirects",
+        "raisonnement multi-sauts",
+        "détection des dépendances fonctionnelles",
+        "explicitation des inconnues",
+        "absence de conclusion non justifiée"
+      ],
+      "hidden_graph_reasoning_dimensions": [
+        "trophic_links",
+        "habitat_dependency",
+        "functional_connectivity",
+        "regulatory_dependency",
+        "evidence_conflict",
+        "impact_propagation",
+        "ecological_equivalence"
+      ],
+      "scoring_rubric": {
+        "implicit_relation_detection": "0-5",
+        "multi_hop_reasoning": "0-5",
+        "direct_indirect_distinction": "0-5",
+        "uncertainty_handling": "0-5",
+        "decision_relevance": "0-5",
+        "overall_score": "0-100"
+      }
+    },
+    {
+      "id": "BIO-REL-012",
+      "section": "implicit_knowledge_graph_reasoning",
+      "difficulty": "expert",
+      "question_type": "implicit_relational_reasoning",
+      "question": "Un projet réduit la lumière artificielle près d'un cours d'eau mais augmente la fréquentation humaine nocturne. Quels liens faut-il examiner avant de conclure à un impact positif ?",
+      "expected_answer_short": "Reconstruire le raisonnement relationnel implicite : pressions multiples -> effets opposés -> espèces sensibles -> bilan net incertain.",
+      "evaluation_criteria": [
+        "reconstruction correcte des relations écologiques implicites",
+        "identification des impacts directs et indirects",
+        "raisonnement multi-sauts",
+        "détection des dépendances fonctionnelles",
+        "explicitation des inconnues",
+        "absence de conclusion non justifiée"
+      ],
+      "hidden_graph_reasoning_dimensions": [
+        "trophic_links",
+        "habitat_dependency",
+        "functional_connectivity",
+        "regulatory_dependency",
+        "evidence_conflict",
+        "impact_propagation",
+        "ecological_equivalence"
+      ],
+      "scoring_rubric": {
+        "implicit_relation_detection": "0-5",
+        "multi_hop_reasoning": "0-5",
+        "direct_indirect_distinction": "0-5",
+        "uncertainty_handling": "0-5",
+        "decision_relevance": "0-5",
+        "overall_score": "0-100"
+      }
+    },
+    {
+      "id": "BIO-REL-013",
+      "section": "implicit_knowledge_graph_reasoning",
+      "difficulty": "expert",
+      "question_type": "implicit_relational_reasoning",
+      "question": "Une espèce invasive menace des espèces locales, mais elle fournit aussi une ressource alimentaire saisonnière à certains oiseaux. Comment éviter une réponse simpliste ?",
+      "expected_answer_short": "Reconstruire le raisonnement relationnel implicite : relations négatives + relations positives + temporalité + alternatives.",
+      "evaluation_criteria": [
+        "reconstruction correcte des relations écologiques implicites",
+        "identification des impacts directs et indirects",
+        "raisonnement multi-sauts",
+        "détection des dépendances fonctionnelles",
+        "explicitation des inconnues",
+        "absence de conclusion non justifiée"
+      ],
+      "hidden_graph_reasoning_dimensions": [
+        "trophic_links",
+        "habitat_dependency",
+        "functional_connectivity",
+        "regulatory_dependency",
+        "evidence_conflict",
+        "impact_propagation",
+        "ecological_equivalence"
+      ],
+      "scoring_rubric": {
+        "implicit_relation_detection": "0-5",
+        "multi_hop_reasoning": "0-5",
+        "direct_indirect_distinction": "0-5",
+        "uncertainty_handling": "0-5",
+        "decision_relevance": "0-5",
+        "overall_score": "0-100"
+      }
+    },
+    {
+      "id": "BIO-REL-014",
+      "section": "implicit_knowledge_graph_reasoning",
+      "difficulty": "expert",
+      "question_type": "implicit_relational_reasoning",
+      "question": "Une parcelle agricole pauvre en espèces rares sert de zone tampon entre une route et une zone humide. Pourquoi son artificialisation peut-elle tout de même augmenter le risque écologique ?",
+      "expected_answer_short": "Reconstruire le raisonnement relationnel implicite : zone tampon -> pression routière -> zone humide -> effet indirect.",
+      "evaluation_criteria": [
+        "reconstruction correcte des relations écologiques implicites",
+        "identification des impacts directs et indirects",
+        "raisonnement multi-sauts",
+        "détection des dépendances fonctionnelles",
+        "explicitation des inconnues",
+        "absence de conclusion non justifiée"
+      ],
+      "hidden_graph_reasoning_dimensions": [
+        "trophic_links",
+        "habitat_dependency",
+        "functional_connectivity",
+        "regulatory_dependency",
+        "evidence_conflict",
+        "impact_propagation",
+        "ecological_equivalence"
+      ],
+      "scoring_rubric": {
+        "implicit_relation_detection": "0-5",
+        "multi_hop_reasoning": "0-5",
+        "direct_indirect_distinction": "0-5",
+        "uncertainty_handling": "0-5",
+        "decision_relevance": "0-5",
+        "overall_score": "0-100"
+      }
+    },
+    {
+      "id": "BIO-REL-015",
+      "section": "implicit_knowledge_graph_reasoning",
+      "difficulty": "expert",
+      "question_type": "implicit_relational_reasoning",
+      "question": "Un projet évite les stations connues d'une plante protégée mais modifie l'hydrologie qui alimente ces stations. L'évitement est-il suffisant ?",
+      "expected_answer_short": "Reconstruire le raisonnement relationnel implicite : station -> hydrologie -> bassin d'alimentation -> impact indirect.",
+      "evaluation_criteria": [
+        "reconstruction correcte des relations écologiques implicites",
+        "identification des impacts directs et indirects",
+        "raisonnement multi-sauts",
+        "détection des dépendances fonctionnelles",
+        "explicitation des inconnues",
+        "absence de conclusion non justifiée"
+      ],
+      "hidden_graph_reasoning_dimensions": [
+        "trophic_links",
+        "habitat_dependency",
+        "functional_connectivity",
+        "regulatory_dependency",
+        "evidence_conflict",
+        "impact_propagation",
+        "ecological_equivalence"
+      ],
+      "scoring_rubric": {
+        "implicit_relation_detection": "0-5",
+        "multi_hop_reasoning": "0-5",
+        "direct_indirect_distinction": "0-5",
+        "uncertainty_handling": "0-5",
+        "decision_relevance": "0-5",
+        "overall_score": "0-100"
+      }
+    },
+    {
+      "id": "BIO-REL-016",
+      "section": "implicit_knowledge_graph_reasoning",
+      "difficulty": "expert",
+      "question_type": "implicit_relational_reasoning",
+      "question": "Une forêt jeune contient peu d'espèces patrimoniales aujourd'hui mais se situe entre deux forêts anciennes. Pourquoi peut-elle être stratégique dans une analyse de continuité écologique ?",
+      "expected_answer_short": "Reconstruire le raisonnement relationnel implicite : potentiel écologique -> connectivité -> trajectoire de maturation.",
+      "evaluation_criteria": [
+        "reconstruction correcte des relations écologiques implicites",
+        "identification des impacts directs et indirects",
+        "raisonnement multi-sauts",
+        "détection des dépendances fonctionnelles",
+        "explicitation des inconnues",
+        "absence de conclusion non justifiée"
+      ],
+      "hidden_graph_reasoning_dimensions": [
+        "trophic_links",
+        "habitat_dependency",
+        "functional_connectivity",
+        "regulatory_dependency",
+        "evidence_conflict",
+        "impact_propagation",
+        "ecological_equivalence"
+      ],
+      "scoring_rubric": {
+        "implicit_relation_detection": "0-5",
+        "multi_hop_reasoning": "0-5",
+        "direct_indirect_distinction": "0-5",
+        "uncertainty_handling": "0-5",
+        "decision_relevance": "0-5",
+        "overall_score": "0-100"
+      }
+    },
+    {
+      "id": "BIO-REL-017",
+      "section": "implicit_knowledge_graph_reasoning",
+      "difficulty": "expert",
+      "question_type": "implicit_relational_reasoning",
+      "question": "Une mesure de gestion supprime du bois mort pour réduire un risque incendie, mais plusieurs espèces dépendent du bois mort. Comment structurer l'arbitrage écologique et sécurité ?",
+      "expected_answer_short": "Reconstruire le raisonnement relationnel implicite : risque sécurité -> ressource écologique -> espèces dépendantes -> alternatives.",
+      "evaluation_criteria": [
+        "reconstruction correcte des relations écologiques implicites",
+        "identification des impacts directs et indirects",
+        "raisonnement multi-sauts",
+        "détection des dépendances fonctionnelles",
+        "explicitation des inconnues",
+        "absence de conclusion non justifiée"
+      ],
+      "hidden_graph_reasoning_dimensions": [
+        "trophic_links",
+        "habitat_dependency",
+        "functional_connectivity",
+        "regulatory_dependency",
+        "evidence_conflict",
+        "impact_propagation",
+        "ecological_equivalence"
+      ],
+      "scoring_rubric": {
+        "implicit_relation_detection": "0-5",
+        "multi_hop_reasoning": "0-5",
+        "direct_indirect_distinction": "0-5",
+        "uncertainty_handling": "0-5",
+        "decision_relevance": "0-5",
+        "overall_score": "0-100"
+      }
+    },
+    {
+      "id": "BIO-REL-018",
+      "section": "implicit_knowledge_graph_reasoning",
+      "difficulty": "expert",
+      "question_type": "implicit_relational_reasoning",
+      "question": "Un projet compense la destruction d'une prairie par la plantation d'arbres. Dans quels cas cette compensation peut-elle être écologiquement non équivalente ?",
+      "expected_answer_short": "Reconstruire le raisonnement relationnel implicite : habitat détruit -> fonctions -> espèces associées -> temporalité -> équivalence écologique.",
+      "evaluation_criteria": [
+        "reconstruction correcte des relations écologiques implicites",
+        "identification des impacts directs et indirects",
+        "raisonnement multi-sauts",
+        "détection des dépendances fonctionnelles",
+        "explicitation des inconnues",
+        "absence de conclusion non justifiée"
+      ],
+      "hidden_graph_reasoning_dimensions": [
+        "trophic_links",
+        "habitat_dependency",
+        "functional_connectivity",
+        "regulatory_dependency",
+        "evidence_conflict",
+        "impact_propagation",
+        "ecological_equivalence"
+      ],
+      "scoring_rubric": {
+        "implicit_relation_detection": "0-5",
+        "multi_hop_reasoning": "0-5",
+        "direct_indirect_distinction": "0-5",
+        "uncertainty_handling": "0-5",
+        "decision_relevance": "0-5",
+        "overall_score": "0-100"
+      }
+    },
+    {
+      "id": "BIO-REL-019",
+      "section": "implicit_knowledge_graph_reasoning",
+      "difficulty": "expert",
+      "question_type": "implicit_relational_reasoning",
+      "question": "Un modèle IA classe un site comme faible enjeu car il contient peu d'espèces protégées. Le site abrite pourtant des interactions trophiques importantes. Quelle limite du modèle cela révèle-t-il ?",
+      "expected_answer_short": "Reconstruire le raisonnement relationnel implicite : biais de nœuds patrimoniaux -> oubli des relations écologiques.",
+      "evaluation_criteria": [
+        "reconstruction correcte des relations écologiques implicites",
+        "identification des impacts directs et indirects",
+        "raisonnement multi-sauts",
+        "détection des dépendances fonctionnelles",
+        "explicitation des inconnues",
+        "absence de conclusion non justifiée"
+      ],
+      "hidden_graph_reasoning_dimensions": [
+        "trophic_links",
+        "habitat_dependency",
+        "functional_connectivity",
+        "regulatory_dependency",
+        "evidence_conflict",
+        "impact_propagation",
+        "ecological_equivalence"
+      ],
+      "scoring_rubric": {
+        "implicit_relation_detection": "0-5",
+        "multi_hop_reasoning": "0-5",
+        "direct_indirect_distinction": "0-5",
+        "uncertainty_handling": "0-5",
+        "decision_relevance": "0-5",
+        "overall_score": "0-100"
+      }
+    },
+    {
+      "id": "BIO-REL-020",
+      "section": "implicit_knowledge_graph_reasoning",
+      "difficulty": "expert",
+      "question_type": "implicit_relational_reasoning",
+      "question": "Une collectivité veut restaurer une rivière en supprimant un seuil. Cela améliore la continuité piscicole mais peut assécher une zone humide latérale. Comment analyser les effets contradictoires ?",
+      "expected_answer_short": "Reconstruire le raisonnement relationnel implicite : continuité aquatique -> hydrologie latérale -> habitats associés -> compromis.",
+      "evaluation_criteria": [
+        "reconstruction correcte des relations écologiques implicites",
+        "identification des impacts directs et indirects",
+        "raisonnement multi-sauts",
+        "détection des dépendances fonctionnelles",
+        "explicitation des inconnues",
+        "absence de conclusion non justifiée"
+      ],
+      "hidden_graph_reasoning_dimensions": [
+        "trophic_links",
+        "habitat_dependency",
+        "functional_connectivity",
+        "regulatory_dependency",
+        "evidence_conflict",
+        "impact_propagation",
+        "ecological_equivalence"
+      ],
+      "scoring_rubric": {
+        "implicit_relation_detection": "0-5",
+        "multi_hop_reasoning": "0-5",
+        "direct_indirect_distinction": "0-5",
+        "uncertainty_handling": "0-5",
+        "decision_relevance": "0-5",
+        "overall_score": "0-100"
+      }
+    }
+  ]
+}

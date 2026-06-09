@@ -4,6 +4,7 @@ export const TRANSLATIONS: Record<string, string> = {
   factual_expert: "Factuel expert",
   bias_and_dilemmas: "Biais & dilemmes",
   knowledge_graph_reasoning: "Raisonnement sur graphe",
+  implicit_knowledge_graph_reasoning: "Raisonnement relationnel implicite",
   moral_dilemmas: "Dilemmes moraux",
 
   // Anciens topics (jeu 800 questions)
@@ -36,6 +37,7 @@ export const TRANSLATIONS: Record<string, string> = {
   graph_reasoning: "Raisonnement sur graphe",
   tradeoff_and_bias_detection: "Arbitrage & détection de biais",
   ethical_tradeoff: "Arbitrage éthique",
+  implicit_relational_reasoning: "Raisonnement relationnel implicite",
 
   // Question types (ancien jeu)
   factuel: "Factuel",

@@ -92,11 +92,18 @@ change BOTH of those to the new filename.
   formatted triples + "répondre uniquement à partir du graphe" instruction;
   `build_judge_prompt` also embeds the graph for fidelity scoring.
   `format_graph_context` is defensive (non-dict / malformed → "").
-- **Dataset is single-source + cached:** `biodiversity_benchmark_100_v3.json` (in
-  `biodiversity-benchmark/`) feeds BOTH the api-server (`dataset.ts`, cached in
-  memory for the process lifetime) and the Python CLI. After editing the JSON you
-  MUST restart `artifacts/api-server` or the UI keeps serving the stale count.
-  Editing the file in place updates both consumers — no second copy to sync.
+- **Dataset is single-source + cached:** the active dataset JSON (in
+  `biodiversity-benchmark/`, currently `biodiversity_benchmark_100_v4.json`) feeds
+  BOTH the api-server (`dataset.ts`, cached in memory for the process lifetime) and
+  the Python CLI. The filename is set in TWO places that must agree: `paths.ts`
+  `datasetPath()` and `main.py`'s `--input` default. After editing/swapping the
+  JSON you MUST restart `artifacts/api-server` or the UI keeps serving stale data.
+- **New dataset = check French labels + taxonomy:** on a dataset swap, add French
+  labels for any new `section`/`question_type` in `format.ts` `TRANSLATIONS` (raw
+  keys leak to the UI otherwise), and grep `report.py` `ARBITRAGE_QUESTION_TYPES`
+  for arbitrage-type coverage. V4 dropped explicit-graph items for
+  `implicit_relational_reasoning` (section `implicit_knowledge_graph_reasoning`);
+  no `graph_context`, so `config.py`'s graph-injection block stays dormant.
 
 ## Admin auth (launch/delete gating)
 - Browsing (results/history/questions) is public; only POST/DELETE `/benchmark/runs` (+ `POST /benchmark/admin/session` verify route) are gated by `requireAdmin`.
