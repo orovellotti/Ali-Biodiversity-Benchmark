@@ -12,7 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Button } from "@/components/ui/button";
 import { t } from "@/lib/format";
 import { Run, RunResults } from "@workspace/api-client-react";
-import { Download, CheckCircle2, AlertTriangle, Award, ShieldCheck, Compass } from "lucide-react";
+import { Download, CheckCircle2, AlertTriangle, Award, ShieldCheck, Compass, ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const CHART_COLORS = [
@@ -114,6 +114,80 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
     if (filterDifficulty !== "all") res = res.filter(r => r.difficulty === filterDifficulty);
     return res;
   }, [results.rows, searchTerm, filterModel, filterTopic, filterDifficulty]);
+
+  type SortKey =
+    | "questionId"
+    | "question"
+    | "model"
+    | "topic"
+    | "overallScore"
+    | "regulatoryHallucinationRisk";
+  const [sortKey, setSortKey] = useState<SortKey | null>(null);
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+
+  const toggleSort = (key: SortKey) => {
+    if (sortKey === key) {
+      setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setSortKey(key);
+      setSortDir("asc");
+    }
+  };
+
+  const sortHead = (label: string, key: SortKey, className?: string) => {
+    const active = sortKey === key;
+    return (
+      <TableHead
+        className={className}
+        aria-sort={
+          active ? (sortDir === "asc" ? "ascending" : "descending") : "none"
+        }
+      >
+        <button
+          type="button"
+          onClick={() => toggleSort(key)}
+          className="group inline-flex items-center gap-1 -ml-1 px-1 py-0.5 rounded hover:text-foreground transition-colors"
+          aria-label={`Trier par ${label}${
+            active
+              ? sortDir === "asc"
+                ? ", ordre croissant"
+                : ", ordre décroissant"
+              : ""
+          }`}
+        >
+          {label}
+          {active ? (
+            sortDir === "asc" ? (
+              <ChevronUp className="w-3.5 h-3.5 text-primary" />
+            ) : (
+              <ChevronDown className="w-3.5 h-3.5 text-primary" />
+            )
+          ) : (
+            <ChevronsUpDown className="w-3.5 h-3.5 opacity-40 group-hover:opacity-70" />
+          )}
+        </button>
+      </TableHead>
+    );
+  };
+
+  const sortedRows = useMemo(() => {
+    if (!sortKey) return filteredRows;
+    const dir = sortDir === "asc" ? 1 : -1;
+    const isNumeric =
+      sortKey === "overallScore" || sortKey === "regulatoryHallucinationRisk";
+    return [...filteredRows].sort((a, b) => {
+      const av = a[sortKey];
+      const bv = b[sortKey];
+      // Always push empty/null values to the bottom regardless of direction.
+      const aEmpty = av == null || av === "";
+      const bEmpty = bv == null || bv === "";
+      if (aEmpty && bEmpty) return 0;
+      if (aEmpty) return 1;
+      if (bEmpty) return -1;
+      if (isNumeric) return ((av as number) - (bv as number)) * dir;
+      return String(av).localeCompare(String(bv), "fr", { numeric: true }) * dir;
+    });
+  }, [filteredRows, sortKey, sortDir]);
 
   const uniqueTopics = useMemo(() => [...new Set(results.rows.map(r => r.topic).filter(Boolean) as string[])], [results.rows]);
   const uniqueDifficulties = useMemo(() => [...new Set(results.rows.map(r => r.difficulty).filter(Boolean) as string[])], [results.rows]);
@@ -505,17 +579,17 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-24">ID</TableHead>
-                  <TableHead className="min-w-[18rem]">Question</TableHead>
-                  <TableHead>Modèle</TableHead>
-                  <TableHead>Topic / Diff.</TableHead>
-                  <TableHead>Score</TableHead>
-                  <TableHead>Hallucination</TableHead>
+                  {sortHead("ID", "questionId", "w-24")}
+                  {sortHead("Question", "question", "min-w-[18rem]")}
+                  {sortHead("Modèle", "model")}
+                  {sortHead("Topic / Diff.", "topic")}
+                  {sortHead("Score", "overallScore")}
+                  {sortHead("Hallucination", "regulatoryHallucinationRisk")}
                   <TableHead>Détails</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredRows.slice(0, 100).map((row, i) => (
+                {sortedRows.slice(0, 100).map((row, i) => (
                   <TableRow key={`${row.questionId}-${row.model}-${i}`}>
                     <TableCell className="font-mono text-xs">{row.questionId}</TableCell>
                     <TableCell className="max-w-md">
