@@ -161,6 +161,11 @@ export function Landing() {
               </Link>
             </Button>
             <Button size="lg" variant="outline" asChild>
+              <Link href="/console#questions">
+                <BookOpen className="w-4 h-4 mr-2" /> Voir les questions
+              </Link>
+            </Button>
+            <Button size="lg" variant="outline" asChild>
               <a href="#demarche">
                 Comprendre la démarche <ArrowRight className="w-4 h-4 ml-2" />
               </a>

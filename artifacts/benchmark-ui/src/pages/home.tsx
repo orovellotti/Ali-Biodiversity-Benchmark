@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
 import {
@@ -79,6 +79,14 @@ export function Home() {
   const latestCompleted = runs?.find(
     (r) => r.status === "completed" && !r.dryRun,
   );
+
+  // Wouter does not scroll to the URL hash on navigation; do it ourselves so
+  // links like /console#questions land on the right section.
+  useEffect(() => {
+    if (window.location.hash !== "#questions") return;
+    const el = document.getElementById("questions");
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, []);
 
   // --- Admin login ---------------------------------------------------------
   // Browsing results and questions is public. Launching (and deleting) a run is
@@ -368,7 +376,7 @@ export function Home() {
         </section>
 
         {/* §02 Questions — the dataset (public) */}
-        <section className="mb-14">
+        <section id="questions" className="mb-14 scroll-mt-24">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-5">
             <div>
               <div className="eyebrow mb-1.5">
