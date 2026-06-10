@@ -89,13 +89,15 @@ export function questionTypes(): string[] {
   return load().questionTypes;
 }
 
-/** Number of questions a run will cover given a topic filter and limit. */
+/** Number of questions a run will cover given a topic filter, offset and limit. */
 export function questionCount(
   topic: string | null,
   limit: number | null,
+  offset: number | null = null,
 ): number {
   let qs = load().questions;
   if (topic) qs = qs.filter((q) => topicOf(q) === topic);
+  if (offset != null && offset > 0) qs = qs.slice(offset);
   if (limit != null) qs = qs.slice(0, limit);
   return qs.length;
 }

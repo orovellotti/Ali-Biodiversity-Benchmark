@@ -17,6 +17,7 @@ interface RunMeta {
   status: string;
   models: string[];
   limit: number | null;
+  offset: number | null;
   topic: string | null;
   dryRun: boolean;
   noEval: boolean;
@@ -77,6 +78,7 @@ function toRun(meta: RunMeta): Run {
     phase: progress.phase ?? "",
     models: meta.models,
     limit: meta.limit,
+    offset: meta.offset,
     topic: meta.topic,
     dryRun: meta.dryRun,
     noEval: meta.noEval,
@@ -161,6 +163,7 @@ export function createRun(input: RunInput): Run {
   }
 
   const limit = input.limit ?? null;
+  const offset = input.offset ?? null;
   const topic = input.topic ?? null;
   if (limit != null) {
     if (!Number.isInteger(limit) || limit < 1) {
@@ -172,8 +175,25 @@ export function createRun(input: RunInput): Run {
       );
     }
   }
+  if (offset != null) {
+    if (!Number.isInteger(offset) || offset < 0) {
+      throw new ValidationError("Le décalage doit être un entier positif ou nul.");
+    }
+    if (offset >= totalQuestions()) {
+      throw new ValidationError(
+        `Le décalage doit être inférieur à ${totalQuestions()} questions.`,
+      );
+    }
+  }
   if (topic != null && !topics().includes(topic)) {
     throw new ValidationError(`Topic inconnu : ${topic}`);
+  }
+  // Reject combinations (e.g. offset past the topic-filtered pool) that would
+  // select zero questions, which would otherwise launch an empty no-op run.
+  if (questionCount(topic, limit, offset) === 0) {
+    throw new ValidationError(
+      "Cette combinaison (topic / décalage / limite) ne sélectionne aucune question.",
+    );
   }
   const dryRun = input.dryRun ?? false;
   const noEval = input.noEval ?? false;
@@ -195,7 +215,7 @@ export function createRun(input: RunInput): Run {
   // is evaluated and a judge is configured), since both bill against credits.
   // Simulations are free, so skip.
   if (!dryRun) {
-    const planned = questionCount(topic, limit) ?? totalQuestions();
+    const planned = questionCount(topic, limit, offset) ?? totalQuestions();
     const answerRequests = models.length * planned;
     const judged = !noEval && judgeAvailable();
     const judgeRequests = judged ? models.length * planned : 0;
@@ -218,10 +238,11 @@ export function createRun(input: RunInput): Run {
     status: "running",
     models,
     limit,
+    offset,
     topic,
     dryRun,
     noEval,
-    questionCount: questionCount(topic, limit),
+    questionCount: questionCount(topic, limit, offset),
     createdAt: new Date().toISOString(),
     startedAt: new Date().toISOString(),
     finishedAt: null,
@@ -241,6 +262,7 @@ export function createRun(input: RunInput): Run {
     statusPath(id),
   ];
   if (limit != null) args.push("--limit", String(limit));
+  if (offset != null && offset > 0) args.push("--offset", String(offset));
   if (topic) args.push("--topic", topic);
   if (dryRun) args.push("--dry-run");
   if (noEval) args.push("--no-eval");

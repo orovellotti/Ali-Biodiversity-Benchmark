@@ -86,9 +86,12 @@ def topic_of(question: dict) -> str | None:
 
 
 def filter_questions(
-    questions: list[dict], topic: str | None, limit: int | None
+    questions: list[dict],
+    topic: str | None,
+    limit: int | None,
+    offset: int | None = None,
 ) -> list[dict]:
-    """Filtre par topic/section puis applique une limite."""
+    """Filtre par topic/section, applique un décalage puis une limite."""
     filtered = questions
     if topic:
         filtered = [q for q in filtered if topic_of(q) == topic]
@@ -98,7 +101,13 @@ def filter_questions(
                 f"Aucune question pour le topic {topic!r}. "
                 f"Topics disponibles : {', '.join(available)}"
             )
+    if offset is not None:
+        if offset < 0:
+            raise ValueError("Le décalage (--offset) doit être positif ou nul.")
+        filtered = filtered[offset:]
     if limit is not None:
+        if limit < 1:
+            raise ValueError("La limite (--limit) doit être un entier positif.")
         filtered = filtered[:limit]
     return filtered
 
@@ -312,6 +321,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Nombre maximum de questions (test rapide).",
     )
     parser.add_argument(
+        "--offset",
+        type=int,
+        default=None,
+        help="Nombre de questions à ignorer avant d'appliquer la limite (lots successifs).",
+    )
+    parser.add_argument(
         "--judge-model",
         default=config.JUDGE_MODEL,
         help="Modèle OpenAI utilisé comme juge.",
@@ -358,7 +373,9 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         meta, all_questions = load_questions(args.input)
-        questions = filter_questions(all_questions, args.topic, args.limit)
+        questions = filter_questions(
+            all_questions, args.topic, args.limit, args.offset
+        )
         model_names = parse_models(args.models)
     except (FileNotFoundError, ValueError) as exc:
         logger.error("%s", exc)

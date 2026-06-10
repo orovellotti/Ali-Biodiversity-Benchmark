@@ -12,6 +12,8 @@ export interface RunInput {
   /** @nullable */
   limit?: number | null;
   /** @nullable */
+  offset?: number | null;
+  /** @nullable */
   topic?: string | null;
   dryRun?: boolean;
   noEval?: boolean;

@@ -47,6 +47,7 @@ export const ListRunsResponseItem = zod.object({
   "phase": zod.string().describe('empty, query, evaluate, report or done'),
   "models": zod.array(zod.string()),
   "limit": zod.number().nullish(),
+  "offset": zod.number().nullish(),
   "topic": zod.string().nullish(),
   "dryRun": zod.boolean(),
   "noEval": zod.boolean(),
@@ -72,6 +73,7 @@ export const createRunBodyNoEvalDefault = false;
 export const CreateRunBody = zod.object({
   "models": zod.array(zod.string()).min(1),
   "limit": zod.number().nullish(),
+  "offset": zod.number().nullish(),
   "topic": zod.string().nullish(),
   "dryRun": zod.boolean().default(createRunBodyDryRunDefault),
   "noEval": zod.boolean().default(createRunBodyNoEvalDefault)
@@ -91,6 +93,7 @@ export const GetRunResponse = zod.object({
   "phase": zod.string().describe('empty, query, evaluate, report or done'),
   "models": zod.array(zod.string()),
   "limit": zod.number().nullish(),
+  "offset": zod.number().nullish(),
   "topic": zod.string().nullish(),
   "dryRun": zod.boolean(),
   "noEval": zod.boolean(),
@@ -127,6 +130,7 @@ export const GetRunResultsResponse = zod.object({
   "phase": zod.string().describe('empty, query, evaluate, report or done'),
   "models": zod.array(zod.string()),
   "limit": zod.number().nullish(),
+  "offset": zod.number().nullish(),
   "topic": zod.string().nullish(),
   "dryRun": zod.boolean(),
   "noEval": zod.boolean(),
