@@ -34,3 +34,8 @@ externalPort = 8081
 [[ports]]
 localPort = 24834
 externalPort = 3000
+
+[userenv]
+
+[userenv.shared]
+BENCHMARK_MAX_REQUESTS_PER_RUN = "800"
