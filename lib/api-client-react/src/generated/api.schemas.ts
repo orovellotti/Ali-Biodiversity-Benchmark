@@ -64,6 +64,8 @@ export interface BenchmarkConfig {
   judgeModel: string;
   judgeAvailable: boolean;
   totalQuestions: number;
+  /** Server-enforced ceiling on the number of model requests (models × questions) a single non-simulation run may issue. A safeguard against accidentally consuming all API credits. */
+  maxRequestsPerRun: number;
 }
 
 export interface RunInput {

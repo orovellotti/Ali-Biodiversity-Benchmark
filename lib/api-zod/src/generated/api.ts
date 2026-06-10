@@ -33,7 +33,8 @@ export const GetBenchmarkConfigResponse = zod.object({
   "questionTypes": zod.array(zod.string()),
   "judgeModel": zod.string(),
   "judgeAvailable": zod.boolean(),
-  "totalQuestions": zod.number()
+  "totalQuestions": zod.number(),
+  "maxRequestsPerRun": zod.number().describe('Server-enforced ceiling on the number of model requests (models × questions) a single non-simulation run may issue. A safeguard against accidentally consuming all API credits.')
 })
 
 

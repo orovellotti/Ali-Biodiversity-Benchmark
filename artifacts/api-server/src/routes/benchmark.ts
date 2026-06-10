@@ -19,6 +19,7 @@ import { getBenchmarkConfig } from "../lib/benchmark/config";
 import { listQuestions } from "../lib/benchmark/dataset";
 import { contactFilePath } from "../lib/benchmark/paths";
 import {
+  ConcurrentRunError,
   createRun,
   deleteRun,
   getRun,
@@ -106,6 +107,10 @@ router.post("/benchmark/runs", requireAdmin, (req, res) => {
     const run = createRun(parsed.data);
     res.status(201).json(GetRunResponse.parse(run));
   } catch (err) {
+    if (err instanceof ConcurrentRunError) {
+      res.status(409).json({ error: err.message });
+      return;
+    }
     if (err instanceof ValidationError) {
       res.status(400).json({ error: err.message });
       return;

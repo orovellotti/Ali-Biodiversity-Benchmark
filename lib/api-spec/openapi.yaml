@@ -76,6 +76,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        "409":
+          description: Another run is already active (concurrency lock)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /benchmark/admin/session:
     post:
       operationId: verifyAdmin
@@ -372,6 +378,7 @@ components:
         - judgeModel
         - judgeAvailable
         - totalQuestions
+        - maxRequestsPerRun
       properties:
         providers:
           type: array
@@ -395,6 +402,12 @@ components:
           type: boolean
         totalQuestions:
           type: integer
+        maxRequestsPerRun:
+          type: integer
+          description: >-
+            Server-enforced ceiling on the number of model requests
+            (models × questions) a single non-simulation run may issue.
+            A safeguard against accidentally consuming all API credits.
     RunInput:
       type: object
       required: [models]

@@ -6,6 +6,7 @@ import {
   useCreateRun,
   useDeleteRun,
   useVerifyAdmin,
+  useListRuns,
 } from "@workspace/api-client-react";
 import { getListRunsQueryKey } from "@workspace/api-client-react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -13,6 +14,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { SiteHeader } from "@/components/site-header";
 import { RunHistory } from "@/components/run-history";
 import { useI18n } from "@/lib/i18n";
@@ -20,7 +31,7 @@ import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocation } from "wouter";
-import { AlertCircle, Lock, LogOut, BarChart3 } from "lucide-react";
+import { AlertCircle, Lock, LogOut, BarChart3, ShieldCheck } from "lucide-react";
 
 import {
   getAdminToken,
@@ -28,6 +39,8 @@ import {
   clearAdminToken,
   isAuthError,
   isAdminDisabledError,
+  isConflictError,
+  apiErrorMessage,
 } from "@/lib/admin";
 
 const runSchema = z.object({
@@ -68,6 +81,18 @@ export function Home() {
   const createRun = useCreateRun();
   const deleteRun = useDeleteRun();
   const verifyAdmin = useVerifyAdmin();
+
+  // Poll runs so we can block a launch while another analysis is active.
+  const { data: runs } = useListRuns({
+    query: { queryKey: getListRunsQueryKey(), refetchInterval: 5000 },
+  });
+  const activeRun = useMemo(
+    () =>
+      (runs ?? []).find(
+        (r) => r.status === "running" || r.status === "queued",
+      ) ?? null,
+    [runs],
+  );
 
   // --- Admin login ---------------------------------------------------------
   // Launching (and deleting) a run is gated behind a login: the password is
@@ -131,12 +156,26 @@ export function Home() {
 
   const selectedModels = form.watch("models");
   const selectedLimit = form.watch("limit");
+  const dryRun = form.watch("dryRun");
 
-  const estimatedRequests = config
-    ? selectedModels.length * (selectedLimit || config.totalQuestions)
+  const noEval = form.watch("noEval");
+  const plannedQuestions = config
+    ? selectedLimit || config.totalQuestions
     : 0;
+  // Mirror the server cap: count answer calls plus judge-scoring calls (another
+  // models × questions when the run is evaluated and a judge is configured).
+  const answerRequests = selectedModels.length * plannedQuestions;
+  const judged = !noEval && (config?.judgeAvailable ?? false);
+  const estimatedRequests = answerRequests + (judged ? answerRequests : 0);
+  const cap = config?.maxRequestsPerRun ?? 0;
+  // A real (non-simulation) run over the server-enforced ceiling is refused.
+  const overCap = !dryRun && cap > 0 && estimatedRequests > cap;
 
-  const onSubmit = (values: RunFormValues) => {
+  const [launchError, setLaunchError] = useState<string | null>(null);
+  const [pendingValues, setPendingValues] = useState<RunFormValues | null>(null);
+
+  const doLaunch = (values: RunFormValues) => {
+    setLaunchError(null);
     createRun.mutate(
       { data: values },
       {
@@ -145,10 +184,32 @@ export function Home() {
           setLocation(`/runs/${newRun.id}`);
         },
         onError: (err) => {
-          if (isAuthError(err)) handleAuthFailure();
+          if (isAuthError(err)) {
+            handleAuthFailure();
+            return;
+          }
+          const msg = apiErrorMessage(err);
+          setLaunchError(
+            msg ??
+              (isConflictError(err)
+                ? tr(
+                    "Une analyse est déjà en cours.",
+                    "An analysis is already running.",
+                  )
+                : tr(
+                    "Le lancement a échoué. Réessayez.",
+                    "Launch failed. Try again.",
+                  )),
+          );
         },
-      }
+      },
     );
+  };
+
+  // Always confirm before a real launch — the dialog spells out the cost.
+  const onSubmit = (values: RunFormValues) => {
+    setLaunchError(null);
+    setPendingValues(values);
   };
 
   const handleDelete = (id: string, e: React.MouseEvent) => {
@@ -469,17 +530,69 @@ export function Home() {
                         </div>
                       )}
 
+                    {activeRun && (
+                      <div className="p-3 bg-secondary border border-card-border rounded-md flex items-start gap-2 text-foreground/80">
+                        <AlertCircle className="w-4 h-4 mt-0.5 shrink-0 text-primary" />
+                        <p className="text-xs">
+                          {tr(
+                            "Une analyse est déjà en cours. Pour protéger vos crédits, une seule analyse peut tourner à la fois — attendez sa fin ou supprimez-la avant d'en lancer une autre.",
+                            "An analysis is already running. To protect your credits, only one analysis can run at a time — wait for it to finish or delete it before launching another.",
+                          )}
+                        </p>
+                      </div>
+                    )}
+
+                    {overCap && (
+                      <div className="p-3 bg-destructive/10 border border-destructive/30 rounded-md flex items-start gap-2 text-destructive">
+                        <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+                        <p className="text-xs">
+                          {tr(
+                            `Cette configuration déclencherait ~${estimatedRequests} requêtes, au-dessus de la limite de sécurité de ${cap}. Réduisez le nombre de modèles ou fixez une limite de questions plus basse (ou passez en simulation).`,
+                            `This configuration would trigger ~${estimatedRequests} requests, above the safety cap of ${cap}. Reduce the number of models or set a lower question limit (or switch to simulation).`,
+                          )}
+                        </p>
+                      </div>
+                    )}
+
+                    {launchError && (
+                      <div className="p-3 bg-destructive/10 border border-destructive/30 rounded-md flex items-start gap-2 text-destructive">
+                        <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+                        <p className="text-xs">{launchError}</p>
+                      </div>
+                    )}
+
                     <div className="pt-4 flex items-center justify-between border-t border-border">
                       <div className="text-xs text-muted-foreground">
-                        {tr("Est. requêtes", "Est. requests")}
-                        <span className="font-mono font-bold text-foreground ml-1.5 tabular-nums">
-                          {estimatedRequests}
-                        </span>
+                        <div>
+                          {tr("Est. requêtes", "Est. requests")}
+                          <span
+                            className={`font-mono font-bold ml-1.5 tabular-nums ${
+                              overCap ? "text-destructive" : "text-foreground"
+                            }`}
+                          >
+                            {estimatedRequests}
+                          </span>
+                          {cap > 0 && (
+                            <span className="text-muted-foreground/70">
+                              {" "}
+                              / {cap} {tr("max", "max")}
+                            </span>
+                          )}
+                        </div>
+                        {dryRun && (
+                          <div className="flex items-center gap-1 text-primary mt-1">
+                            <ShieldCheck className="w-3 h-3" />
+                            {tr("Simulation — aucun crédit utilisé", "Simulation — no credits used")}
+                          </div>
+                        )}
                       </div>
                       <Button
                         type="submit"
                         disabled={
-                          createRun.isPending || selectedModels.length === 0
+                          createRun.isPending ||
+                          selectedModels.length === 0 ||
+                          overCap ||
+                          activeRun != null
                         }
                       >
                         {createRun.isPending ? (
@@ -526,6 +639,91 @@ export function Home() {
           </section>
         )}
       </div>
+
+      <AlertDialog
+        open={pendingValues != null}
+        onOpenChange={(open) => {
+          if (!open) setPendingValues(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {pendingValues?.dryRun
+                ? tr("Lancer une simulation ?", "Launch a simulation?")
+                : tr("Confirmer le lancement ?", "Confirm launch?")}
+            </AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="space-y-3">
+                {pendingValues?.dryRun ? (
+                  <p>
+                    {tr(
+                      "Mode simulation : aucun appel API réel, aucun crédit consommé.",
+                      "Simulation mode: no real API calls, no credits consumed.",
+                    )}
+                  </p>
+                ) : (
+                  <>
+                    <p>
+                      {tr(
+                        "Cette analyse va effectuer de vrais appels API et consommer des crédits.",
+                        "This analysis will make real API calls and consume credits.",
+                      )}
+                    </p>
+                    <div className="rounded-md border border-border bg-secondary/40 p-3 text-sm space-y-1">
+                      <div className="flex justify-between gap-4">
+                        <span className="text-muted-foreground">
+                          {tr("Modèles", "Models")}
+                        </span>
+                        <span className="font-mono font-medium text-foreground">
+                          {pendingValues?.models.length}
+                        </span>
+                      </div>
+                      <div className="flex justify-between gap-4">
+                        <span className="text-muted-foreground">
+                          {tr("Questions", "Questions")}
+                        </span>
+                        <span className="font-mono font-medium text-foreground">
+                          {plannedQuestions}
+                        </span>
+                      </div>
+                      <div className="flex justify-between gap-4 pt-1 border-t border-border">
+                        <span className="text-muted-foreground">
+                          {tr("Requêtes API estimées", "Estimated API requests")}
+                        </span>
+                        <span className="font-mono font-semibold text-foreground tabular-nums">
+                          ~{estimatedRequests}
+                        </span>
+                      </div>
+                      {judged && (
+                        <p className="text-xs text-muted-foreground pt-1">
+                          {tr(
+                            "Inclut les appels de réponse et de notation par le juge.",
+                            "Includes both answer and judge-scoring calls.",
+                          )}
+                        </p>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{tr("Annuler", "Cancel")}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (pendingValues) doLaunch(pendingValues);
+                setPendingValues(null);
+              }}
+            >
+              {pendingValues?.dryRun
+                ? tr("Lancer la simulation", "Run simulation")
+                : tr("Oui, lancer", "Yes, launch")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

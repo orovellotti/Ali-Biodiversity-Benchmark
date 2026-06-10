@@ -25,3 +25,18 @@ export function isAuthError(err: unknown): boolean {
 export function isAdminDisabledError(err: unknown): boolean {
   return errStatus(err) === 503;
 }
+
+/** 409 = an analysis is already running (concurrency guard). */
+export function isConflictError(err: unknown): boolean {
+  return errStatus(err) === 409;
+}
+
+/** Pull the human-readable `error` message the API returns on 4xx responses. */
+export function apiErrorMessage(err: unknown): string | null {
+  const data = (err as { data?: unknown } | null)?.data;
+  if (data && typeof data === "object" && "error" in data) {
+    const msg = (data as { error?: unknown }).error;
+    if (typeof msg === "string" && msg.trim()) return msg;
+  }
+  return null;
+}

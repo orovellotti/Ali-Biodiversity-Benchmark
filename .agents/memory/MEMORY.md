@@ -2,3 +2,4 @@
 - [benchmark-ui i18n](benchmark-i18n.md) — bilingual FR/EN via co-located tr(fr,en) + language-aware t(key); brand is "ALI Biodiversity Benchmark"; memo deps must include tr.
 - [benchmark-ui design system](benchmark-ui-design.md) — "Carnet de terrain" concept (Fraunces+Inter+mono, paper/green/ochre); ochre = inverted hallucination risk only.
 - [benchmark-ui arena](benchmark-arena.md) — blind duels reuse stored answers (no live calls); HMAC-signed duel token makes public votes forge-proof; Elo replay leaderboard.
+- [Benchmark credit safeguards](benchmark-credit-safeguards.md) — launch gated by concurrency lock (409) + request ceiling (400); cost estimates MUST count judge calls, not just answers (~2x undercount).

@@ -56,6 +56,18 @@ export function judgeModel(): string {
   return process.env["OPENAI_JUDGE_MODEL"] ?? "gpt-4o-mini";
 }
 
+/**
+ * Server-enforced ceiling on model requests (models × questions) for a single
+ * non-simulation run. Bounds the worst-case API spend so a careless launch
+ * can't drain all credits. Configurable via BENCHMARK_MAX_REQUESTS_PER_RUN
+ * (positive integer); defaults to a conservative 400.
+ */
+export function maxRequestsPerRun(): number {
+  const raw = process.env["BENCHMARK_MAX_REQUESTS_PER_RUN"];
+  const parsed = raw != null ? Number.parseInt(raw, 10) : NaN;
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : 400;
+}
+
 export function judgeAvailable(): boolean {
   return Boolean(process.env["OPENAI_API_KEY"]);
 }
@@ -79,5 +91,6 @@ export function getBenchmarkConfig(): BenchmarkConfig {
     judgeModel: judgeModel(),
     judgeAvailable: judgeAvailable(),
     totalQuestions: totalQuestions(),
+    maxRequestsPerRun: maxRequestsPerRun(),
   };
 }

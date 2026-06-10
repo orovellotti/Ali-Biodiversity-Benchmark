@@ -5,7 +5,12 @@ import type { Run, RunInput } from "@workspace/api-zod";
 import { logger } from "../logger";
 import { benchmarkDir, runDir, runsDir } from "./paths";
 import { questionCount, totalQuestions, topics } from "./dataset";
-import { judgeModel, VALID_PROVIDERS } from "./config";
+import {
+  judgeAvailable,
+  judgeModel,
+  maxRequestsPerRun,
+  VALID_PROVIDERS,
+} from "./config";
 
 interface RunMeta {
   id: string;
@@ -172,6 +177,40 @@ export function createRun(input: RunInput): Run {
   }
   const dryRun = input.dryRun ?? false;
   const noEval = input.noEval ?? false;
+
+  // Safeguard 1 — one active run at a time. Blocks accidental double-launches
+  // (e.g. spam-clicking) and runaway parallel API spend.
+  const active = listRuns().find(
+    (r) => r.status === "running" || r.status === "queued",
+  );
+  if (active) {
+    throw new ConcurrentRunError(
+      "Une analyse est déjà en cours. Attendez sa fin (ou supprimez-la) avant d'en lancer une nouvelle.",
+    );
+  }
+
+  // Safeguard 2 — hard ceiling on real API requests so a single launch can
+  // never drain all credits. Counts BOTH answer-generation calls (models ×
+  // questions) AND judge-scoring calls (another models × questions when the run
+  // is evaluated and a judge is configured), since both bill against credits.
+  // Simulations are free, so skip.
+  if (!dryRun) {
+    const planned = questionCount(topic, limit) ?? totalQuestions();
+    const answerRequests = models.length * planned;
+    const judged = !noEval && judgeAvailable();
+    const judgeRequests = judged ? models.length * planned : 0;
+    const estimatedRequests = answerRequests + judgeRequests;
+    const cap = maxRequestsPerRun();
+    if (estimatedRequests > cap) {
+      const breakdown = judged
+        ? `${models.length} modèle(s) × ${planned} questions × 2 (réponses + juge)`
+        : `${models.length} modèle(s) × ${planned} questions`;
+      throw new ValidationError(
+        `Cette analyse déclencherait ~${estimatedRequests} requêtes (${breakdown}), au-dessus de la limite de ${cap}. Réduisez le nombre de modèles ou la limite de questions, ou utilisez le mode simulation.`,
+      );
+    }
+  }
+
   const id = newId();
 
   const meta: RunMeta = {
@@ -244,3 +283,6 @@ function finalize(id: string, status: string, error: string | null): void {
 }
 
 export class ValidationError extends Error {}
+
+/** Thrown when a run is requested while another is still active (→ HTTP 409). */
+export class ConcurrentRunError extends Error {}
