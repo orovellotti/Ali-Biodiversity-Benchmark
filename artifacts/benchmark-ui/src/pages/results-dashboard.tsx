@@ -1,7 +1,8 @@
 import { useState, useMemo } from "react";
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, 
-  Tooltip as RechartsTooltip, Legend, ResponsiveContainer 
+  Tooltip as RechartsTooltip, Legend, ResponsiveContainer,
+  RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -188,6 +189,31 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
       return String(av).localeCompare(String(bv), "fr", { numeric: true }) * dir;
     });
   }, [filteredRows, sortKey, sortDir]);
+
+  // Radar: one axis per scoring dimension, one polygon per model. Only models
+  // that actually have scores are plotted (a fully-failed model would be empty).
+  const RADAR_DIMS: { key: keyof typeof SCORE_LABELS; label: string }[] = [
+    { key: "accuracy", label: "Exactitude" },
+    { key: "uncertaintyHandling", label: "Incertitude" },
+    { key: "justificationQuality", label: "Justification" },
+    { key: "sourceAwareness", label: "Sources" },
+    { key: "regulatoryHallucinationRisk", label: "Anti-hallucination" },
+  ];
+  const radarModels = useMemo(
+    () => results.summaryByModel.filter((m) => m.overallScore != null),
+    [results.summaryByModel],
+  );
+  const radarData = useMemo(
+    () =>
+      RADAR_DIMS.map((dim) => {
+        const row: Record<string, string | number | null> = { dimension: dim.label };
+        radarModels.forEach((m) => {
+          row[m.model] = (m[dim.key as keyof typeof m] as number | null) ?? null;
+        });
+        return row;
+      }),
+    [radarModels],
+  );
 
   const uniqueTopics = useMemo(() => [...new Set(results.rows.map(r => r.topic).filter(Boolean) as string[])], [results.rows]);
   const uniqueDifficulties = useMemo(() => [...new Set(results.rows.map(r => r.difficulty).filter(Boolean) as string[])], [results.rows]);
@@ -412,25 +438,35 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
               </Button>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={350} debounce={0}>
-                <BarChart data={results.summaryByModel} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke={gridColor} vertical={false} />
-                  <XAxis dataKey="model" tick={{ fontSize: 12, fill: tickColor }} stroke={tickColor} />
-                  <YAxis domain={[0, 5]} tick={{ fontSize: 12, fill: tickColor }} stroke={tickColor} />
-                  <RechartsTooltip content={<CustomTooltip />} isAnimationActive={false} cursor={{ fill: 'rgba(0,0,0,0.05)' }} />
+              {radarModels.length === 0 ? (
+                <div className="flex h-[420px] items-center justify-center text-center">
+                  <p className="text-sm text-muted-foreground">
+                    Aucune note exploitable pour ce run.
+                  </p>
+                </div>
+              ) : (
+              <ResponsiveContainer width="100%" height={420} debounce={0}>
+                <RadarChart data={radarData} margin={{ top: 20, right: 40, bottom: 20, left: 40 }}>
+                  <PolarGrid stroke={gridColor} />
+                  <PolarAngleAxis dataKey="dimension" tick={{ fontSize: 12, fill: tickColor }} />
+                  <PolarRadiusAxis domain={[0, 5]} tickCount={6} tick={{ fontSize: 11, fill: tickColor }} stroke={gridColor} />
+                  <RechartsTooltip content={<CustomTooltip />} isAnimationActive={false} />
                   <Legend wrapperStyle={{ fontSize: "13px" }} />
-                  {['accuracy', 'uncertaintyHandling', 'justificationQuality', 'sourceAwareness', 'regulatoryHallucinationRisk'].map((key, i) => (
-                    <Bar 
-                      key={key} 
-                      dataKey={key} 
-                      name={SCORE_LABELS[key as keyof typeof SCORE_LABELS]} 
-                      fill={CHART_COLORS[i % CHART_COLORS.length]} 
-                      radius={[2, 2, 0, 0]}
+                  {radarModels.map((m, i) => (
+                    <Radar
+                      key={m.model}
+                      name={m.model}
+                      dataKey={m.model}
+                      stroke={CHART_COLORS[i % CHART_COLORS.length]}
+                      fill={CHART_COLORS[i % CHART_COLORS.length]}
+                      fillOpacity={0.12}
+                      strokeWidth={2}
                       isAnimationActive={false}
                     />
                   ))}
-                </BarChart>
+                </RadarChart>
               </ResponsiveContainer>
+              )}
             </CardContent>
           </Card>
 

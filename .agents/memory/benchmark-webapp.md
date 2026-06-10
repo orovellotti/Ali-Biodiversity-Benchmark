@@ -61,6 +61,13 @@ must label it so higher always reads as better.
   DEFAULT_MODELS), NOT the server. The server's `lib/benchmark/config.ts`
   defaultModel is display-only. Keep the two in sync, but fixing a bad model
   means editing `config.py`.
+- The run list (`Run.models`) stores only PROVIDER KEYS (openai, anthropic…),
+  never resolved model names — meta.json never persists names. `RunHistory`
+  shows real names by mapping key→`defaultModel` from `useGetBenchmarkConfig`
+  at render time. **Caveat:** that reflects CURRENT config defaults, so if a
+  model-override env var changes between runs, old runs would display the new
+  name. Acceptable while overrides are unset; the "correct" fix is persisting
+  resolved names per-run server-side (OpenAPI + meta.json change).
 - Adding a new provider/model id touches FIVE places: (1) `config.py`
   PROVIDER_API_KEYS + DEFAULT_MODELS, (2) a provider class under
   `providers/` + register in `providers/__init__.py` PROVIDER_CLASSES,

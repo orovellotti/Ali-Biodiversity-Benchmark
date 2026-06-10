@@ -1,5 +1,10 @@
+import { useMemo } from "react";
 import { Link } from "wouter";
-import { useListRuns, getListRunsQueryKey } from "@workspace/api-client-react";
+import {
+  useListRuns,
+  getListRunsQueryKey,
+  useGetBenchmarkConfig,
+} from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -26,6 +31,17 @@ export function RunHistory({
       },
     },
   });
+
+  // Map provider keys (openai, anthropic…) to the real model names
+  // (gpt-4o-mini, claude-sonnet-4-5…) the benchmark actually runs.
+  const { data: config } = useGetBenchmarkConfig();
+  const modelNameById = useMemo(() => {
+    const map = new Map<string, string>();
+    config?.providers.forEach((p) => map.set(p.id, p.defaultModel));
+    return map;
+  }, [config]);
+  const modelNames = (ids: string[]) =>
+    ids.map((id) => modelNameById.get(id) ?? id).join(", ");
 
   const canDelete = !!onDelete;
   const latestCompleted = featured
@@ -56,7 +72,7 @@ export function RunHistory({
                   · {formatDateTime(latestCompleted.createdAt)}
                 </p>
                 <p className="text-xs text-muted-foreground mt-1 truncate">
-                  {latestCompleted.models.join(", ")}
+                  {modelNames(latestCompleted.models)}
                 </p>
               </div>
               <div className="shrink-0">
@@ -124,7 +140,7 @@ export function RunHistory({
                         )}
                       </div>
                       <p className="text-xs text-muted-foreground truncate">
-                        Modèles : {r.models.join(", ")}
+                        Modèles : {modelNames(r.models)}
                       </p>
                     </div>
                     <p className="text-xs text-muted-foreground shrink-0 font-mono">
