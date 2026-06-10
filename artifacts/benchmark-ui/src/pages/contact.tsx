@@ -121,8 +121,8 @@ export function Contact() {
                   {tr("Envoyer un autre message", "Send another message")}
                 </Button>
                 <Button asChild>
-                  <Link href="/console">
-                    {tr("Retour à la console", "Back to console")}
+                  <Link href="/">
+                    {tr("Retour à l'accueil", "Back to home")}
                   </Link>
                 </Button>
               </div>

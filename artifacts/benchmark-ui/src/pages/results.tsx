@@ -1,21 +1,13 @@
-import { Link } from "wouter";
 import { useI18n } from "@/lib/i18n";
 import { SiteHeader } from "@/components/site-header";
 import { RunHistory } from "@/components/run-history";
-import { Button } from "@/components/ui/button";
-import { ArrowRight, BarChart3 } from "lucide-react";
+import { BarChart3 } from "lucide-react";
 
 export function Results() {
   const { tr } = useI18n();
   return (
     <div className="min-h-screen bg-background">
-      <SiteHeader maxWidth="max-w-[1200px]">
-        <Button variant="outline" size="sm" asChild>
-          <Link href="/console">
-            <ArrowRight className="w-4 h-4 mr-2" /> Console
-          </Link>
-        </Button>
-      </SiteHeader>
+      <SiteHeader maxWidth="max-w-[1200px]" />
 
       <div className="max-w-[1200px] mx-auto px-6 py-10">
         <div className="mb-10">

@@ -19,7 +19,6 @@ export function SiteHeader({
     { href: "/resultats", label: tr("Résultats", "Results") },
     { href: "/questions", label: tr("Questions", "Questions") },
     { href: "/arena", label: tr("Arène", "Arena") },
-    { href: "/console", label: tr("Console", "Console") },
     { href: "/contact", label: tr("Contact", "Contact") },
   ];
 
