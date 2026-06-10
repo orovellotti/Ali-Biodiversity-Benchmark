@@ -200,3 +200,74 @@ export interface RunResults {
   rows: ResultRow[];
 }
 
+export interface ArenaOption {
+  response: string;
+}
+
+export interface ArenaDuel {
+  duelToken: string;
+  questionId: string;
+  /** @nullable */
+  question?: string | null;
+  /** @nullable */
+  topic?: string | null;
+  /** @nullable */
+  difficulty?: string | null;
+  optionA: ArenaOption;
+  optionB: ArenaOption;
+}
+
+export interface ArenaModel {
+  provider: string;
+  model: string;
+}
+
+export type ArenaVoteInputWinner = typeof ArenaVoteInputWinner[keyof typeof ArenaVoteInputWinner];
+
+
+export const ArenaVoteInputWinner = {
+  A: 'A',
+  B: 'B',
+  tie: 'tie',
+} as const;
+
+export interface ArenaVoteInput {
+  duelToken: string;
+  winner: ArenaVoteInputWinner;
+}
+
+export interface ArenaRanking {
+  provider: string;
+  model: string;
+  rating: number;
+  games: number;
+  wins: number;
+  losses: number;
+  ties: number;
+  /** @nullable */
+  winRate?: number | null;
+}
+
+export interface ArenaLeaderboard {
+  totalVotes: number;
+  rankings: ArenaRanking[];
+}
+
+export type ArenaVoteResultWinner = typeof ArenaVoteResultWinner[keyof typeof ArenaVoteResultWinner];
+
+
+export const ArenaVoteResultWinner = {
+  A: 'A',
+  B: 'B',
+  tie: 'tie',
+} as const;
+
+export interface ArenaVoteResult {
+  modelA: ArenaModel;
+  modelB: ArenaModel;
+  winner: ArenaVoteResultWinner;
+  ratingChangeA: number;
+  ratingChangeB: number;
+  leaderboard: ArenaLeaderboard;
+}
+

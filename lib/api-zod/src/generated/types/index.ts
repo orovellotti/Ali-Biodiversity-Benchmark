@@ -6,6 +6,15 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from './arenaDuel';
+export * from './arenaLeaderboard';
+export * from './arenaModel';
+export * from './arenaOption';
+export * from './arenaRanking';
+export * from './arenaVoteInput';
+export * from './arenaVoteInputWinner';
+export * from './arenaVoteResult';
+export * from './arenaVoteResultWinner';
 export * from './benchmarkConfig';
 export * from './contactInput';
 export * from './contactResult';

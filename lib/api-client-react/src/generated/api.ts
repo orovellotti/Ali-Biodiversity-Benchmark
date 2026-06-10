@@ -20,6 +20,10 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  ArenaDuel,
+  ArenaLeaderboard,
+  ArenaVoteInput,
+  ArenaVoteResult,
   BenchmarkConfig,
   ContactInput,
   ContactResult,
@@ -788,4 +792,230 @@ export const useSubmitContact = <TError = ErrorType<Error>,
       > => {
       return useMutation(getSubmitContactMutationOptions(options));
     }
+
+export const getGetArenaDuelUrl = () => {
+
+
+
+
+  return `/api/benchmark/arena/duel`
+}
+
+/**
+ * Pairs two distinct models' already-generated answers to a random question. Identities are hidden until a vote is cast.
+ * @summary Get a blind duel of two model answers to the same question
+ */
+export const getArenaDuel = async ( options?: RequestInit): Promise<ArenaDuel> => {
+
+  return customFetch<ArenaDuel>(getGetArenaDuelUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetArenaDuelQueryKey = () => {
+    return [
+    `/api/benchmark/arena/duel`
+    ] as const;
+    }
+
+
+export const getGetArenaDuelQueryOptions = <TData = Awaited<ReturnType<typeof getArenaDuel>>, TError = ErrorType<Error>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getArenaDuel>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetArenaDuelQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getArenaDuel>>> = ({ signal }) => getArenaDuel({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getArenaDuel>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetArenaDuelQueryResult = NonNullable<Awaited<ReturnType<typeof getArenaDuel>>>
+export type GetArenaDuelQueryError = ErrorType<Error>
+
+
+/**
+ * @summary Get a blind duel of two model answers to the same question
+ */
+
+export function useGetArenaDuel<TData = Awaited<ReturnType<typeof getArenaDuel>>, TError = ErrorType<Error>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getArenaDuel>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetArenaDuelQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getSubmitArenaVoteUrl = () => {
+
+
+
+
+  return `/api/benchmark/arena/vote`
+}
+
+/**
+ * @summary Record a blind vote and reveal the two models
+ */
+export const submitArenaVote = async (arenaVoteInput: ArenaVoteInput, options?: RequestInit): Promise<ArenaVoteResult> => {
+
+  return customFetch<ArenaVoteResult>(getSubmitArenaVoteUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      arenaVoteInput,)
+  }
+);}
+
+
+
+
+export const getSubmitArenaVoteMutationOptions = <TError = ErrorType<Error>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof submitArenaVote>>, TError,{data: BodyType<ArenaVoteInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof submitArenaVote>>, TError,{data: BodyType<ArenaVoteInput>}, TContext> => {
+
+const mutationKey = ['submitArenaVote'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof submitArenaVote>>, {data: BodyType<ArenaVoteInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  submitArenaVote(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SubmitArenaVoteMutationResult = NonNullable<Awaited<ReturnType<typeof submitArenaVote>>>
+    export type SubmitArenaVoteMutationBody = BodyType<ArenaVoteInput>
+    export type SubmitArenaVoteMutationError = ErrorType<Error>
+
+    /**
+ * @summary Record a blind vote and reveal the two models
+ */
+export const useSubmitArenaVote = <TError = ErrorType<Error>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof submitArenaVote>>, TError,{data: BodyType<ArenaVoteInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof submitArenaVote>>,
+        TError,
+        {data: BodyType<ArenaVoteInput>},
+        TContext
+      > => {
+      return useMutation(getSubmitArenaVoteMutationOptions(options));
+    }
+
+export const getGetArenaLeaderboardUrl = () => {
+
+
+
+
+  return `/api/benchmark/arena/leaderboard`
+}
+
+/**
+ * @summary Cumulative community Elo leaderboard from arena votes
+ */
+export const getArenaLeaderboard = async ( options?: RequestInit): Promise<ArenaLeaderboard> => {
+
+  return customFetch<ArenaLeaderboard>(getGetArenaLeaderboardUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetArenaLeaderboardQueryKey = () => {
+    return [
+    `/api/benchmark/arena/leaderboard`
+    ] as const;
+    }
+
+
+export const getGetArenaLeaderboardQueryOptions = <TData = Awaited<ReturnType<typeof getArenaLeaderboard>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getArenaLeaderboard>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetArenaLeaderboardQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getArenaLeaderboard>>> = ({ signal }) => getArenaLeaderboard({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getArenaLeaderboard>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetArenaLeaderboardQueryResult = NonNullable<Awaited<ReturnType<typeof getArenaLeaderboard>>>
+export type GetArenaLeaderboardQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Cumulative community Elo leaderboard from arena votes
+ */
+
+export function useGetArenaLeaderboard<TData = Awaited<ReturnType<typeof getArenaLeaderboard>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getArenaLeaderboard>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetArenaLeaderboardQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
 

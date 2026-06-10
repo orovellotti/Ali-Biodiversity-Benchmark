@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
 import {
@@ -15,7 +15,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SiteHeader } from "@/components/site-header";
 import { RunHistory } from "@/components/run-history";
-import { t } from "@/lib/format";
+import { useI18n } from "@/lib/i18n";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -31,7 +31,7 @@ import {
 } from "@/lib/admin";
 
 const runSchema = z.object({
-  models: z.array(z.string()).min(1, "Sélectionnez au moins un modèle"),
+  models: z.array(z.string()).min(1),
   topic: z.string().nullable(),
   limit: z.number().nullable().optional(),
   dryRun: z.boolean(),
@@ -45,10 +45,25 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
 }
 
 export function Home() {
+  const { tr, t } = useI18n();
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
 
   const { data: config, isLoading: configLoading } = useGetBenchmarkConfig();
+
+  const localizedSchema = useMemo(
+    () =>
+      z.object({
+        models: z
+          .array(z.string())
+          .min(1, tr("Sélectionnez au moins un modèle", "Select at least one model")),
+        topic: z.string().nullable(),
+        limit: z.number().nullable().optional(),
+        dryRun: z.boolean(),
+        noEval: z.boolean(),
+      }),
+    [tr],
+  );
 
   const createRun = useCreateRun();
   const deleteRun = useDeleteRun();
@@ -78,10 +93,13 @@ export function Home() {
         setAuthed(false);
         setLoginError(
           isAdminDisabledError(err)
-            ? "Le lancement d'évaluations est désactivé sur ce serveur."
+            ? tr(
+                "Le lancement d'évaluations est désactivé sur ce serveur.",
+                "Launching evaluations is disabled on this server.",
+              )
             : isAuthError(err)
-              ? "Mot de passe incorrect."
-              : "Connexion impossible. Réessayez.",
+              ? tr("Mot de passe incorrect.", "Incorrect password.")
+              : tr("Connexion impossible. Réessayez.", "Unable to connect. Try again."),
         );
       },
     });
@@ -97,11 +115,11 @@ export function Home() {
   const handleAuthFailure = () => {
     clearAdminToken();
     setAuthed(false);
-    setLoginError("Session expirée. Reconnectez-vous.");
+    setLoginError(tr("Session expirée. Reconnectez-vous.", "Session expired. Please log in again."));
   };
 
   const form = useForm<RunFormValues>({
-    resolver: zodResolver(runSchema),
+    resolver: zodResolver(localizedSchema),
     defaultValues: {
       models: [],
       topic: null,
@@ -135,7 +153,7 @@ export function Home() {
 
   const handleDelete = (id: string, e: React.MouseEvent) => {
     e.preventDefault();
-    if (!confirm("Supprimer ce run ?")) return;
+    if (!confirm(tr("Supprimer ce run ?", "Delete this run?"))) return;
     deleteRun.mutate(
       { runId: id },
       {
@@ -154,7 +172,7 @@ export function Home() {
       <SiteHeader maxWidth="max-w-[1200px]">
         <Button variant="outline" size="sm" asChild>
           <Link href="/resultats">
-            <BarChart3 className="w-4 h-4 mr-2" /> Résultats
+            <BarChart3 className="w-4 h-4 mr-2" /> {tr("Résultats", "Results")}
           </Link>
         </Button>
       </SiteHeader>
@@ -163,16 +181,18 @@ export function Home() {
         {/* Page intro */}
         <div className="mb-10">
           <div className="eyebrow mb-3">
-            <span className="text-primary">§</span> Poste de contrôle
+            <span className="text-primary">§</span> {tr("Poste de contrôle", "Control station")}
           </div>
           <h1 className="font-display text-4xl font-semibold tracking-tight">
-            Console de benchmark
+            {tr("Console de benchmark", "Benchmark console")}
           </h1>
           <p className="text-muted-foreground mt-2 text-[15px] max-w-2xl">
-            Lancez et gérez les évaluations. Cet espace est réservé : une
-            connexion est nécessaire. Pour consulter les résultats,{" "}
+            {tr(
+              "Lancez et gérez les évaluations. Cet espace est réservé : une connexion est nécessaire. Pour consulter les résultats,",
+              "Launch and manage evaluations. This area is restricted: login is required. To view the results,",
+            )}{" "}
             <Link href="/resultats" className="text-primary hover:underline">
-              rendez-vous sur la page Résultats
+              {tr("rendez-vous sur la page Résultats", "head to the Results page")}
             </Link>
             .
           </p>
@@ -182,10 +202,10 @@ export function Home() {
         <section>
           <div className="mb-5">
             <div className="eyebrow mb-1.5">
-              <span className="text-primary">§01</span> Espace réservé
+              <span className="text-primary">§01</span> {tr("Espace réservé", "Restricted area")}
             </div>
             <h2 className="font-display text-2xl font-semibold tracking-tight">
-              Lancer une nouvelle analyse
+              {tr("Lancer une nouvelle analyse", "Launch a new analysis")}
             </h2>
           </div>
 
@@ -193,17 +213,19 @@ export function Home() {
             <Card className="overflow-hidden max-w-md">
               <div className="px-6 py-4 border-b border-card-border bg-secondary/40 flex items-center gap-2">
                 <Lock className="w-4 h-4 text-primary" />
-                <div className="eyebrow !text-foreground/80">Connexion</div>
+                <div className="eyebrow !text-foreground/80">{tr("Connexion", "Login")}</div>
               </div>
               <CardContent className="p-6">
                 <p className="text-sm text-muted-foreground mb-4">
-                  Le lancement d'une évaluation est réservé. Saisissez le mot de
-                  passe pour accéder au formulaire.
+                  {tr(
+                    "Le lancement d'une évaluation est réservé. Saisissez le mot de passe pour accéder au formulaire.",
+                    "Launching an evaluation is restricted. Enter the password to access the form.",
+                  )}
                 </p>
                 <form onSubmit={submitLogin} className="space-y-3">
                   <Input
                     type="password"
-                    placeholder="Mot de passe administrateur"
+                    placeholder={tr("Mot de passe administrateur", "Administrator password")}
                     value={pwInput}
                     onChange={(e) => setPwInput(e.target.value)}
                   />
@@ -218,7 +240,9 @@ export function Home() {
                     className="w-full"
                     disabled={!pwInput.trim() || verifyAdmin.isPending}
                   >
-                    {verifyAdmin.isPending ? "Connexion..." : "Se connecter"}
+                    {verifyAdmin.isPending
+                      ? tr("Connexion...", "Connecting...")
+                      : tr("Se connecter", "Log in")}
                   </Button>
                 </form>
               </CardContent>
@@ -226,7 +250,7 @@ export function Home() {
           ) : (
             <Card className="overflow-hidden">
               <div className="px-6 py-4 border-b border-card-border bg-secondary/40 flex items-center justify-between">
-                <div className="eyebrow !text-foreground/80">Nouveau run</div>
+                <div className="eyebrow !text-foreground/80">{tr("Nouveau run", "New run")}</div>
                 <Button
                   type="button"
                   variant="ghost"
@@ -234,7 +258,7 @@ export function Home() {
                   className="h-7 text-xs text-muted-foreground"
                   onClick={logout}
                 >
-                  <LogOut className="w-3.5 h-3.5 mr-1.5" /> Déconnexion
+                  <LogOut className="w-3.5 h-3.5 mr-1.5" /> {tr("Déconnexion", "Log out")}
                 </Button>
               </div>
               <CardContent className="p-6">
@@ -245,12 +269,15 @@ export function Home() {
                   </div>
                 ) : !config ? (
                   <div className="text-destructive text-sm">
-                    Erreur de chargement de la configuration
+                    {tr(
+                      "Erreur de chargement de la configuration",
+                      "Error loading the configuration",
+                    )}
                   </div>
                 ) : (
                   <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                     <div>
-                      <FieldLabel>Modèles à évaluer</FieldLabel>
+                      <FieldLabel>{tr("Modèles à évaluer", "Models to evaluate")}</FieldLabel>
                       <div className="space-y-2">
                         {config.providers.map((p) => (
                           <Controller
@@ -292,14 +319,18 @@ export function Home() {
                                     </span>
                                     {p.id === "openai-small" && p.available && (
                                       <span className="text-xs text-muted-foreground mt-1">
-                                        Petit modèle « baseline » volontairement
-                                        plus faible (comparaison)
+                                        {tr(
+                                          "Petit modèle « baseline » volontairement plus faible (comparaison)",
+                                          "Small \u201cbaseline\u201d model intentionally weaker (for comparison)",
+                                        )}
                                       </span>
                                     )}
                                     {!p.available && (
                                       <span className="text-xs text-muted-foreground mt-1">
-                                        Non disponible (clé API manquante ou
-                                        serveur local hors ligne)
+                                        {tr(
+                                          "Non disponible (clé API manquante ou serveur local hors ligne)",
+                                          "Unavailable (missing API key or local server offline)",
+                                        )}
                                       </span>
                                     )}
                                   </div>
@@ -317,7 +348,7 @@ export function Home() {
                     </div>
 
                     <div>
-                      <FieldLabel>Filtre par famille (optionnel)</FieldLabel>
+                      <FieldLabel>{tr("Filtre par famille (optionnel)", "Filter by family (optional)")}</FieldLabel>
                       <Controller
                         name="topic"
                         control={form.control}
@@ -329,7 +360,7 @@ export function Home() {
                               field.onChange(e.target.value || null)
                             }
                           >
-                            <option value="">Toutes les familles</option>
+                            <option value="">{tr("Toutes les familles", "All families")}</option>
                             {config.topics.map((t_id) => (
                               <option key={t_id} value={t_id}>
                                 {t(t_id)}
@@ -341,7 +372,7 @@ export function Home() {
                     </div>
 
                     <div>
-                      <FieldLabel>Limite de questions (optionnel)</FieldLabel>
+                      <FieldLabel>{tr("Limite de questions (optionnel)", "Question limit (optional)")}</FieldLabel>
                       <Controller
                         name="limit"
                         control={form.control}
@@ -383,10 +414,13 @@ export function Home() {
                         />
                         <div className="grid gap-0.5 leading-none">
                           <span className="text-sm font-medium">
-                            Simulation (dry-run)
+                            {tr("Simulation (dry-run)", "Simulation (dry-run)")}
                           </span>
                           <span className="text-xs text-muted-foreground">
-                            Aucun appel API réel ne sera effectué.
+                            {tr(
+                              "Aucun appel API réel ne sera effectué.",
+                              "No real API calls will be made.",
+                            )}
                           </span>
                         </div>
                       </label>
@@ -409,11 +443,13 @@ export function Home() {
                         />
                         <div className="grid gap-0.5 leading-none">
                           <span className="text-sm font-medium">
-                            Sauter l'évaluation
+                            {tr("Sauter l'évaluation", "Skip the evaluation")}
                           </span>
                           <span className="text-xs text-muted-foreground">
-                            Les réponses seront générées mais non notées par le
-                            juge.
+                            {tr(
+                              "Les réponses seront générées mais non notées par le juge.",
+                              "Answers will be generated but not graded by the judge.",
+                            )}
                           </span>
                         </div>
                       </label>
@@ -425,16 +461,17 @@ export function Home() {
                         <div className="p-3 bg-ochre/10 border border-ochre/30 rounded-md flex items-start gap-2 text-ochre">
                           <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
                           <p className="text-xs">
-                            Le modèle juge ({config.judgeModel}) n'est pas
-                            disponible. L'évaluation sera sautée sauf si une clé
-                            API est fournie.
+                            {tr(
+                              `Le modèle juge (${config.judgeModel}) n'est pas disponible. L'évaluation sera sautée sauf si une clé API est fournie.`,
+                              `The judge model (${config.judgeModel}) is not available. The evaluation will be skipped unless an API key is provided.`,
+                            )}
                           </p>
                         </div>
                       )}
 
                     <div className="pt-4 flex items-center justify-between border-t border-border">
                       <div className="text-xs text-muted-foreground">
-                        Est. requêtes
+                        {tr("Est. requêtes", "Est. requests")}
                         <span className="font-mono font-bold text-foreground ml-1.5 tabular-nums">
                           {estimatedRequests}
                         </span>
@@ -446,10 +483,10 @@ export function Home() {
                         }
                       >
                         {createRun.isPending ? (
-                          "Lancement..."
+                          tr("Lancement...", "Launching...")
                         ) : (
                           <>
-                            <Lock className="w-3.5 h-3.5 mr-2" /> Lancer
+                            <Lock className="w-3.5 h-3.5 mr-2" /> {tr("Lancer", "Launch")}
                           </>
                         )}
                       </Button>
@@ -466,20 +503,25 @@ export function Home() {
           <section className="mt-14">
             <div className="mb-5">
               <div className="eyebrow mb-1.5">
-                <span className="text-primary">§02</span> Gestion
+                <span className="text-primary">§02</span> {tr("Gestion", "Management")}
               </div>
               <h2 className="font-display text-2xl font-semibold tracking-tight">
-                Gérer les analyses
+                {tr("Gérer les analyses", "Manage analyses")}
               </h2>
               <p className="text-muted-foreground mt-2 text-[15px] max-w-2xl">
-                Survolez un run pour le supprimer, ou cliquez pour ouvrir son
-                tableau de bord.
+                {tr(
+                  "Survolez un run pour le supprimer, ou cliquez pour ouvrir son tableau de bord.",
+                  "Hover over a run to delete it, or click to open its dashboard.",
+                )}
               </p>
             </div>
             <RunHistory
               featured={false}
               onDelete={handleDelete}
-              emptyHint="Lancez une première évaluation ci-dessus."
+              emptyHint={tr(
+                "Lancez une première évaluation ci-dessus.",
+                "Launch a first evaluation above.",
+              )}
             />
           </section>
         )}

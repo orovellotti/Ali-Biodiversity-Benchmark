@@ -8,7 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { t, formatDateTime } from "@/lib/format";
+import { useI18n } from "@/lib/i18n";
 import { Trash2, ArrowRight, BarChart3 } from "lucide-react";
 
 export function RunHistory({
@@ -20,6 +20,7 @@ export function RunHistory({
   featured?: boolean;
   emptyHint?: string;
 }) {
+  const { tr, t, formatDateTime } = useI18n();
   const { data: runs, isLoading: runsLoading } = useListRuns({
     query: {
       queryKey: getListRunsQueryKey(),
@@ -56,16 +57,18 @@ export function RunHistory({
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
               <div className="min-w-0">
                 <div className="eyebrow mb-2 flex items-center gap-2 !text-primary">
-                  <BarChart3 className="w-3.5 h-3.5" /> Dernier résultat
+                  <BarChart3 className="w-3.5 h-3.5" />{" "}
+                  {tr("Dernier résultat", "Latest result")}
                 </div>
                 <h3 className="font-display text-2xl font-semibold tracking-tight">
-                  Évaluation {latestCompleted.id.split("-").pop()}
+                  {tr("Évaluation", "Evaluation")}{" "}
+                  {latestCompleted.id.split("-").pop()}
                 </h3>
                 <p className="text-sm text-muted-foreground mt-2">
                   <span className="font-medium text-foreground">
-                    {latestCompleted.models.length} modèles
+                    {latestCompleted.models.length} {tr("modèles", "models")}
                   </span>{" "}
-                  comparés sur{" "}
+                  {tr("comparés sur", "compared on")}{" "}
                   <span className="font-medium text-foreground">
                     {latestCompleted.completed} questions
                   </span>{" "}
@@ -77,7 +80,7 @@ export function RunHistory({
               </div>
               <div className="shrink-0">
                 <Button size="lg" className="w-full sm:w-auto">
-                  Voir les résultats
+                  {tr("Voir les résultats", "View results")}
                   <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-0.5 transition-transform" />
                 </Button>
               </div>
@@ -87,7 +90,7 @@ export function RunHistory({
       )}
 
       {latestCompleted && runs && runs.length > 1 && (
-        <div className="eyebrow mb-4 !text-foreground/60">Historique complet</div>
+        <div className="eyebrow mb-4 !text-foreground/60">{tr("Historique complet", "Full history")}</div>
       )}
 
       {runsLoading ? (
@@ -98,7 +101,7 @@ export function RunHistory({
       ) : !runs || runs.length === 0 ? (
         <div className="p-12 text-center border border-dashed border-border rounded-xl bg-card/40">
           <p className="text-muted-foreground">
-            Aucun run n'a été lancé pour le moment.
+            {tr("Aucun run n'a été lancé pour le moment.", "No run has been launched yet.")}
           </p>
           {emptyHint && (
             <p className="text-sm text-muted-foreground/70 mt-1">{emptyHint}</p>
@@ -134,13 +137,19 @@ export function RunHistory({
                         >
                           {t(r.status)}
                         </Badge>
-                        {r.dryRun && <Badge variant="outline">Simulation</Badge>}
+                        {r.dryRun && (
+                          <Badge variant="outline">
+                            {tr("Simulation", "Simulation")}
+                          </Badge>
+                        )}
                         {r.noEval && (
-                          <Badge variant="outline">Sans évaluation</Badge>
+                          <Badge variant="outline">
+                            {tr("Sans évaluation", "No evaluation")}
+                          </Badge>
                         )}
                       </div>
                       <p className="text-xs text-muted-foreground truncate">
-                        Modèles : {modelNames(r.models)}
+                        {tr("Modèles", "Models")} : {modelNames(r.models)}
                       </p>
                     </div>
                     <p className="text-xs text-muted-foreground shrink-0 font-mono">
@@ -167,11 +176,12 @@ export function RunHistory({
                     <div className="mt-2 text-xs">
                       {r.status === "completed" ? (
                         <span className="text-primary font-medium">
-                          {r.completed} questions traitées
+                          {r.completed}{" "}
+                          {tr("questions traitées", "questions processed")}
                         </span>
                       ) : (
                         <span className="text-destructive truncate block max-w-full">
-                          {r.error || "Erreur inconnue"}
+                          {r.error || tr("Erreur inconnue", "Unknown error")}
                         </span>
                       )}
                     </div>

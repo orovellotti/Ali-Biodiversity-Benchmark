@@ -1,2 +1,4 @@
-- [Biodiversity benchmark web app](benchmark-webapp.md) — React/Express UI wraps the Python CLI; local-subprocess polling (no 5min floor), inverted hallucination score, French UI, YAML description gotcha.
+- [Biodiversity benchmark web app](benchmark-webapp.md) — React/Express UI wraps the Python CLI; local-subprocess polling (no 5min floor), inverted hallucination score, YAML description gotcha.
+- [benchmark-ui i18n](benchmark-i18n.md) — bilingual FR/EN via co-located tr(fr,en) + language-aware t(key); brand is "ALI Biodiversity Benchmark"; memo deps must include tr.
 - [benchmark-ui design system](benchmark-ui-design.md) — "Carnet de terrain" concept (Fraunces+Inter+mono, paper/green/ochre); ochre = inverted hallucination risk only.
+- [benchmark-ui arena](benchmark-arena.md) — blind duels reuse stored answers (no live calls); HMAC-signed duel token makes public votes forge-proof; Elo replay leaderboard.

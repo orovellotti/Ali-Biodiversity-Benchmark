@@ -1,15 +1,8 @@
 import type { ReactNode } from "react";
 import { Link, useLocation } from "wouter";
 import { Leaf } from "lucide-react";
-import { DarkModeToggle } from "@/components/controls";
-
-const NAV = [
-  { href: "/", label: "Démarche" },
-  { href: "/resultats", label: "Résultats" },
-  { href: "/questions", label: "Questions" },
-  { href: "/console", label: "Console" },
-  { href: "/contact", label: "Contact" },
-];
+import { DarkModeToggle, LanguageToggle } from "@/components/controls";
+import { useI18n } from "@/lib/i18n";
 
 export function SiteHeader({
   children,
@@ -19,6 +12,16 @@ export function SiteHeader({
   maxWidth?: string;
 }) {
   const [loc] = useLocation();
+  const { tr } = useI18n();
+
+  const nav = [
+    { href: "/", label: tr("Démarche", "About") },
+    { href: "/resultats", label: tr("Résultats", "Results") },
+    { href: "/questions", label: tr("Questions", "Questions") },
+    { href: "/arena", label: tr("Arène", "Arena") },
+    { href: "/console", label: tr("Console", "Console") },
+    { href: "/contact", label: tr("Contact", "Contact") },
+  ];
 
   return (
     <header className="sticky top-0 z-30 border-b border-border/70 bg-background/80 backdrop-blur-md print:hidden">
@@ -28,23 +31,23 @@ export function SiteHeader({
         <Link
           href="/"
           className="flex items-center gap-2.5 shrink-0"
-          aria-label="Accueil"
+          aria-label={tr("Accueil", "Home")}
         >
           <span className="flex items-center justify-center w-8 h-8 rounded-md bg-primary text-primary-foreground">
             <Leaf className="w-4 h-4" />
           </span>
           <span className="flex flex-col leading-none">
             <span className="font-display text-[15px] font-semibold tracking-tight">
-              Biodiversity Benchmark
+              ALI Biodiversity Benchmark
             </span>
             <span className="text-[9px] uppercase tracking-[0.28em] text-muted-foreground font-mono mt-1">
-              carnet de terrain
+              {tr("carnet de terrain", "field notebook")}
             </span>
           </span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-1 absolute left-1/2 -translate-x-1/2">
-          {NAV.map((item) => {
+          {nav.map((item) => {
             const active =
               item.href === "/" ? loc === "/" : loc.startsWith(item.href);
             return (
@@ -65,6 +68,7 @@ export function SiteHeader({
 
         <div className="flex items-center gap-2 shrink-0">
           {children}
+          <LanguageToggle />
           <DarkModeToggle />
         </div>
       </div>

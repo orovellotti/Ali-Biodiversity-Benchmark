@@ -77,7 +77,7 @@ function toRow(raw: RawRow): ResultRow {
   };
 }
 
-function readRows(id: string): ResultRow[] {
+export function readRows(id: string): ResultRow[] {
   const file = path.join(runDir(id), "evaluated_results.jsonl");
   let content: string;
   try {

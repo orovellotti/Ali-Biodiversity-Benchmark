@@ -1,4 +1,4 @@
-# Biodiversity Judgment Benchmark
+# ALI Biodiversity Benchmark
 
 A Python CLI (`biodiversity-benchmark/`) that benchmarks multiple LLMs (OpenAI, Anthropic, Mistral, Gemini, Ollama) against the 800-question biodiversity judgment dataset, scores answers with an OpenAI LLM-as-judge, and produces comparative CSV + Markdown reports.
 
@@ -36,8 +36,9 @@ _The sections below describe the pnpm/TypeScript workspace scaffold that ships w
 ## Where things live
 
 - API contract (source of truth): `lib/api-spec/openapi.yaml` → run codegen to regenerate hooks/Zod (`@workspace/api-client-react`, `@workspace/api-zod`).
-- Benchmark backend: `artifacts/api-server/src/lib/benchmark/*` (paths, dataset, config, runner, results) + `src/routes/benchmark.ts` (mounted under `/api`).
-- Web front end (French): `artifacts/benchmark-ui` (React/Vite, previewPath `/`). Pages in `src/pages/{home,run-detail,results-dashboard}.tsx`; French label helpers in `src/lib/format.ts`.
+- Benchmark backend: `artifacts/api-server/src/lib/benchmark/*` (paths, dataset, config, runner, results, arena) + `src/routes/benchmark.ts` (mounted under `/api`).
+- Arena backend: `artifacts/api-server/src/lib/benchmark/arena.ts` (answer index across runs, HMAC-signed duel tokens, append-only votes, Elo replay leaderboard); votes at `biodiversity-benchmark/arena/votes.jsonl`.
+- Web front end (French): `artifacts/benchmark-ui` (React/Vite, previewPath `/`). Pages in `src/pages/{home,run-detail,results-dashboard,arena}.tsx`; French label helpers in `src/lib/format.ts`.
 - Python CLI (unchanged engine): `biodiversity-benchmark/main.py`.
 
 ## Architecture decisions
@@ -47,10 +48,12 @@ _The sections below describe the pnpm/TypeScript workspace scaffold that ships w
 - Live progress is polled ~2s from the UI (local subprocess — the data-viz 5-min refresh floor deliberately does not apply).
 - `runId` is strictly validated (regex + path-containment) before any filesystem op to prevent path traversal; run inputs (models/topic/limit) are validated server-side (400 on bad input).
 - `regulatory_hallucination_risk` is an inverted score (5 = no risk); the UI labels it so higher always reads as better.
+- The UI is bilingual FR/EN via a lightweight context in `src/lib/i18n.tsx`: `useI18n()` returns `tr(fr, en)` for inline chrome, a language-aware `t(key)` for dynamic data labels (topics/status/scores/phases), and a locale-aware `formatDateTime`. Language persists in localStorage (`benchmark-lang`, default `fr`); switch via the FR/EN toggle in the header. Dataset content (questions/answers) stays French.
+- Arena (`/arena`): Chatbot-Arena-style blind duels that **reuse already-generated run answers** — no live LLM calls. A duel pairs two distinct models' stored answers to the same dataset question. The reveal is forge-proof via an HMAC-signed duel token (prefers `SESSION_SECRET`, else a random per-process secret — never hardcoded); the vote endpoint is intentionally **public** ("communautaire"). Votes are append-only JSONL replayed through Elo (init 1000, K=24) to compute the leaderboard. The answer index keeps the newest answer per model+question and excludes empty/errored/`[DRY-RUN]` responses.
 
 ## Product
 
-A French-language control room for benchmarking LLMs (OpenAI, Anthropic, Mistral, Gemini) against the 800-question biodiversity judgment dataset. Users configure & launch runs (pick models/topic/limit, dry-run, skip-eval), watch live progress, and explore results: model rankings, comparative charts by topic/difficulty, and a filterable per-question drill-down with raw answers and judge verdicts. CSV export per table/chart and PDF print of the results page.
+A French-language control room for benchmarking LLMs (OpenAI, Anthropic, Mistral, Gemini) against the 800-question biodiversity judgment dataset. Users configure & launch runs (pick models/topic/limit, dry-run, skip-eval), watch live progress, and explore results: model rankings, comparative charts by topic/difficulty, and a filterable per-question drill-down with raw answers and judge verdicts. CSV export per table/chart and PDF print of the results page. An **Arena** (`/arena`) offers Chatbot-Arena-style blind duels over already-generated answers: blind vote → reveal models + per-vote Elo deltas, plus a cumulative community Elo leaderboard.
 
 ## User preferences
 

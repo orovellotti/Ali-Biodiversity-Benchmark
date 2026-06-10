@@ -2,11 +2,14 @@ import { Router, type IRouter, type RequestHandler } from "express";
 import { createHash, timingSafeEqual } from "node:crypto";
 import {
   CreateRunBody,
+  GetArenaDuelResponse,
+  GetArenaLeaderboardResponse,
   GetBenchmarkConfigResponse,
   GetRunResponse,
   GetRunResultsResponse,
   ListRunsResponse,
   ListQuestionsResponse,
+  SubmitArenaVoteBody,
   SubmitContactBody,
 } from "@workspace/api-zod";
 import { appendFileSync } from "node:fs";
@@ -21,6 +24,12 @@ import {
   ValidationError,
 } from "../lib/benchmark/runner";
 import { getRunResults } from "../lib/benchmark/results";
+import {
+  ArenaVoteError,
+  buildDuel,
+  getLeaderboard,
+  recordVote,
+} from "../lib/benchmark/arena";
 
 const router: IRouter = Router();
 
@@ -147,6 +156,43 @@ router.post("/benchmark/contact", (req, res) => {
       error: "Erreur interne lors de l'envoi du message.",
     });
   }
+});
+
+// --- Community arena (blind duels over already-generated answers) ---------
+
+router.get("/benchmark/arena/duel", (_req, res) => {
+  const duel = buildDuel();
+  if (!duel) {
+    res.status(404).json({
+      error:
+        "Pas assez de réponses générées pour créer un duel (il faut au moins deux modèles ayant répondu à une même question).",
+    });
+    return;
+  }
+  res.json(GetArenaDuelResponse.parse(duel));
+});
+
+router.post("/benchmark/arena/vote", (req, res) => {
+  const parsed = SubmitArenaVoteBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.issues[0]?.message ?? "Vote invalide" });
+    return;
+  }
+  try {
+    const result = recordVote(parsed.data.duelToken, parsed.data.winner);
+    res.status(201).json(result);
+  } catch (err) {
+    if (err instanceof ArenaVoteError) {
+      res.status(400).json({ error: err.message });
+      return;
+    }
+    req.log.error({ err }, "Échec de l'enregistrement du vote arène");
+    res.status(500).json({ error: "Erreur interne lors de l'enregistrement du vote." });
+  }
+});
+
+router.get("/benchmark/arena/leaderboard", (_req, res) => {
+  res.json(GetArenaLeaderboardResponse.parse(getLeaderboard()));
 });
 
 export default router;

@@ -42,6 +42,16 @@ export function contactFilePath(): string {
   return path.join(dir, "contact.jsonl");
 }
 
+/**
+ * JSONL file where community arena votes are appended. Lives outside `runs/`
+ * so it is never mistaken for a benchmark run by `listRuns`.
+ */
+export function arenaVotesFilePath(): string {
+  const dir = path.join(benchmarkDir(), "arena");
+  fs.mkdirSync(dir, { recursive: true });
+  return path.join(dir, "votes.jsonl");
+}
+
 const RUN_ID_RE = /^[A-Za-z0-9_-]+$/;
 
 /** Validate a runId and resolve its directory, guarding against path traversal. */

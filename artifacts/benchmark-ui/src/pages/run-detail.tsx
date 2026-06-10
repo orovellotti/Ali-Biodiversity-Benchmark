@@ -8,7 +8,7 @@ import {
 } from "@workspace/api-client-react";
 import { SiteHeader } from "@/components/site-header";
 import { PrintButton } from "@/components/controls";
-import { t, formatDateTime } from "@/lib/format";
+import { useI18n } from "@/lib/i18n";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -16,6 +16,7 @@ import { ChevronLeft, Loader2, AlertTriangle, CheckCircle2 } from "lucide-react"
 import { ResultsDashboard } from "./results-dashboard";
 
 export function RunDetail() {
+  const { tr, t, formatDateTime } = useI18n();
   const [, params] = useRoute("/runs/:id");
   const runId = params?.id || "";
 
@@ -64,13 +65,16 @@ export function RunDetail() {
           <div className="max-w-xl mx-auto text-center space-y-4">
             <AlertTriangle className="w-12 h-12 text-destructive mx-auto" />
             <h1 className="font-display text-2xl font-semibold">
-              Run introuvable
+              {tr("Run introuvable", "Run not found")}
             </h1>
             <p className="text-muted-foreground">
-              Le benchmark avec l'ID {runId} n'existe pas ou a été supprimé.
+              {tr(
+                `Le benchmark avec l'ID ${runId} n'existe pas ou a été supprimé.`,
+                `The benchmark with ID ${runId} does not exist or has been deleted.`,
+              )}
             </p>
             <Link href="/resultats" className="text-primary hover:underline">
-              Retour aux résultats
+              {tr("Retour aux résultats", "Back to results")}
             </Link>
           </div>
         </div>
@@ -93,7 +97,7 @@ export function RunDetail() {
           href="/resultats"
           className="eyebrow hover:text-foreground transition-colors mb-4 print:hidden"
         >
-          <ChevronLeft className="w-3.5 h-3.5" /> Retour aux résultats
+          <ChevronLeft className="w-3.5 h-3.5" /> {tr("Retour aux résultats", "Back to results")}
         </Link>
 
         <div className="mb-8 flex flex-wrap items-start justify-between gap-x-4 gap-y-3">
@@ -115,28 +119,28 @@ export function RunDetail() {
               </Badge>
             </h1>
             <p className="text-muted-foreground mt-2 text-[14px]">
-              Modèles : {run.models.join(", ")}
-              {run.topic && ` • Famille : ${t(run.topic)}`}
-              {run.limit && ` • Limite : ${run.limit}`}
+              {tr("Modèles", "Models")} : {run.models.join(", ")}
+              {run.topic && ` • ${tr("Famille", "Family")} : ${t(run.topic)}`}
+              {run.limit && ` • ${tr("Limite", "Limit")} : ${run.limit}`}
             </p>
             <div className="flex flex-wrap items-center gap-1.5 mt-3">
               {run.dryRun && (
                 <span className="text-[11px] font-mono uppercase tracking-wider rounded-full px-2.5 py-0.5 bg-muted text-muted-foreground">
-                  Simulation
+                  {tr("Simulation", "Dry run")}
                 </span>
               )}
               {run.noEval && (
                 <span className="text-[11px] font-mono uppercase tracking-wider rounded-full px-2.5 py-0.5 bg-muted text-muted-foreground">
-                  Sans évaluation
+                  {tr("Sans évaluation", "No evaluation")}
                 </span>
               )}
               {!run.noEval && run.judgeModel && (
                 <span className="text-[11px] font-mono uppercase tracking-wider rounded-full px-2.5 py-0.5 bg-primary/10 text-primary">
-                  Juge : {run.judgeModel}
+                  {tr("Juge", "Judge")} : {run.judgeModel}
                 </span>
               )}
               <span className="text-[12px] text-muted-foreground ml-1">
-                Lancé le {formatDateTime(run.createdAt)}
+                {tr("Lancé le", "Started on")} {formatDateTime(run.createdAt)}
               </span>
             </div>
           </div>
@@ -150,15 +154,17 @@ export function RunDetail() {
               <div className="flex items-center justify-between mb-4 gap-4">
                 <div>
                   <div className="eyebrow mb-1.5 !text-primary">
-                    En cours d'exécution
+                    {tr("En cours d'exécution", "In progress")}
                   </div>
                   <h3 className="font-display font-semibold text-xl flex items-center gap-2">
                     <Loader2 className="w-5 h-5 animate-spin text-primary" />
                     {t(run.phase)}
                   </h3>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Le benchmark tourne en local. Vous pouvez quitter cette page,
-                    la progression est sauvegardée.
+                    {tr(
+                      "Le benchmark tourne en local. Vous pouvez quitter cette page, la progression est sauvegardée.",
+                      "The benchmark is running locally. You can leave this page; progress is saved.",
+                    )}
                   </p>
                 </div>
                 <div className="text-right shrink-0">
@@ -188,7 +194,7 @@ export function RunDetail() {
                 <AlertTriangle className="w-6 h-6 text-destructive shrink-0 mt-0.5" />
                 <div className="min-w-0">
                   <h3 className="font-display font-semibold text-destructive text-lg">
-                    Échec de l'exécution
+                    {tr("Échec de l'exécution", "Run failed")}
                   </h3>
                   <pre className="mt-2 text-sm bg-background p-4 rounded-md border border-border overflow-x-auto text-destructive whitespace-pre-wrap font-mono">
                     {run.error}
@@ -205,7 +211,7 @@ export function RunDetail() {
             <CardContent className="p-6 text-center space-y-4">
               <CheckCircle2 className="w-12 h-12 text-primary mx-auto" />
               <h3 className="font-display font-semibold text-lg">
-                Génération du rapport…
+                {tr("Génération du rapport…", "Generating report…")}
               </h3>
               <Skeleton className="h-64 w-full" />
             </CardContent>

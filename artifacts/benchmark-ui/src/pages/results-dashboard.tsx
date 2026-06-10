@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { t } from "@/lib/format";
+import { useI18n } from "@/lib/i18n";
 import { Run, RunResults } from "@workspace/api-client-react";
 import { Download, CheckCircle2, AlertTriangle, Award, ShieldCheck, Compass, ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -25,44 +25,14 @@ const CHART_COLORS = [
   "#5b8c6e", // sage
 ];
 
-const SCORE_LABELS = {
-  overallScore: t("overallScore"),
-  accuracy: t("accuracy"),
-  uncertaintyHandling: t("uncertaintyHandling"),
-  justificationQuality: t("justificationQuality"),
-  sourceAwareness: t("sourceAwareness"),
-  regulatoryHallucinationRisk: "Risque d'hallucination (5 = aucun)",
-};
-
-// Plain-language descriptions of each scoring dimension, written for a
-// scientific (non-ML) audience. Each note is rated from 0 to 5.
-const DIMENSION_GLOSSARY: { label: string; description: string }[] = [
-  {
-    label: "Exactitude",
-    description:
-      "La réponse est-elle juste sur le fond, conforme aux connaissances écologiques et réglementaires ?",
-  },
-  {
-    label: "Gestion de l'incertitude",
-    description:
-      "Le modèle reconnaît-il ses limites et nuance-t-il quand la question est ambiguë, plutôt que d'affirmer à tort ?",
-  },
-  {
-    label: "Qualité de la justification",
-    description:
-      "Le raisonnement est-il clair, structuré et explicité, ou la réponse tombe-t-elle sans explication ?",
-  },
-  {
-    label: "Conscience des sources",
-    description:
-      "Le modèle s'appuie-t-il sur des références pertinentes (textes, protocoles) au lieu d'inventer ?",
-  },
-  {
-    label: "Risque d'hallucination (5 = aucun)",
-    description:
-      "Mesure inversée : une note élevée signifie que le modèle invente peu de faits ou de références. C'est le critère de prudence le plus important.",
-  },
-];
+const SCORE_LABEL_KEYS = [
+  "overallScore",
+  "accuracy",
+  "uncertaintyHandling",
+  "justificationQuality",
+  "sourceAwareness",
+  "regulatoryHallucinationRisk",
+] as const;
 
 function exportToCSV(filename: string, data: any[], headers: string[]) {
   if (data.length === 0) return;
@@ -91,6 +61,51 @@ function exportToCSV(filename: string, data: any[], headers: string[]) {
 }
 
 export function ResultsDashboard({ results, run }: { results: RunResults; run: Run }) {
+  const { tr, t } = useI18n();
+
+  // Plain-language descriptions of each scoring dimension, written for a
+  // scientific (non-ML) audience. Each note is rated from 0 to 5.
+  const DIMENSION_GLOSSARY: { label: string; description: string }[] = useMemo(
+    () => [
+      {
+        label: tr("Exactitude", "Accuracy"),
+        description: tr(
+          "La réponse est-elle juste sur le fond, conforme aux connaissances écologiques et réglementaires ?",
+          "Is the answer factually correct and consistent with ecological and regulatory knowledge?",
+        ),
+      },
+      {
+        label: tr("Gestion de l'incertitude", "Uncertainty handling"),
+        description: tr(
+          "Le modèle reconnaît-il ses limites et nuance-t-il quand la question est ambiguë, plutôt que d'affirmer à tort ?",
+          "Does the model acknowledge its limits and add nuance when the question is ambiguous, rather than asserting incorrectly?",
+        ),
+      },
+      {
+        label: tr("Qualité de la justification", "Justification quality"),
+        description: tr(
+          "Le raisonnement est-il clair, structuré et explicité, ou la réponse tombe-t-elle sans explication ?",
+          "Is the reasoning clear, structured and explicit, or does the answer come without any explanation?",
+        ),
+      },
+      {
+        label: tr("Conscience des sources", "Source awareness"),
+        description: tr(
+          "Le modèle s'appuie-t-il sur des références pertinentes (textes, protocoles) au lieu d'inventer ?",
+          "Does the model rely on relevant references (texts, protocols) instead of making things up?",
+        ),
+      },
+      {
+        label: tr("Risque d'hallucination (5 = aucun)", "Hallucination risk (5 = none)"),
+        description: tr(
+          "Mesure inversée : une note élevée signifie que le modèle invente peu de faits ou de références. C'est le critère de prudence le plus important.",
+          "Inverted measure: a high score means the model invents few facts or references. This is the most important caution criterion.",
+        ),
+      },
+    ],
+    [tr],
+  );
+
   const isDark = document.documentElement.classList.contains("dark");
   const gridColor = isDark ? "rgba(255,255,255,0.08)" : "#e5e5e5";
   const tickColor = isDark ? "#98999C" : "#71717a";
@@ -148,11 +163,11 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
           type="button"
           onClick={() => toggleSort(key)}
           className="group inline-flex items-center gap-1 -ml-1 px-1 py-0.5 rounded hover:text-foreground transition-colors"
-          aria-label={`Trier par ${label}${
+          aria-label={`${tr("Trier par", "Sort by")} ${label}${
             active
               ? sortDir === "asc"
-                ? ", ordre croissant"
-                : ", ordre décroissant"
+                ? tr(", ordre croissant", ", ascending order")
+                : tr(", ordre décroissant", ", descending order")
               : ""
           }`}
         >
@@ -192,12 +207,12 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
 
   // Radar: one axis per scoring dimension, one polygon per model. Only models
   // that actually have scores are plotted (a fully-failed model would be empty).
-  const RADAR_DIMS: { key: keyof typeof SCORE_LABELS; label: string }[] = [
-    { key: "accuracy", label: "Exactitude" },
-    { key: "uncertaintyHandling", label: "Incertitude" },
-    { key: "justificationQuality", label: "Justification" },
-    { key: "sourceAwareness", label: "Sources" },
-    { key: "regulatoryHallucinationRisk", label: "Anti-hallucination" },
+  const RADAR_DIMS: { key: (typeof SCORE_LABEL_KEYS)[number]; label: string }[] = [
+    { key: "accuracy", label: tr("Exactitude", "Accuracy") },
+    { key: "uncertaintyHandling", label: tr("Incertitude", "Uncertainty") },
+    { key: "justificationQuality", label: tr("Justification", "Justification") },
+    { key: "sourceAwareness", label: tr("Sources", "Sources") },
+    { key: "regulatoryHallucinationRisk", label: tr("Anti-hallucination", "Anti-hallucination") },
   ];
   const radarModels = useMemo(
     () => results.summaryByModel.filter((m) => m.overallScore != null),
@@ -212,7 +227,7 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
         });
         return row;
       }),
-    [radarModels],
+    [radarModels, tr],
   );
 
   const uniqueTopics = useMemo(() => [...new Set(results.rows.map(r => r.topic).filter(Boolean) as string[])], [results.rows]);
@@ -257,23 +272,18 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
           <CardContent className="p-6">
             <div className="eyebrow mb-1.5 flex items-center gap-1.5">
               <Compass className="w-3.5 h-3.5" />
-              Comment lire ces résultats
+              {tr("Comment lire ces résultats", "How to read these results")}
             </div>
             <h2 className="font-display text-2xl font-semibold tracking-tight mb-3">
-              Synthèse de l'évaluation
+              {tr("Synthèse de l'évaluation", "Evaluation summary")}
             </h2>
             <p className="text-[15px] text-muted-foreground max-w-3xl leading-relaxed">
-              Chaque modèle d'IA a répondu à un échantillon de questions du jeu
-              de données « jugement biodiversité ». Un modèle juge indépendant a
-              ensuite noté les réponses sur cinq critères, de 0 à 5. Le{" "}
-              <strong className="text-foreground">score global</strong> (sur 100)
-              combine ces critères : plus il est élevé, plus le modèle est
-              fiable. En matière d'écologie, l'essentiel n'est pas seulement
-              d'avoir raison, mais de{" "}
+              {tr("Chaque modèle d'IA a répondu à un échantillon de questions du jeu de données « jugement biodiversité ». Un modèle juge indépendant a ensuite noté les réponses sur cinq critères, de 0 à 5. Le", "Each AI model answered a sample of questions from the “biodiversity judgment” dataset. An independent judge model then scored the answers on five criteria, from 0 to 5. The")}{" "}
+              <strong className="text-foreground">{tr("score global", "overall score")}</strong> {tr("(sur 100) combine ces critères : plus il est élevé, plus le modèle est fiable. En matière d'écologie, l'essentiel n'est pas seulement d'avoir raison, mais de", "(out of 100) combines these criteria: the higher it is, the more reliable the model. In ecology, what matters is not only being right, but also")}{" "}
               <strong className="text-foreground">
-                ne pas inventer
+                {tr("ne pas inventer", "not making things up")}
               </strong>{" "}
-              et de signaler ses incertitudes.
+              {tr("et de signaler ses incertitudes.", "and flagging its uncertainties.")}
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-5">
@@ -281,13 +291,13 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
                 <Award className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                 <div>
                   <div className="text-xs text-muted-foreground">
-                    Modèle le plus fiable
+                    {tr("Modèle le plus fiable", "Most reliable model")}
                   </div>
                   <div className="font-display font-semibold text-lg leading-tight">
                     {bestOverall.model}
                   </div>
                   <div className="text-sm text-muted-foreground mt-0.5">
-                    Meilleur score global
+                    {tr("Meilleur score global", "Best overall score")}
                     {bestOverall.overallScore != null && (
                       <span className="font-mono text-foreground">
                         {" "}
@@ -303,13 +313,13 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
                   <ShieldCheck className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                   <div>
                     <div className="text-xs text-muted-foreground">
-                      Le plus prudent (anti-hallucination)
+                      {tr("Le plus prudent (anti-hallucination)", "Most cautious (anti-hallucination)")}
                     </div>
                     <div className="font-display font-semibold text-lg leading-tight">
                       {safestModel.model}
                     </div>
                     <div className="text-sm text-muted-foreground mt-0.5">
-                      Invente le moins de faits
+                      {tr("Invente le moins de faits", "Invents the fewest facts")}
                       {safestModel.regulatoryHallucinationRisk != null && (
                         <span className="font-mono text-foreground">
                           {" "}
@@ -324,7 +334,7 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
 
             <div className="mt-6">
               <div className="text-sm font-medium mb-3">
-                Les cinq critères de notation (chacun de 0 à 5)
+                {tr("Les cinq critères de notation (chacun de 0 à 5)", "The five scoring criteria (each from 0 to 5)")}
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
                 {DIMENSION_GLOSSARY.map((dim) => (
@@ -347,9 +357,9 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
 
       {/* Overview Rankings — specimen cards */}
       <div>
-        <div className="eyebrow mb-1.5">Classement</div>
+        <div className="eyebrow mb-1.5">{tr("Classement", "Ranking")}</div>
         <h2 className="font-display text-2xl font-semibold tracking-tight mb-4">
-          Classement des modèles
+          {tr("Classement des modèles", "Model ranking")}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {results.summaryByModel.map((modelSummary, index) => (
@@ -363,7 +373,7 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
               <CardContent className="p-5">
                 <div className="flex justify-between items-start mb-3">
                   <span className="index-tag">
-                    rang {String(index + 1).padStart(2, "0")}
+                    {tr("rang", "rank")} {String(index + 1).padStart(2, "0")}
                   </span>
                   <Badge variant={index === 0 ? "default" : "secondary"}>
                     #{index + 1}
@@ -397,7 +407,7 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
                 <div className="space-y-1.5 pt-3 border-t border-border">
                   <div className="flex justify-between items-center">
                     <span className="text-xs text-muted-foreground">
-                      Réponses en échec
+                      {tr("Réponses en échec", "Failed answers")}
                     </span>
                     <span
                       className={`text-xs font-mono font-medium tabular-nums ${modelSummary.nErrors > 0 ? "text-destructive" : ""}`}
@@ -407,7 +417,7 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-xs text-muted-foreground">
-                      Temps de réponse moy.
+                      {tr("Temps de réponse moy.", "Avg. response time")}
                     </span>
                     <span className="text-xs font-mono font-medium tabular-nums">
                       {modelSummary.avgLatency != null
@@ -427,7 +437,7 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
           {/* Detailed Scores Chart */}
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="font-display tracking-tight">Dimensions d'évaluation (0-5)</CardTitle>
+              <CardTitle className="font-display tracking-tight">{tr("Dimensions d'évaluation (0-5)", "Evaluation dimensions (0-5)")}</CardTitle>
               <Button 
                 variant="ghost" 
                 size="icon" 
@@ -441,7 +451,7 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
               {radarModels.length === 0 ? (
                 <div className="flex h-[420px] items-center justify-center text-center">
                   <p className="text-sm text-muted-foreground">
-                    Aucune note exploitable pour ce run.
+                    {tr("Aucune note exploitable pour ce run.", "No usable scores for this run.")}
                   </p>
                 </div>
               ) : (
@@ -474,7 +484,7 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
             {/* By Topic */}
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="font-display tracking-tight">Score par famille</CardTitle>
+                <CardTitle className="font-display tracking-tight">{tr("Score par famille", "Score by family")}</CardTitle>
                 <Button 
                   variant="ghost" 
                   size="icon" 
@@ -519,7 +529,7 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
             {/* By Difficulty */}
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="font-display tracking-tight">Score par difficulté</CardTitle>
+                <CardTitle className="font-display tracking-tight">{tr("Score par difficulté", "Score by difficulty")}</CardTitle>
                 <Button 
                   variant="ghost" 
                   size="icon" 
@@ -568,32 +578,32 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
       <Card>
         <CardHeader className="pb-4">
           <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
-            <CardTitle className="font-display tracking-tight">Détail des questions</CardTitle>
+            <CardTitle className="font-display tracking-tight">{tr("Détail des questions", "Question details")}</CardTitle>
             <div className="flex flex-wrap gap-3">
               <Input 
-                placeholder="Rechercher..." 
+                placeholder={tr("Rechercher...", "Search...")} 
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full md:w-48"
               />
               <Select value={filterModel} onValueChange={setFilterModel}>
-                <SelectTrigger className="w-32"><SelectValue placeholder="Modèle" /></SelectTrigger>
+                <SelectTrigger className="w-32"><SelectValue placeholder={tr("Modèle", "Model")} /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Tous les modèles</SelectItem>
+                  <SelectItem value="all">{tr("Tous les modèles", "All models")}</SelectItem>
                   {results.summaryByModel.map(m => <SelectItem key={m.model} value={m.model}>{m.model}</SelectItem>)}
                 </SelectContent>
               </Select>
               <Select value={filterTopic} onValueChange={setFilterTopic}>
-                <SelectTrigger className="w-32"><SelectValue placeholder="Topic" /></SelectTrigger>
+                <SelectTrigger className="w-32"><SelectValue placeholder={tr("Topic", "Topic")} /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Tous les topics</SelectItem>
+                  <SelectItem value="all">{tr("Tous les topics", "All topics")}</SelectItem>
                   {uniqueTopics.map(t_id => <SelectItem key={t_id} value={t_id}>{t(t_id)}</SelectItem>)}
                 </SelectContent>
               </Select>
               <Select value={filterDifficulty} onValueChange={setFilterDifficulty}>
-                <SelectTrigger className="w-36"><SelectValue placeholder="Difficulté" /></SelectTrigger>
+                <SelectTrigger className="w-36"><SelectValue placeholder={tr("Difficulté", "Difficulty")} /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Toutes diff.</SelectItem>
+                  <SelectItem value="all">{tr("Toutes diff.", "All difficulties")}</SelectItem>
                   {uniqueDifficulties.map(d_id => <SelectItem key={d_id} value={d_id}>{t(d_id)}</SelectItem>)}
                 </SelectContent>
               </Select>
@@ -602,12 +612,12 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
                 className="w-full md:w-auto"
                 onClick={() => exportToCSV("drill-down.csv", filteredRows, ["questionId", "question", "model", "topic", "difficulty", "overallScore", "accuracy", "uncertaintyHandling", "justificationQuality", "sourceAwareness", "regulatoryHallucinationRisk", "error"])}
               >
-                <Download className="w-4 h-4 mr-2" /> Exporter CSV
+                <Download className="w-4 h-4 mr-2" /> {tr("Exporter CSV", "Export CSV")}
               </Button>
             </div>
           </div>
           <div className="text-sm text-muted-foreground">
-            Affichage de {filteredRows.length} résultats sur {results.rows.length}
+            {tr(`Affichage de ${filteredRows.length} résultats sur ${results.rows.length}`, `Showing ${filteredRows.length} of ${results.rows.length} results`)}
           </div>
         </CardHeader>
         <CardContent className="p-0">
@@ -615,13 +625,13 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
             <Table>
               <TableHeader>
                 <TableRow>
-                  {sortHead("ID", "questionId", "w-24")}
-                  {sortHead("Question", "question", "min-w-[18rem]")}
-                  {sortHead("Modèle", "model")}
-                  {sortHead("Topic / Diff.", "topic")}
-                  {sortHead("Score", "overallScore")}
-                  {sortHead("Hallucination", "regulatoryHallucinationRisk")}
-                  <TableHead>Détails</TableHead>
+                  {sortHead(tr("ID", "ID"), "questionId", "w-24")}
+                  {sortHead(tr("Question", "Question"), "question", "min-w-[18rem]")}
+                  {sortHead(tr("Modèle", "Model"), "model")}
+                  {sortHead(tr("Topic / Diff.", "Topic / Diff."), "topic")}
+                  {sortHead(tr("Score", "Score"), "overallScore")}
+                  {sortHead(tr("Hallucination", "Hallucination"), "regulatoryHallucinationRisk")}
+                  <TableHead>{tr("Détails", "Details")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -640,7 +650,7 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
                     </TableCell>
                     <TableCell>
                       {row.error ? (
-                        <Badge variant="destructive">Erreur API</Badge>
+                        <Badge variant="destructive">{tr("Erreur API", "API error")}</Badge>
                       ) : row.overallScore != null ? (
                         <div className="font-bold text-primary">{row.overallScore.toFixed(0)}</div>
                       ) : (
@@ -662,18 +672,18 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
                     <TableCell>
                       <Dialog>
                         <DialogTrigger asChild>
-                          <Button variant="outline" size="sm">Voir</Button>
+                          <Button variant="outline" size="sm">{tr("Voir", "View")}</Button>
                         </DialogTrigger>
                         <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
                           <DialogHeader>
                             <DialogTitle className="flex items-center gap-2">
-                              Question {row.questionId} - {row.model}
+                              {tr("Question", "Question")} {row.questionId} - {row.model}
                             </DialogTitle>
                           </DialogHeader>
                           
                           <div className="space-y-6 mt-4">
                             <div>
-                              <h4 className="text-sm font-semibold mb-2">Question</h4>
+                              <h4 className="text-sm font-semibold mb-2">{tr("Question", "Question")}</h4>
                               <div className="p-3 bg-muted rounded-md text-sm whitespace-pre-wrap">
                                 {row.question}
                               </div>
@@ -681,8 +691,8 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
                             
                             <div>
                               <h4 className="text-sm font-semibold mb-2 flex justify-between">
-                                <span>Réponse du modèle</span>
-                                {row.latencySeconds && <span className="font-normal text-muted-foreground">Latence: {row.latencySeconds.toFixed(1)}s</span>}
+                                <span>{tr("Réponse du modèle", "Model response")}</span>
+                                {row.latencySeconds && <span className="font-normal text-muted-foreground">{tr("Latence:", "Latency:")} {row.latencySeconds.toFixed(1)}s</span>}
                               </h4>
                               {row.error ? (
                                 <div className="p-3 bg-destructive/10 text-destructive rounded-md text-sm font-mono whitespace-pre-wrap">
@@ -690,25 +700,25 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
                                 </div>
                               ) : (
                                 <div className="p-3 border rounded-md text-sm whitespace-pre-wrap">
-                                  {row.rawResponse || "Aucune réponse générée"}
+                                  {row.rawResponse || tr("Aucune réponse générée", "No response generated")}
                                 </div>
                               )}
                             </div>
 
                             {row.overallScore != null && (
                               <div>
-                                <h4 className="text-sm font-semibold mb-2">Évaluation par le juge ({run.judgeModel})</h4>
+                                <h4 className="text-sm font-semibold mb-2">{tr("Évaluation par le juge", "Judge evaluation")} ({run.judgeModel})</h4>
                                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4">
                                   <div className="p-2 bg-muted/50 rounded flex flex-col">
-                                    <span className="text-xs text-muted-foreground">Score Global</span>
+                                    <span className="text-xs text-muted-foreground">{tr("Score Global", "Overall score")}</span>
                                     <span className="font-bold text-primary">{row.overallScore}/100</span>
                                   </div>
                                   <div className="p-2 bg-muted/50 rounded flex flex-col">
-                                    <span className="text-xs text-muted-foreground">Exactitude</span>
+                                    <span className="text-xs text-muted-foreground">{tr("Exactitude", "Accuracy")}</span>
                                     <span className="font-bold">{row.accuracy}/5</span>
                                   </div>
                                   <div className="p-2 bg-muted/50 rounded flex flex-col">
-                                    <span className="text-xs text-muted-foreground">Risque d'hallucination</span>
+                                    <span className="text-xs text-muted-foreground">{tr("Risque d'hallucination", "Hallucination risk")}</span>
                                     <span className={`font-bold ${row.regulatoryHallucinationRisk! < 3 ? 'text-destructive' : ''}`}>
                                       {row.regulatoryHallucinationRisk}/5
                                     </span>
@@ -718,19 +728,19 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
                                 {row.verdict && (
                                   <div className="space-y-3">
                                     <div className="p-3 bg-primary/5 border border-primary/20 rounded-md text-sm">
-                                      <span className="font-semibold block mb-1">Verdict</span>
+                                      <span className="font-semibold block mb-1">{tr("Verdict", "Verdict")}</span>
                                       {row.verdict}
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                       {row.strengths && (
                                         <div className="p-3 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-900 rounded-md text-sm">
-                                          <span className="font-semibold text-green-800 dark:text-green-300 block mb-1">Points forts</span>
+                                          <span className="font-semibold text-green-800 dark:text-green-300 block mb-1">{tr("Points forts", "Strengths")}</span>
                                           <div className="whitespace-pre-wrap">{row.strengths}</div>
                                         </div>
                                       )}
                                       {row.weaknesses && (
                                         <div className="p-3 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900 rounded-md text-sm">
-                                          <span className="font-semibold text-red-800 dark:text-red-300 block mb-1">Points faibles</span>
+                                          <span className="font-semibold text-red-800 dark:text-red-300 block mb-1">{tr("Points faibles", "Weaknesses")}</span>
                                           <div className="whitespace-pre-wrap">{row.weaknesses}</div>
                                         </div>
                                       )}
@@ -749,12 +759,12 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
             </Table>
             {filteredRows.length > 100 && (
               <div className="p-4 text-center text-sm text-muted-foreground border-t">
-                Seuls les 100 premiers résultats sont affichés. Utilisez l'export CSV pour voir tous les résultats.
+                {tr("Seuls les 100 premiers résultats sont affichés. Utilisez l'export CSV pour voir tous les résultats.", "Only the first 100 results are shown. Use the CSV export to see all results.")}
               </div>
             )}
             {filteredRows.length === 0 && (
               <div className="p-8 text-center text-muted-foreground">
-                Aucun résultat ne correspond à vos filtres.
+                {tr("Aucun résultat ne correspond à vos filtres.", "No results match your filters.")}
               </div>
             )}
           </div>

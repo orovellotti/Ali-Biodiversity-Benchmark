@@ -234,3 +234,49 @@ export const SubmitContactBody = zod.object({
 })
 
 
+/**
+ * Pairs two distinct models' already-generated answers to a random question. Identities are hidden until a vote is cast.
+ * @summary Get a blind duel of two model answers to the same question
+ */
+export const GetArenaDuelResponse = zod.object({
+  "duelToken": zod.string(),
+  "questionId": zod.string(),
+  "question": zod.string().nullish(),
+  "topic": zod.string().nullish(),
+  "difficulty": zod.string().nullish(),
+  "optionA": zod.object({
+  "response": zod.string()
+}),
+  "optionB": zod.object({
+  "response": zod.string()
+})
+})
+
+
+/**
+ * @summary Record a blind vote and reveal the two models
+ */
+export const SubmitArenaVoteBody = zod.object({
+  "duelToken": zod.string(),
+  "winner": zod.enum(['A', 'B', 'tie'])
+})
+
+
+/**
+ * @summary Cumulative community Elo leaderboard from arena votes
+ */
+export const GetArenaLeaderboardResponse = zod.object({
+  "totalVotes": zod.number(),
+  "rankings": zod.array(zod.object({
+  "provider": zod.string(),
+  "model": zod.string(),
+  "rating": zod.number(),
+  "games": zod.number(),
+  "wins": zod.number(),
+  "losses": zod.number(),
+  "ties": zod.number(),
+  "winRate": zod.number().nullish()
+}))
+})
+
+

@@ -201,6 +201,61 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /benchmark/arena/duel:
+    get:
+      operationId: getArenaDuel
+      tags: [benchmark]
+      summary: Get a blind duel of two model answers to the same question
+      description: Pairs two distinct models' already-generated answers to a random question. Identities are hidden until a vote is cast.
+      responses:
+        "200":
+          description: A duel
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArenaDuel"
+        "404":
+          description: Not enough generated answers to build a duel
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /benchmark/arena/vote:
+    post:
+      operationId: submitArenaVote
+      tags: [benchmark]
+      summary: Record a blind vote and reveal the two models
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ArenaVoteInput"
+      responses:
+        "201":
+          description: Vote recorded and models revealed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArenaVoteResult"
+        "400":
+          description: Invalid vote or duel token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /benchmark/arena/leaderboard:
+    get:
+      operationId: getArenaLeaderboard
+      tags: [benchmark]
+      summary: Cumulative community Elo leaderboard from arena votes
+      responses:
+        "200":
+          description: Leaderboard
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ArenaLeaderboard"
 components:
   schemas:
     HealthStatus:
@@ -492,3 +547,91 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ResultRow"
+    ArenaOption:
+      type: object
+      required: [response]
+      properties:
+        response:
+          type: string
+    ArenaDuel:
+      type: object
+      required: [duelToken, questionId, optionA, optionB]
+      properties:
+        duelToken:
+          type: string
+        questionId:
+          type: string
+        question:
+          type: ["string", "null"]
+        topic:
+          type: ["string", "null"]
+        difficulty:
+          type: ["string", "null"]
+        optionA:
+          $ref: "#/components/schemas/ArenaOption"
+        optionB:
+          $ref: "#/components/schemas/ArenaOption"
+    ArenaModel:
+      type: object
+      required: [provider, model]
+      properties:
+        provider:
+          type: string
+        model:
+          type: string
+    ArenaVoteInput:
+      type: object
+      required: [duelToken, winner]
+      properties:
+        duelToken:
+          type: string
+        winner:
+          type: string
+          enum: [A, B, tie]
+    ArenaRanking:
+      type: object
+      required: [provider, model, rating, games, wins, losses, ties]
+      properties:
+        provider:
+          type: string
+        model:
+          type: string
+        rating:
+          type: number
+        games:
+          type: integer
+        wins:
+          type: integer
+        losses:
+          type: integer
+        ties:
+          type: integer
+        winRate:
+          type: ["number", "null"]
+    ArenaLeaderboard:
+      type: object
+      required: [totalVotes, rankings]
+      properties:
+        totalVotes:
+          type: integer
+        rankings:
+          type: array
+          items:
+            $ref: "#/components/schemas/ArenaRanking"
+    ArenaVoteResult:
+      type: object
+      required: [modelA, modelB, winner, ratingChangeA, ratingChangeB, leaderboard]
+      properties:
+        modelA:
+          $ref: "#/components/schemas/ArenaModel"
+        modelB:
+          $ref: "#/components/schemas/ArenaModel"
+        winner:
+          type: string
+          enum: [A, B, tie]
+        ratingChangeA:
+          type: number
+        ratingChangeB:
+          type: number
+        leaderboard:
+          $ref: "#/components/schemas/ArenaLeaderboard"
