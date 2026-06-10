@@ -30,6 +30,9 @@ import type {
   Error,
   HealthStatus,
   QuestionPreview,
+  QuestionVoteCount,
+  QuestionVoteInput,
+  QuestionVotes,
   Run,
   RunInput,
   RunResults
@@ -1018,4 +1021,152 @@ export function useGetArenaLeaderboard<TData = Awaited<ReturnType<typeof getAren
 
 
 
+
+export const getListQuestionVotesUrl = () => {
+
+
+
+
+  return `/api/benchmark/questions/votes`
+}
+
+/**
+ * @summary Community up/down vote tallies for every question
+ */
+export const listQuestionVotes = async ( options?: RequestInit): Promise<QuestionVotes> => {
+
+  return customFetch<QuestionVotes>(getListQuestionVotesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListQuestionVotesQueryKey = () => {
+    return [
+    `/api/benchmark/questions/votes`
+    ] as const;
+    }
+
+
+export const getListQuestionVotesQueryOptions = <TData = Awaited<ReturnType<typeof listQuestionVotes>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listQuestionVotes>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListQuestionVotesQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listQuestionVotes>>> = ({ signal }) => listQuestionVotes({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listQuestionVotes>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListQuestionVotesQueryResult = NonNullable<Awaited<ReturnType<typeof listQuestionVotes>>>
+export type ListQuestionVotesQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Community up/down vote tallies for every question
+ */
+
+export function useListQuestionVotes<TData = Awaited<ReturnType<typeof listQuestionVotes>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listQuestionVotes>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListQuestionVotesQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getSubmitQuestionVoteUrl = () => {
+
+
+
+
+  return `/api/benchmark/questions/vote`
+}
+
+/**
+ * @summary Cast, change, or clear an up/down vote on a question
+ */
+export const submitQuestionVote = async (questionVoteInput: QuestionVoteInput, options?: RequestInit): Promise<QuestionVoteCount> => {
+
+  return customFetch<QuestionVoteCount>(getSubmitQuestionVoteUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      questionVoteInput,)
+  }
+);}
+
+
+
+
+export const getSubmitQuestionVoteMutationOptions = <TError = ErrorType<Error>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof submitQuestionVote>>, TError,{data: BodyType<QuestionVoteInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof submitQuestionVote>>, TError,{data: BodyType<QuestionVoteInput>}, TContext> => {
+
+const mutationKey = ['submitQuestionVote'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof submitQuestionVote>>, {data: BodyType<QuestionVoteInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  submitQuestionVote(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SubmitQuestionVoteMutationResult = NonNullable<Awaited<ReturnType<typeof submitQuestionVote>>>
+    export type SubmitQuestionVoteMutationBody = BodyType<QuestionVoteInput>
+    export type SubmitQuestionVoteMutationError = ErrorType<Error>
+
+    /**
+ * @summary Cast, change, or clear an up/down vote on a question
+ */
+export const useSubmitQuestionVote = <TError = ErrorType<Error>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof submitQuestionVote>>, TError,{data: BodyType<QuestionVoteInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof submitQuestionVote>>,
+        TError,
+        {data: BodyType<QuestionVoteInput>},
+        TContext
+      > => {
+      return useMutation(getSubmitQuestionVoteMutationOptions(options));
+    }
 

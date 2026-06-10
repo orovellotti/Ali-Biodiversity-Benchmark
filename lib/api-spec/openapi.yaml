@@ -256,6 +256,42 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ArenaLeaderboard"
+  /benchmark/questions/votes:
+    get:
+      operationId: listQuestionVotes
+      tags: [benchmark]
+      summary: Community up/down vote tallies for every question
+      responses:
+        "200":
+          description: Vote tallies keyed by question
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuestionVotes"
+  /benchmark/questions/vote:
+    post:
+      operationId: submitQuestionVote
+      tags: [benchmark]
+      summary: Cast, change, or clear an up/down vote on a question
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QuestionVoteInput"
+      responses:
+        "201":
+          description: Updated tally for the voted question
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuestionVoteCount"
+        "400":
+          description: Invalid vote
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   schemas:
     HealthStatus:
@@ -635,3 +671,38 @@ components:
           type: number
         leaderboard:
           $ref: "#/components/schemas/ArenaLeaderboard"
+    QuestionVoteCount:
+      type: object
+      required: [questionId, up, down, score]
+      properties:
+        questionId:
+          type: string
+        up:
+          type: integer
+        down:
+          type: integer
+        score:
+          type: integer
+    QuestionVotes:
+      type: object
+      required: [votes]
+      properties:
+        votes:
+          type: array
+          items:
+            $ref: "#/components/schemas/QuestionVoteCount"
+    QuestionVoteInput:
+      type: object
+      required: [questionId, voterId, vote]
+      properties:
+        questionId:
+          type: string
+          minLength: 1
+          maxLength: 200
+        voterId:
+          type: string
+          minLength: 1
+          maxLength: 64
+        vote:
+          type: string
+          enum: [up, down, none]

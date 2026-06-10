@@ -280,3 +280,32 @@ export const GetArenaLeaderboardResponse = zod.object({
 })
 
 
+/**
+ * @summary Community up/down vote tallies for every question
+ */
+export const ListQuestionVotesResponse = zod.object({
+  "votes": zod.array(zod.object({
+  "questionId": zod.string(),
+  "up": zod.number(),
+  "down": zod.number(),
+  "score": zod.number()
+}))
+})
+
+
+/**
+ * @summary Cast, change, or clear an up/down vote on a question
+ */
+export const submitQuestionVoteBodyQuestionIdMax = 200;
+
+export const submitQuestionVoteBodyVoterIdMax = 64;
+
+
+
+export const SubmitQuestionVoteBody = zod.object({
+  "questionId": zod.string().min(1).max(submitQuestionVoteBodyQuestionIdMax),
+  "voterId": zod.string().min(1).max(submitQuestionVoteBodyVoterIdMax),
+  "vote": zod.enum(['up', 'down', 'none'])
+})
+
+

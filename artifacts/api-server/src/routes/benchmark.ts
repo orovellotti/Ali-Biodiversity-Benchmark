@@ -9,8 +9,10 @@ import {
   GetRunResultsResponse,
   ListRunsResponse,
   ListQuestionsResponse,
+  ListQuestionVotesResponse,
   SubmitArenaVoteBody,
   SubmitContactBody,
+  SubmitQuestionVoteBody,
 } from "@workspace/api-zod";
 import { appendFileSync } from "node:fs";
 import { getBenchmarkConfig } from "../lib/benchmark/config";
@@ -30,6 +32,11 @@ import {
   getLeaderboard,
   recordVote,
 } from "../lib/benchmark/arena";
+import {
+  QuestionVoteError,
+  listQuestionVotes,
+  recordQuestionVote,
+} from "../lib/benchmark/question-votes";
 
 const router: IRouter = Router();
 
@@ -193,6 +200,35 @@ router.post("/benchmark/arena/vote", (req, res) => {
 
 router.get("/benchmark/arena/leaderboard", (_req, res) => {
   res.json(GetArenaLeaderboardResponse.parse(getLeaderboard()));
+});
+
+// --- Community question voting (public up/down on dataset questions) -------
+
+router.get("/benchmark/questions/votes", (_req, res) => {
+  res.json(ListQuestionVotesResponse.parse(listQuestionVotes()));
+});
+
+router.post("/benchmark/questions/vote", (req, res) => {
+  const parsed = SubmitQuestionVoteBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.issues[0]?.message ?? "Vote invalide" });
+    return;
+  }
+  try {
+    const result = recordQuestionVote(
+      parsed.data.questionId,
+      parsed.data.voterId,
+      parsed.data.vote,
+    );
+    res.status(201).json(result);
+  } catch (err) {
+    if (err instanceof QuestionVoteError) {
+      res.status(400).json({ error: err.message });
+      return;
+    }
+    req.log.error({ err }, "Échec de l'enregistrement du vote question");
+    res.status(500).json({ error: "Erreur interne lors de l'enregistrement du vote." });
+  }
 });
 
 export default router;

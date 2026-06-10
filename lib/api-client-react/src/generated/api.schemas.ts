@@ -271,3 +271,37 @@ export interface ArenaVoteResult {
   leaderboard: ArenaLeaderboard;
 }
 
+export interface QuestionVoteCount {
+  questionId: string;
+  up: number;
+  down: number;
+  score: number;
+}
+
+export interface QuestionVotes {
+  votes: QuestionVoteCount[];
+}
+
+export type QuestionVoteInputVote = typeof QuestionVoteInputVote[keyof typeof QuestionVoteInputVote];
+
+
+export const QuestionVoteInputVote = {
+  up: 'up',
+  down: 'down',
+  none: 'none',
+} as const;
+
+export interface QuestionVoteInput {
+  /**
+     * @minLength 1
+     * @maxLength 200
+     */
+  questionId: string;
+  /**
+     * @minLength 1
+     * @maxLength 64
+     */
+  voterId: string;
+  vote: QuestionVoteInputVote;
+}
+

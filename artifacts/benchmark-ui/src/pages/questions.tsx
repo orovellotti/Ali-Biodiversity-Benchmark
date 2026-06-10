@@ -1,8 +1,13 @@
 import { useMemo, useState } from "react";
 import { Link } from "wouter";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   useListQuestions,
   getListQuestionsQueryKey,
+  useListQuestionVotes,
+  getListQuestionVotesQueryKey,
+  useSubmitQuestionVote,
+  type QuestionVoteCount,
 } from "@workspace/api-client-react";
 import { SiteHeader } from "@/components/site-header";
 import { Button } from "@/components/ui/button";
@@ -10,7 +15,31 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useI18n } from "@/lib/i18n";
-import { BookOpen, Search, MessageSquare } from "lucide-react";
+import { BookOpen, Search, MessageSquare, ArrowBigUp, ArrowBigDown } from "lucide-react";
+
+type MyVote = "up" | "down";
+
+/** Stable anonymous per-browser id so a voter can change/clear their vote. */
+function getVoterId(): string {
+  const KEY = "benchmark-voter-id";
+  let id = localStorage.getItem(KEY);
+  if (!id) {
+    id = `${Math.random().toString(36).slice(2)}${Date.now().toString(36)}`;
+    localStorage.setItem(KEY, id);
+  }
+  return id;
+}
+
+const MY_VOTES_KEY = "benchmark-question-votes";
+
+function loadMyVotes(): Record<string, MyVote> {
+  try {
+    const raw = localStorage.getItem(MY_VOTES_KEY);
+    return raw ? (JSON.parse(raw) as Record<string, MyVote>) : {};
+  } catch {
+    return {};
+  }
+}
 
 export function Questions() {
   const { tr, t } = useI18n();
@@ -56,6 +85,48 @@ export function Questions() {
       return true;
     });
   }, [questions, search, topic, difficulty]);
+
+  // --- Community voting --------------------------------------------------
+  const queryClient = useQueryClient();
+  const voterId = useMemo(() => getVoterId(), []);
+  const [myVotes, setMyVotes] = useState<Record<string, MyVote>>(() =>
+    loadMyVotes(),
+  );
+  const { data: votesData } = useListQuestionVotes({
+    query: { queryKey: getListQuestionVotesQueryKey() },
+  });
+  const voteCounts = useMemo(() => {
+    const m = new Map<string, QuestionVoteCount>();
+    for (const v of votesData?.votes ?? []) m.set(v.questionId, v);
+    return m;
+  }, [votesData]);
+
+  const voteMutation = useSubmitQuestionVote();
+  const pendingId = voteMutation.isPending
+    ? voteMutation.variables?.data.questionId
+    : null;
+
+  const handleVote = (questionId: string, dir: MyVote) => {
+    const next: "up" | "down" | "none" =
+      myVotes[questionId] === dir ? "none" : dir;
+    voteMutation.mutate(
+      { data: { questionId, voterId, vote: next } },
+      {
+        onSuccess: () => {
+          setMyVotes((prev) => {
+            const copy = { ...prev };
+            if (next === "none") delete copy[questionId];
+            else copy[questionId] = next;
+            localStorage.setItem(MY_VOTES_KEY, JSON.stringify(copy));
+            return copy;
+          });
+          queryClient.invalidateQueries({
+            queryKey: getListQuestionVotesQueryKey(),
+          });
+        },
+      },
+    );
+  };
 
   const selectClass =
     "flex h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring";
@@ -161,37 +232,111 @@ export function Questions() {
               {filtered.map((q) => (
                 <div
                   key={q.id}
-                  className="border border-card-border rounded-lg p-4 bg-card"
+                  className="border border-card-border rounded-lg p-4 bg-card flex gap-4"
                 >
-                  <div className="flex flex-wrap items-center gap-2 mb-2">
-                    <span className="font-mono text-xs font-semibold text-primary">
-                      {q.id}
-                    </span>
-                    {q.topic && <Badge variant="secondary">{t(q.topic)}</Badge>}
-                    {q.difficulty && (
-                      <Badge variant="outline">{t(q.difficulty)}</Badge>
-                    )}
-                    {q.questionType && (
-                      <Badge variant="outline">{t(q.questionType)}</Badge>
-                    )}
-                    {q.countryScope && (
-                      <span className="text-xs text-muted-foreground">
-                        {q.countryScope}
+                  <VoteControl
+                    count={voteCounts.get(q.id) ?? null}
+                    myVote={myVotes[q.id] ?? null}
+                    pending={pendingId === q.id}
+                    onVote={(dir) => handleVote(q.id, dir)}
+                    tr={tr}
+                  />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2 mb-2">
+                      <span className="font-mono text-xs font-semibold text-primary">
+                        {q.id}
                       </span>
+                      {q.topic && (
+                        <Badge variant="secondary">{t(q.topic)}</Badge>
+                      )}
+                      {q.difficulty && (
+                        <Badge variant="outline">{t(q.difficulty)}</Badge>
+                      )}
+                      {q.questionType && (
+                        <Badge variant="outline">{t(q.questionType)}</Badge>
+                      )}
+                      {q.countryScope && (
+                        <span className="text-xs text-muted-foreground">
+                          {q.countryScope}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-sm">{q.question}</p>
+                    {q.expectedAnswerShort && (
+                      <p className="text-xs text-muted-foreground mt-2">
+                        {q.expectedAnswerShort}
+                      </p>
                     )}
                   </div>
-                  <p className="text-sm">{q.question}</p>
-                  {q.expectedAnswerShort && (
-                    <p className="text-xs text-muted-foreground mt-2">
-                      {q.expectedAnswerShort}
-                    </p>
-                  )}
                 </div>
               ))}
             </div>
           )}
         </div>
       </main>
+    </div>
+  );
+}
+
+function VoteControl({
+  count,
+  myVote,
+  pending,
+  onVote,
+  tr,
+}: {
+  count: QuestionVoteCount | null;
+  myVote: MyVote | null;
+  pending: boolean;
+  onVote: (dir: MyVote) => void;
+  tr: (fr: string, en: string) => string;
+}) {
+  const score = count?.score ?? 0;
+  return (
+    <div className="flex flex-col items-center gap-0.5 shrink-0 select-none">
+      <button
+        type="button"
+        onClick={() => onVote("up")}
+        disabled={pending}
+        aria-pressed={myVote === "up"}
+        aria-label={tr("Voter pour cette question", "Upvote this question")}
+        title={tr("Question pertinente", "Relevant question")}
+        className={`rounded-md p-1 transition-colors disabled:opacity-50 hover:bg-secondary ${
+          myVote === "up" ? "text-primary" : "text-muted-foreground"
+        }`}
+      >
+        <ArrowBigUp
+          className="w-5 h-5"
+          fill={myVote === "up" ? "currentColor" : "none"}
+        />
+      </button>
+      <span
+        className={`font-mono text-sm font-semibold tabular-nums ${
+          score > 0
+            ? "text-primary"
+            : score < 0
+              ? "text-destructive"
+              : "text-muted-foreground"
+        }`}
+      >
+        {score}
+      </span>
+      <button
+        type="button"
+        onClick={() => onVote("down")}
+        disabled={pending}
+        aria-pressed={myVote === "down"}
+        aria-label={tr("Voter contre cette question", "Downvote this question")}
+        title={tr("Question peu pertinente", "Less relevant question")}
+        className={`rounded-md p-1 transition-colors disabled:opacity-50 hover:bg-secondary ${
+          myVote === "down" ? "text-destructive" : "text-muted-foreground"
+        }`}
+      >
+        <ArrowBigDown
+          className="w-5 h-5"
+          fill={myVote === "down" ? "currentColor" : "none"}
+        />
+      </button>
     </div>
   );
 }
