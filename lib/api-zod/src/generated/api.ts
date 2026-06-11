@@ -240,6 +240,24 @@ export const SubmitContactBody = zod.object({
 
 
 /**
+ * Display-only translation of source strings. French stays the source of truth; each unique string is translated once and cached permanently server-side.
+ * @summary Translate French dataset/answer strings to English (cached)
+ */
+export const translateTextsBodyTextsMax = 600;
+
+export const translateTextsBodyTargetDefault = `en`;
+
+export const TranslateTextsBody = zod.object({
+  "texts": zod.array(zod.string()).max(translateTextsBodyTextsMax),
+  "target": zod.enum(['en']).default(translateTextsBodyTargetDefault)
+})
+
+export const TranslateTextsResponse = zod.object({
+  "translations": zod.array(zod.string())
+})
+
+
+/**
  * Pairs two distinct models' already-generated answers to a random question. Identities are hidden until a vote is cast.
  * @summary Get a blind duel of two model answers to the same question
  */

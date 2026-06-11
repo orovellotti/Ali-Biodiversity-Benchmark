@@ -49,6 +49,23 @@ export interface ContactResult {
   ok: boolean;
 }
 
+export type TranslateInputTarget = typeof TranslateInputTarget[keyof typeof TranslateInputTarget];
+
+
+export const TranslateInputTarget = {
+  en: 'en',
+} as const;
+
+export interface TranslateInput {
+  /** @maxItems 600 */
+  texts: string[];
+  target?: TranslateInputTarget;
+}
+
+export interface TranslateResult {
+  translations: string[];
+}
+
 export interface Provider {
   id: string;
   defaultModel: string;

@@ -207,6 +207,37 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /benchmark/translate:
+    post:
+      operationId: translateTexts
+      tags: [benchmark]
+      summary: Translate French dataset/answer strings to English (cached)
+      description: Display-only translation of source strings. French stays the source of truth; each unique string is translated once and cached permanently server-side.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TranslateInput"
+      responses:
+        "200":
+          description: Translations aligned to the input order
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TranslateResult"
+        "400":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "502":
+          description: Translation provider error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /benchmark/arena/duel:
     get:
       operationId: getArenaDuel
@@ -356,6 +387,27 @@ components:
       properties:
         ok:
           type: boolean
+    TranslateInput:
+      type: object
+      required: [texts]
+      properties:
+        texts:
+          type: array
+          maxItems: 600
+          items:
+            type: string
+        target:
+          type: string
+          enum: [en]
+          default: en
+    TranslateResult:
+      type: object
+      required: [translations]
+      properties:
+        translations:
+          type: array
+          items:
+            type: string
     Provider:
       type: object
       required: [id, defaultModel, available, requiresKey]

@@ -13,7 +13,9 @@ const STORAGE_KEY = "benchmark-lang";
 
 // Bilingual dictionary for dynamic data labels coming from the API
 // (sections/topics, scores, difficulty, question types, status, phases).
-// The benchmark dataset content itself (questions/answers) stays French.
+// The benchmark dataset content itself (questions/answers/verdicts) is the
+// source of truth in French; in EN mode it is translated display-only via the
+// server /benchmark/translate endpoint (see use-translate.ts), not this dict.
 const DATA_LABELS: Record<string, { fr: string; en: string }> = {
   // Sections (jeu V2/V3 Discriminant)
   factual_easy: { fr: "Factuel facile", en: "Factual (easy)" },

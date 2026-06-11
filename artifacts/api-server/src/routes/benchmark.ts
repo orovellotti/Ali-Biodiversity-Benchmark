@@ -13,6 +13,7 @@ import {
   SubmitArenaVoteBody,
   SubmitContactBody,
   SubmitQuestionVoteBody,
+  TranslateTextsBody,
 } from "@workspace/api-zod";
 import { appendFileSync } from "node:fs";
 import { getBenchmarkConfig } from "../lib/benchmark/config";
@@ -38,6 +39,10 @@ import {
   listQuestionVotes,
   recordQuestionVote,
 } from "../lib/benchmark/question-votes";
+import {
+  TranslateValidationError,
+  translateTexts,
+} from "../lib/benchmark/translate";
 
 const router: IRouter = Router();
 
@@ -166,6 +171,32 @@ router.post("/benchmark/contact", (req, res) => {
     req.log.error({ err }, "Échec de l'enregistrement du message de contact");
     res.status(500).json({
       error: "Erreur interne lors de l'envoi du message.",
+    });
+  }
+});
+
+// Display-only FR->EN translation (cached permanently). French stays the
+// source of truth; this only powers the EN view of questions/answers. Public,
+// consistent with the rest of the read API, and cost-bounded by the cache.
+router.post("/benchmark/translate", async (req, res) => {
+  const parsed = TranslateTextsBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({
+      error: parsed.error.issues[0]?.message ?? "Requête de traduction invalide",
+    });
+    return;
+  }
+  try {
+    const translations = await translateTexts(parsed.data.texts, parsed.data.target);
+    res.json({ translations });
+  } catch (err) {
+    if (err instanceof TranslateValidationError) {
+      res.status(400).json({ error: err.message });
+      return;
+    }
+    req.log.error({ err }, "Échec de la traduction");
+    res.status(502).json({
+      error: "La traduction a échoué. Réessayez plus tard.",
     });
   }
 });

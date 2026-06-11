@@ -4,3 +4,4 @@
 - [benchmark-ui arena](benchmark-arena.md) — blind duels reuse stored answers (no live calls); HMAC-signed duel token makes public votes forge-proof; Elo replay leaderboard.
 - [Benchmark credit safeguards](benchmark-credit-safeguards.md) — launch gated by concurrency lock (409) + request ceiling (400); cost estimates MUST count judge calls, not just answers (~2x undercount).
 - [Benchmark run batching](benchmark-run-batching.md) — full ~800-call runs freeze on dev-workspace idle pause (not a bug); use `offset` to launch ~30min batches (topic→offset→limit).
+- [Benchmark EN translation](benchmark-translation.md) — EN now translates dataset+answers (display-only, reverses "stays French"); public translate endpoint cost-bounded by corpus gate + permanent cache + mutex.

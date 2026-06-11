@@ -32,3 +32,6 @@ export * from './resultRow';
 export * from './run';
 export * from './runInput';
 export * from './runResults';
+export * from './translateInput';
+export * from './translateInputTarget';
+export * from './translateResult';

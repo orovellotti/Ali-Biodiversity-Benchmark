@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useI18n } from "@/lib/i18n";
+import { useTranslateMap } from "@/lib/use-translate";
 import { BookOpen, Search, MessageSquare, ArrowBigUp, ArrowBigDown } from "lucide-react";
 
 type MyVote = "up" | "down";
@@ -85,6 +86,17 @@ export function Questions() {
       return true;
     });
   }, [questions, search, topic, difficulty]);
+
+  // Translate visible question text + expected answers to EN (cached, no-op in FR).
+  const translatable = useMemo(() => {
+    const out: string[] = [];
+    for (const q of filtered) {
+      out.push(q.question);
+      if (q.expectedAnswerShort) out.push(q.expectedAnswerShort);
+    }
+    return out;
+  }, [filtered]);
+  const { tr: trText, failed: trFailed } = useTranslateMap(translatable);
 
   // --- Community voting --------------------------------------------------
   const queryClient = useQueryClient();
@@ -229,6 +241,14 @@ export function Questions() {
             </div>
           ) : (
             <div className="space-y-3">
+              {trFailed && (
+                <p className="text-xs text-destructive">
+                  {tr(
+                    "Traduction indisponible — affichage en français.",
+                    "Translation unavailable — showing French.",
+                  )}
+                </p>
+              )}
               {filtered.map((q) => (
                 <div
                   key={q.id}
@@ -261,10 +281,10 @@ export function Questions() {
                         </span>
                       )}
                     </div>
-                    <p className="text-sm">{q.question}</p>
+                    <p className="text-sm">{trText(q.question)}</p>
                     {q.expectedAnswerShort && (
                       <p className="text-xs text-muted-foreground mt-2">
-                        {q.expectedAnswerShort}
+                        {trText(q.expectedAnswerShort)}
                       </p>
                     )}
                   </div>

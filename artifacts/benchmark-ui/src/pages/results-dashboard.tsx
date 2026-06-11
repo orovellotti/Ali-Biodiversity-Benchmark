@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
+import { useTranslateMap } from "@/lib/use-translate";
 import { Run, RunResults } from "@workspace/api-client-react";
 import { Download, CheckCircle2, AlertTriangle, Award, ShieldCheck, Compass, ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -62,6 +63,21 @@ function exportToCSV(filename: string, data: any[], headers: string[]) {
 
 export function ResultsDashboard({ results, run }: { results: RunResults; run: Run }) {
   const { tr, t } = useI18n();
+
+  // Translate the dataset/answer text shown to the user when EN is active
+  // (questions, model responses, judge verdicts). No-op in FR; cached otherwise.
+  const translatable = useMemo(() => {
+    const out: string[] = [];
+    for (const r of results.rows) {
+      if (r.question) out.push(r.question);
+      if (r.rawResponse) out.push(r.rawResponse);
+      if (r.verdict) out.push(r.verdict);
+      if (r.strengths) out.push(r.strengths);
+      if (r.weaknesses) out.push(r.weaknesses);
+    }
+    return out;
+  }, [results.rows]);
+  const { tr: trText, failed: trFailed } = useTranslateMap(translatable);
 
   // Plain-language descriptions of each scoring dimension, written for a
   // scientific (non-ML) audience. Each note is rated from 0 to 5.
@@ -618,6 +634,11 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
           </div>
           <div className="text-sm text-muted-foreground">
             {tr(`Affichage de ${filteredRows.length} résultats sur ${results.rows.length}`, `Showing ${filteredRows.length} of ${results.rows.length} results`)}
+            {trFailed && (
+              <span className="ml-2 text-destructive">
+                {tr("· Traduction indisponible (français)", "· Translation unavailable (French)")}
+              </span>
+            )}
           </div>
         </CardHeader>
         <CardContent className="p-0">
@@ -639,8 +660,8 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
                   <TableRow key={`${row.questionId}-${row.model}-${i}`}>
                     <TableCell className="font-mono text-xs">{row.questionId}</TableCell>
                     <TableCell className="max-w-md">
-                      <span className="block text-sm line-clamp-2" title={row.question ?? undefined}>
-                        {row.question}
+                      <span className="block text-sm line-clamp-2" title={trText(row.question) || undefined}>
+                        {trText(row.question)}
                       </span>
                     </TableCell>
                     <TableCell className="font-medium">{row.model}</TableCell>
@@ -685,7 +706,7 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
                             <div>
                               <h4 className="text-sm font-semibold mb-2">{tr("Question", "Question")}</h4>
                               <div className="p-3 bg-muted rounded-md text-sm whitespace-pre-wrap">
-                                {row.question}
+                                {trText(row.question)}
                               </div>
                             </div>
                             
@@ -700,7 +721,7 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
                                 </div>
                               ) : (
                                 <div className="p-3 border rounded-md text-sm whitespace-pre-wrap">
-                                  {row.rawResponse || tr("Aucune réponse générée", "No response generated")}
+                                  {trText(row.rawResponse) || tr("Aucune réponse générée", "No response generated")}
                                 </div>
                               )}
                             </div>
@@ -729,19 +750,19 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
                                   <div className="space-y-3">
                                     <div className="p-3 bg-primary/5 border border-primary/20 rounded-md text-sm">
                                       <span className="font-semibold block mb-1">{tr("Verdict", "Verdict")}</span>
-                                      {row.verdict}
+                                      {trText(row.verdict)}
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                       {row.strengths && (
                                         <div className="p-3 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-900 rounded-md text-sm">
                                           <span className="font-semibold text-green-800 dark:text-green-300 block mb-1">{tr("Points forts", "Strengths")}</span>
-                                          <div className="whitespace-pre-wrap">{row.strengths}</div>
+                                          <div className="whitespace-pre-wrap">{trText(row.strengths)}</div>
                                         </div>
                                       )}
                                       {row.weaknesses && (
                                         <div className="p-3 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900 rounded-md text-sm">
                                           <span className="font-semibold text-red-800 dark:text-red-300 block mb-1">{tr("Points faibles", "Weaknesses")}</span>
-                                          <div className="whitespace-pre-wrap">{row.weaknesses}</div>
+                                          <div className="whitespace-pre-wrap">{trText(row.weaknesses)}</div>
                                         </div>
                                       )}
                                     </div>

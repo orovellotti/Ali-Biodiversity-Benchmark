@@ -35,7 +35,9 @@ import type {
   QuestionVotes,
   Run,
   RunInput,
-  RunResults
+  RunResults,
+  TranslateInput,
+  TranslateResult
 } from './api.schemas';
 
 import { customFetch } from '../custom-fetch';
@@ -794,6 +796,78 @@ export const useSubmitContact = <TError = ErrorType<Error>,
         TContext
       > => {
       return useMutation(getSubmitContactMutationOptions(options));
+    }
+
+export const getTranslateTextsUrl = () => {
+
+
+
+
+  return `/api/benchmark/translate`
+}
+
+/**
+ * Display-only translation of source strings. French stays the source of truth; each unique string is translated once and cached permanently server-side.
+ * @summary Translate French dataset/answer strings to English (cached)
+ */
+export const translateTexts = async (translateInput: TranslateInput, options?: RequestInit): Promise<TranslateResult> => {
+
+  return customFetch<TranslateResult>(getTranslateTextsUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      translateInput,)
+  }
+);}
+
+
+
+
+export const getTranslateTextsMutationOptions = <TError = ErrorType<Error>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof translateTexts>>, TError,{data: BodyType<TranslateInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof translateTexts>>, TError,{data: BodyType<TranslateInput>}, TContext> => {
+
+const mutationKey = ['translateTexts'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof translateTexts>>, {data: BodyType<TranslateInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  translateTexts(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type TranslateTextsMutationResult = NonNullable<Awaited<ReturnType<typeof translateTexts>>>
+    export type TranslateTextsMutationBody = BodyType<TranslateInput>
+    export type TranslateTextsMutationError = ErrorType<Error>
+
+    /**
+ * @summary Translate French dataset/answer strings to English (cached)
+ */
+export const useTranslateTexts = <TError = ErrorType<Error>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof translateTexts>>, TError,{data: BodyType<TranslateInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof translateTexts>>,
+        TError,
+        {data: BodyType<TranslateInput>},
+        TContext
+      > => {
+      return useMutation(getTranslateTextsMutationOptions(options));
     }
 
 export const getGetArenaDuelUrl = () => {
