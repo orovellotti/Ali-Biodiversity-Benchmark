@@ -58,6 +58,11 @@ const DATA_LABELS: Record<string, { fr: string; en: string }> = {
   hard: { fr: "Difficile", en: "Hard" },
   expert: { fr: "Expert", en: "Expert" },
 
+  // Model size tiers
+  size_small: { fr: "Petit", en: "Small" },
+  size_medium: { fr: "Moyen", en: "Medium" },
+  size_large: { fr: "Grand", en: "Large" },
+
   // Question types (jeu V2/V3 Discriminant)
   domain_knowledge: { fr: "Connaissance du domaine", en: "Domain knowledge" },
   expert_domain_knowledge: { fr: "Expertise du domaine", en: "Expert domain knowledge" },
@@ -107,9 +112,9 @@ interface I18nContextValue {
 const I18nContext = createContext<I18nContextValue | null>(null);
 
 function readInitialLang(): Lang {
-  if (typeof window === "undefined") return "fr";
+  if (typeof window === "undefined") return "en";
   const saved = window.localStorage.getItem(STORAGE_KEY);
-  return saved === "en" ? "en" : "fr";
+  return saved === "fr" ? "fr" : "en";
 }
 
 export function LanguageProvider({ children }: { children: ReactNode }) {

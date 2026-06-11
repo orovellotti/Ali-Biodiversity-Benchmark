@@ -10,10 +10,15 @@ export interface ModelSummary {
   provider: string;
   model: string;
   /**
-     * Approximate model size class (e.g. Petit, Moyen, Grand)
+     * Approximate model size tier as an i18n key (small, medium, large), translated in the UI
      * @nullable
      */
   size?: string | null;
+  /**
+     * Officially published parameter count (e.g. 8B, 70B) for open-weight models; null when the provider does not disclose it
+     * @nullable
+     */
+  params?: string | null;
   nQuestions: number;
   nErrors: number;
   /** @nullable */

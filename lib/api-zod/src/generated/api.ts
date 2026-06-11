@@ -146,7 +146,8 @@ export const GetRunResultsResponse = zod.object({
   "summaryByModel": zod.array(zod.object({
   "provider": zod.string(),
   "model": zod.string(),
-  "size": zod.string().nullish().describe('Approximate model size class (e.g. Petit, Moyen, Grand)'),
+  "size": zod.string().nullish().describe('Approximate model size tier as an i18n key (small, medium, large), translated in the UI'),
+  "params": zod.string().nullish().describe('Officially published parameter count (e.g. 8B, 70B) for open-weight models; null when the provider does not disclose it'),
   "nQuestions": zod.number(),
   "nErrors": zod.number(),
   "avgLatency": zod.number().nullish(),

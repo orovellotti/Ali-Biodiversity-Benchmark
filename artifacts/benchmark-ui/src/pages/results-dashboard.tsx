@@ -402,9 +402,14 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
                   <span className="text-xs font-mono text-muted-foreground">
                     {modelSummary.provider}
                   </span>
-                  {modelSummary.size && (
+                  {(modelSummary.size || modelSummary.params) && (
                     <Badge variant="outline" className="text-xs">
-                      {modelSummary.size}
+                      {modelSummary.size
+                        ? t(`size_${modelSummary.size}`)
+                        : modelSummary.params}
+                      {modelSummary.size && modelSummary.params
+                        ? ` · ${modelSummary.params}`
+                        : ""}
                     </Badge>
                   )}
                 </div>
@@ -458,7 +463,7 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
                 variant="ghost" 
                 size="icon" 
                 className="h-8 w-8"
-                onClick={() => exportToCSV("scores-dimensions.csv", results.summaryByModel, ["model", "size", "accuracy", "uncertaintyHandling", "justificationQuality", "sourceAwareness", "regulatoryHallucinationRisk"])}
+                onClick={() => exportToCSV("scores-dimensions.csv", results.summaryByModel, ["model", "size", "params", "accuracy", "uncertaintyHandling", "justificationQuality", "sourceAwareness", "regulatoryHallucinationRisk"])}
               >
                 <Download className="w-4 h-4" />
               </Button>
