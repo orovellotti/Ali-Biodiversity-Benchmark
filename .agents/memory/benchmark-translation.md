@@ -35,3 +35,21 @@ them in French. Client batches requests under the server's hard caps (600 texts
 / 300k chars); keep new callers going through the shared client hook so chunking
 + caching stay consistent. FR mode is a pure no-op identity (never calls the
 endpoint).
+
+## Cold-cache UX (why EN can "look broken")
+
+The client query is **all-or-nothing per query key**: nothing flips to English
+until the entire batch resolves. On a cold cache the server translates misses in
+sequential LLM chunk-waves (20/chunk, concurrency 4), so a first EN load of a
+full page takes several seconds during which dataset text **silently stays
+French**. Users read this as "translation is broken."
+
+**Fix in place:** every page that calls `useTranslateMap` must surface its
+`loading` flag (a "Translating… / Traduction en cours…" spinner). Don't ship a
+translated surface that only renders `failed` — the silent multi-second wait is
+the actual complaint, not failure. Warm cache is instant (~9ms, a cache hit).
+
+**Why:** the server handler runs to completion even if the HTTP request is
+aborted (client disconnect/unmount doesn't cancel the OpenAI calls), so an
+aborted first request still warms the cache — but the *first viewer* sees French
+the whole time unless the loading state is shown.

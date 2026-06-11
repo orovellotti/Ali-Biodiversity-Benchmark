@@ -16,7 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useI18n } from "@/lib/i18n";
 import { useTranslateMap } from "@/lib/use-translate";
-import { BookOpen, Search, MessageSquare, ArrowBigUp, ArrowBigDown } from "lucide-react";
+import { BookOpen, Search, MessageSquare, ArrowBigUp, ArrowBigDown, Loader2 } from "lucide-react";
 
 type MyVote = "up" | "down";
 
@@ -96,7 +96,11 @@ export function Questions() {
     }
     return out;
   }, [filtered]);
-  const { tr: trText, failed: trFailed } = useTranslateMap(translatable);
+  const {
+    tr: trText,
+    failed: trFailed,
+    loading: trLoading,
+  } = useTranslateMap(translatable);
 
   // --- Community voting --------------------------------------------------
   const queryClient = useQueryClient();
@@ -209,13 +213,19 @@ export function Questions() {
           </select>
         </div>
 
-        <div className="text-xs text-muted-foreground mt-4">
+        <div className="text-xs text-muted-foreground mt-4 flex items-center gap-2">
           {isLoading
             ? tr("Chargement...", "Loading...")
             : tr(
                 `${filtered.length} question${filtered.length > 1 ? "s" : ""} sur ${questions?.length ?? 0}`,
                 `${filtered.length} of ${questions?.length ?? 0} question${(questions?.length ?? 0) > 1 ? "s" : ""}`,
               )}
+          {trLoading && (
+            <span className="inline-flex items-center gap-1.5 text-primary">
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              {tr("Traduction en cours…", "Translating…")}
+            </span>
+          )}
         </div>
 
         <div className="mt-4">

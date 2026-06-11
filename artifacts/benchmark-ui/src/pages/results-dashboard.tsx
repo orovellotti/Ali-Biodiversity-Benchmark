@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
 import { useTranslateMap } from "@/lib/use-translate";
 import { Run, RunResults } from "@workspace/api-client-react";
-import { Download, CheckCircle2, AlertTriangle, Award, ShieldCheck, Compass, ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
+import { Download, CheckCircle2, AlertTriangle, Award, ShieldCheck, Compass, ChevronUp, ChevronDown, ChevronsUpDown, Loader2 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const CHART_COLORS = [
@@ -77,7 +77,11 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
     }
     return out;
   }, [results.rows]);
-  const { tr: trText, failed: trFailed } = useTranslateMap(translatable);
+  const {
+    tr: trText,
+    failed: trFailed,
+    loading: trLoading,
+  } = useTranslateMap(translatable);
 
   // Plain-language descriptions of each scoring dimension, written for a
   // scientific (non-ML) audience. Each note is rated from 0 to 5.
@@ -639,6 +643,12 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
           </div>
           <div className="text-sm text-muted-foreground">
             {tr(`Affichage de ${filteredRows.length} résultats sur ${results.rows.length}`, `Showing ${filteredRows.length} of ${results.rows.length} results`)}
+            {trLoading && (
+              <span className="ml-2 inline-flex items-center gap-1.5 text-primary">
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                {tr("· Traduction en cours…", "· Translating…")}
+              </span>
+            )}
             {trFailed && (
               <span className="ml-2 text-destructive">
                 {tr("· Traduction indisponible (français)", "· Translation unavailable (French)")}
