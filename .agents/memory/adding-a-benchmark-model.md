@@ -43,3 +43,8 @@ reuses the same key automatically.
 **Cost note:** every extra model added to a run multiplies spend — it adds both
 answer-generation calls AND judge-scoring calls (models × questions each). The
 `BENCHMARK_MAX_REQUESTS_PER_RUN` ceiling counts both.
+
+## Provider availability on THIS account (June 2026)
+
+- **Gemini key has ZERO quota** (`generate_content_free_tier_requests, limit: 0`) → every gemini call 429s `RESOURCE_EXHAUSTED`. Cannot benchmark Gemini until the user enables paid billing on their Google AI project. Don't waste a run on gemini until that's fixed — verify with a single live call first.
+- OpenAI, Anthropic (4.5 family), Mistral (`mistral-large-latest`) all work. Mistral scored highest in the reference run.

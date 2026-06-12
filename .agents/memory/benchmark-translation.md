@@ -53,3 +53,12 @@ the actual complaint, not failure. Warm cache is instant (~9ms, a cache hit).
 aborted (client disconnect/unmount doesn't cancel the OpenAI calls), so an
 aborted first request still warms the cache — but the *first viewer* sees French
 the whole time unless the loading state is shown.
+
+## Body-size limit (413 on large EN batches)
+
+The public `POST /benchmark/translate` body grows with run size (more models = more
+answers/verdicts). Express's default `express.json()` 100kb limit **413s** on
+multi-model runs in EN mode. Fix: route-scope a larger `express.json({limit:"1mb"})`
+to the translate path only (keep the small default elsewhere to limit DoS surface).
+**Rule:** the translate route's body limit must stay ahead of the client chunk cap
+(use-translate.ts CHUNK_MAX_CHARS) AND the server's 300k-char request cap.
