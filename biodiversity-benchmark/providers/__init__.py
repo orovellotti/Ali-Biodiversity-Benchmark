@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from .anthropic_provider import AnthropicProvider
+from .anthropic_provider import AnthropicProvider, AnthropicSmallProvider
 from .base import BaseProvider, ProviderError
 from .gemini_provider import GeminiProvider
 from .mistral_provider import MistralProvider
@@ -15,6 +15,7 @@ PROVIDER_CLASSES = {
     "mistral": MistralProvider,
     "gemini": GeminiProvider,
     "openai-small": OpenAISmallProvider,
+    "anthropic-small": AnthropicSmallProvider,
     "ollama": OllamaProvider,
 }
 

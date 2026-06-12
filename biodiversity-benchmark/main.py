@@ -307,7 +307,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--models",
         default="all",
         help="Liste de fournisseurs séparés par des virgules "
-        "(openai,anthropic,mistral,gemini,openai-small,ollama) ou 'all'.",
+        "(openai,anthropic,mistral,gemini,openai-small,anthropic-small,ollama) ou 'all'.",
     )
     parser.add_argument(
         "--topic",

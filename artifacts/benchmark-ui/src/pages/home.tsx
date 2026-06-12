@@ -378,7 +378,7 @@ export function Home() {
                                     <span className="text-xs font-mono text-muted-foreground mt-0.5">
                                       {p.defaultModel}
                                     </span>
-                                    {p.id === "openai-small" && p.available && (
+                                    {(p.id === "openai-small" || p.id === "anthropic-small") && p.available && (
                                       <span className="text-xs text-muted-foreground mt-1">
                                         {tr(
                                           "Petit modèle « baseline » volontairement plus faible (comparaison)",

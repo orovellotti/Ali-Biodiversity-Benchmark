@@ -47,3 +47,13 @@ class AnthropicProvider(BaseProvider):
         if not text:
             raise ProviderError("Réponse Anthropic vide.")
         return text
+
+
+class AnthropicSmallProvider(AnthropicProvider):
+    """Petit modèle Claude volontairement plus léger (baseline de comparaison).
+
+    Réutilise le client Anthropic et la clé ANTHROPIC_API_KEY, mais pointe par
+    défaut vers un modèle plus léger (Claude Haiku).
+    """
+
+    name = "anthropic-small"
