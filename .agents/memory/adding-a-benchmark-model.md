@@ -35,6 +35,8 @@ reuses the same key automatically.
 ## Verify
 
 - `cd biodiversity-benchmark && python main.py --dry-run --models <id> --limit 2` (free, no API calls).
+  ⚠️ **Dry-run does NOT validate the model id against the provider API** — it skips the real call. A wrong/deprecated default model name passes dry-run + typecheck but then 404s on every question in a real run (the run still "completes" but that model shows nErrors == nQuestions and a null score). Always confirm the model id against the live model list before trusting a real run.
+- Confirm the model id exists for THIS account: `curl -s https://api.anthropic.com/v1/models -H "x-api-key: $ANTHROPIC_API_KEY" -H "anthropic-version: 2023-06-01"` (OpenAI: `GET https://api.openai.com/v1/models`). **Why:** this account is on the Claude **4.5** family (e.g. `claude-haiku-4-5-20251001`, `claude-sonnet-4-5-20250929`) — the older `claude-3-5-haiku-*` ids 404. Don't assume legacy Anthropic model names exist.
 - `pnpm --filter @workspace/api-server run typecheck` + `--filter @workspace/benchmark-ui run typecheck`.
 - Restart the api-server workflow (PROVIDER_DEFS is module-level), then `curl localhost:80/api/benchmark/config` to confirm the new id shows `available: true`.
 

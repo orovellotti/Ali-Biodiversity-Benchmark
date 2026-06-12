@@ -106,7 +106,7 @@ Pour les 800 questions, retirez simplement `--limit`.
 | Option | Description |
 |---|---|
 | `--input` | Chemin du fichier JSON du benchmark. |
-| `--models` | `all` ou liste séparée par des virgules (`openai,anthropic,mistral,gemini,openai-small,anthropic-small,ollama`). `openai-small` (gpt-3.5-turbo) et `anthropic-small` (Claude Haiku) sont des « baselines » volontairement plus légères, réutilisant les mêmes clés que `openai`/`anthropic`. |
+| `--models` | `all` ou liste séparée par des virgules (`openai,anthropic,mistral,gemini,openai-small,anthropic-small,ollama`). `openai-small` (gpt-3.5-turbo) et `anthropic-small` (Claude Haiku 4.5) sont des « baselines » volontairement plus légères, réutilisant les mêmes clés que `openai`/`anthropic`. |
 | `--topic` | Restreint à un topic du benchmark. |
 | `--limit N` | Limite le nombre de questions (test rapide). |
 | `--judge-model` | Modèle OpenAI utilisé comme juge. |
