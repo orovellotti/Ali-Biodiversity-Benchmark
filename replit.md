@@ -62,7 +62,7 @@ A French-language control room for benchmarking LLMs (OpenAI, Anthropic, Mistral
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+- **Ne relancer un run que si les questions changent.** Les résultats d'un run sont stockés sur disque et relus sans recalcul, donc tant que le dataset de questions est inchangé, on réutilise les résultats existants (économie de crédits). Cas justifiant un (re)lancement : (1) les questions changent ; (2) un nouveau modèle est ajouté → lancer un run pour ce seul modèle puis fusionner ses lignes dans le run de référence ; (3) rare : changement du prompt ou des critères du juge. Mêmes modèles + mêmes questions = aucun relancement.
 
 ## Gotchas
 
