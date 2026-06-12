@@ -204,6 +204,12 @@ export function Landing() {
               "On topics of biodiversity and environmental regulation, a wrong answer or a made-up rule can be costly. This field notebook measures, in a comparable and reproducible way, the reliability of large language models — their accuracy, their caution and their resistance to hallucination.",
             )}
           </p>
+          <p className="text-base text-muted-foreground/90 mt-5 max-w-2xl leading-relaxed">
+            {tr(
+              "Au fond, une seule question : peut-on aligner l'IA sur les besoins des non-humains ? Évaluer comment les modèles traitent le vivant, c'est un premier pas pour qu'ils servent aussi les espèces et les écosystèmes qui n'ont pas voix au chapitre.",
+              "At its core, a single question: can we align AI with the needs of non-humans? Measuring how models treat the living world is a first step toward making them serve the species and ecosystems that have no voice of their own.",
+            )}
+          </p>
           <div className="flex flex-wrap items-center gap-3 mt-9">
             <Button size="lg" asChild>
               <Link href="/resultats">
