@@ -25,6 +25,13 @@ PROVIDER_API_KEYS = {
     "openai-small": "OPENAI_API_KEY",
     "anthropic-small": "ANTHROPIC_API_KEY",
     "ollama": None,
+    # Petits modèles open-source via OpenRouter (intégration IA Replit, clé
+    # provisionnée automatiquement — pas de clé personnelle à fournir).
+    "llama-3.2-3b": "AI_INTEGRATIONS_OPENROUTER_API_KEY",
+    "llama-3.2-1b": "AI_INTEGRATIONS_OPENROUTER_API_KEY",
+    "qwen-2.5-7b": "AI_INTEGRATIONS_OPENROUTER_API_KEY",
+    "ministral-8b": "AI_INTEGRATIONS_OPENROUTER_API_KEY",
+    "gemma-3-4b": "AI_INTEGRATIONS_OPENROUTER_API_KEY",
 }
 
 ALL_PROVIDERS = list(PROVIDER_API_KEYS.keys())
@@ -38,6 +45,12 @@ DEFAULT_MODELS = {
     "openai-small": os.environ.get("OPENAI_SMALL_MODEL", "gpt-3.5-turbo"),
     "anthropic-small": os.environ.get("ANTHROPIC_SMALL_MODEL", "claude-haiku-4-5-20251001"),
     "ollama": os.environ.get("OLLAMA_MODEL", "llama3.1"),
+    # Petits modèles open-source via OpenRouter (ids OpenRouter).
+    "llama-3.2-3b": os.environ.get("LLAMA32_3B_MODEL", "meta-llama/llama-3.2-3b-instruct"),
+    "llama-3.2-1b": os.environ.get("LLAMA32_1B_MODEL", "meta-llama/llama-3.2-1b-instruct"),
+    "qwen-2.5-7b": os.environ.get("QWEN25_7B_MODEL", "qwen/qwen-2.5-7b-instruct"),
+    "ministral-8b": os.environ.get("MINISTRAL_8B_MODEL", "mistralai/ministral-8b-2512"),
+    "gemma-3-4b": os.environ.get("GEMMA3_4B_MODEL", "google/gemma-3-4b-it"),
 }
 
 # Modèle utilisé par le juge LLM-as-judge (OpenAI par défaut).

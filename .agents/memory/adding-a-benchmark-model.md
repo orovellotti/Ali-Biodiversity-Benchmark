@@ -48,3 +48,13 @@ answer-generation calls AND judge-scoring calls (models × questions each). The
 
 - **Gemini key has ZERO quota** (`generate_content_free_tier_requests, limit: 0`) → every gemini call 429s `RESOURCE_EXHAUSTED`. Cannot benchmark Gemini until the user enables paid billing on their Google AI project. Don't waste a run on gemini until that's fixed — verify with a single live call first.
 - OpenAI, Anthropic (4.5 family), Mistral (`mistral-large-latest`) all work. Mistral scored highest in the reference run.
+
+## OpenRouter provider family (one integration, many small open-weight models)
+
+Added 5 small open-weight models (Llama 3.2 3B/1B, Qwen2.5 7B, Ministral 8B, Gemma 3 4B) via **Replit AI integration `openrouter`** — provisioned env-vars-only (`setupReplitAIIntegrations(openrouter)` → `AI_INTEGRATIONS_OPENROUTER_BASE_URL` + `AI_INTEGRATIONS_OPENROUTER_API_KEY`). Skip ALL the TS chat scaffolding it offers (DB tables/routes); the Python subprocess just inherits these two env vars via `env: process.env`.
+
+- One `OpenRouterProvider` (OpenAI SDK pointed at the proxy base_url) + one named subclass per model id. All 5 share the SAME integration key — that's expected, not a leak.
+- **Gotcha: availability needs BOTH env vars.** The Python provider init requires the key AND the base URL, but the TS `available` check originally only tested the key. Gate OpenRouter `available` on both (`providerAvailable` in config.ts) so the UI can't show "available" while Python fails to init.
+- **PARAM_RULES ordering matters for dashed ids:** put the more specific id first — `llama-3.2-1b` MUST precede `llama-3.2` or 1B gets matched as 3B. SIZE_RULES classifies all of these as `small`.
+- These models DO publish param counts (open-weight) so PARAM_RULES gives them a "· 8B/7B/4B/3B/1B" tag; proprietary models never get a number (don't fabricate).
+- Reference-run result (20 questions): ministral-8b topped the WHOLE board at 96.6 (> mistral-large 96.25); llama-3.2-1b was the floor at 62.9. All 5 ran with 0 errors via the proxy.

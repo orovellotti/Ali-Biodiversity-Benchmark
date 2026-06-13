@@ -8,6 +8,13 @@ from .gemini_provider import GeminiProvider
 from .mistral_provider import MistralProvider
 from .ollama_provider import OllamaProvider
 from .openai_provider import OpenAIProvider, OpenAISmallProvider
+from .openrouter_provider import (
+    Gemma3_4BProvider,
+    Llama32_1BProvider,
+    Llama32_3BProvider,
+    Ministral8BProvider,
+    Qwen25_7BProvider,
+)
 
 PROVIDER_CLASSES = {
     "openai": OpenAIProvider,
@@ -17,6 +24,12 @@ PROVIDER_CLASSES = {
     "openai-small": OpenAISmallProvider,
     "anthropic-small": AnthropicSmallProvider,
     "ollama": OllamaProvider,
+    # Petits modèles open-source via OpenRouter (intégration IA Replit).
+    "llama-3.2-3b": Llama32_3BProvider,
+    "llama-3.2-1b": Llama32_1BProvider,
+    "qwen-2.5-7b": Qwen25_7BProvider,
+    "ministral-8b": Ministral8BProvider,
+    "gemma-3-4b": Gemma3_4BProvider,
 }
 
 

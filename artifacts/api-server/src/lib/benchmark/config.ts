@@ -20,6 +20,13 @@ const PROVIDER_DEFS: ProviderDef[] = [
   { id: "openai-small", envKey: "OPENAI_API_KEY", defaultModel: process.env["OPENAI_SMALL_MODEL"] ?? "gpt-3.5-turbo" },
   { id: "anthropic-small", envKey: "ANTHROPIC_API_KEY", defaultModel: process.env["ANTHROPIC_SMALL_MODEL"] ?? "claude-haiku-4-5-20251001" },
   { id: "ollama", envKey: null, defaultModel: process.env["OLLAMA_MODEL"] ?? "llama3.1" },
+  // Small open-source models via OpenRouter (Replit AI integration — key
+  // provisioned automatically, billed to credits).
+  { id: "llama-3.2-3b", envKey: "AI_INTEGRATIONS_OPENROUTER_API_KEY", defaultModel: process.env["LLAMA32_3B_MODEL"] ?? "meta-llama/llama-3.2-3b-instruct" },
+  { id: "llama-3.2-1b", envKey: "AI_INTEGRATIONS_OPENROUTER_API_KEY", defaultModel: process.env["LLAMA32_1B_MODEL"] ?? "meta-llama/llama-3.2-1b-instruct" },
+  { id: "qwen-2.5-7b", envKey: "AI_INTEGRATIONS_OPENROUTER_API_KEY", defaultModel: process.env["QWEN25_7B_MODEL"] ?? "qwen/qwen-2.5-7b-instruct" },
+  { id: "ministral-8b", envKey: "AI_INTEGRATIONS_OPENROUTER_API_KEY", defaultModel: process.env["MINISTRAL_8B_MODEL"] ?? "mistralai/ministral-8b-2512" },
+  { id: "gemma-3-4b", envKey: "AI_INTEGRATIONS_OPENROUTER_API_KEY", defaultModel: process.env["GEMMA3_4B_MODEL"] ?? "google/gemma-3-4b-it" },
 ];
 
 export const VALID_PROVIDERS = PROVIDER_DEFS.map((p) => p.id);
@@ -47,6 +54,11 @@ const SIZE_RULES: { match: string; size: "small" | "medium" | "large" }[] = [
   { match: "llama3.1", size: "medium" },
   { match: "llama3.2", size: "small" },
   { match: "llama3.3", size: "large" },
+  // OpenRouter dashed naming (e.g. meta-llama/llama-3.2-3b-instruct).
+  { match: "llama-3.2", size: "small" },
+  { match: "qwen-2.5-7b", size: "small" },
+  { match: "qwen3-8b", size: "small" },
+  { match: "gemma-3-4b", size: "small" },
 ];
 
 export function modelSize(model: string | null | undefined): string | null {
@@ -77,6 +89,12 @@ const PARAM_RULES: { match: string; params: string }[] = [
   { match: "mixtral-8x22b", params: "141B" },
   { match: "mixtral-8x7b", params: "47B" },
   { match: "mistral-7b", params: "7B" },
+  // OpenRouter dashed naming (most-specific-first: 1b before the 3.2 default).
+  { match: "llama-3.2-1b", params: "1B" },
+  { match: "llama-3.2", params: "3B" },
+  { match: "qwen-2.5-7b", params: "7B" },
+  { match: "qwen3-8b", params: "8B" },
+  { match: "gemma-3-4b", params: "4B" },
 ];
 
 export function modelParams(model: string | null | undefined): string | null {
@@ -108,13 +126,24 @@ export function judgeAvailable(): boolean {
   return Boolean(process.env["OPENAI_API_KEY"]);
 }
 
+function providerAvailable(envKey: string | null): boolean {
+  if (envKey == null) return false;
+  if (!process.env[envKey]) return false;
+  // OpenRouter (via Replit AI integration) needs BOTH the key and the base URL;
+  // the Python subprocess fails to initialise the provider if either is missing.
+  if (envKey === "AI_INTEGRATIONS_OPENROUTER_API_KEY") {
+    return Boolean(process.env["AI_INTEGRATIONS_OPENROUTER_BASE_URL"]);
+  }
+  return true;
+}
+
 function providers(): Provider[] {
   return PROVIDER_DEFS.map((p) => ({
     id: p.id,
     defaultModel: p.defaultModel,
     requiresKey: p.envKey != null,
     // Ollama is local and not verifiable here; keyed providers depend on env.
-    available: p.envKey == null ? false : Boolean(process.env[p.envKey]),
+    available: providerAvailable(p.envKey),
   }));
 }
 
