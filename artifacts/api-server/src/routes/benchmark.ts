@@ -5,6 +5,7 @@ import {
   GetArenaDuelResponse,
   GetArenaLeaderboardResponse,
   GetBenchmarkConfigResponse,
+  GetQuestionAnswersResponse,
   GetRunResponse,
   GetRunResultsResponse,
   ListRunsResponse,
@@ -39,6 +40,10 @@ import {
   listQuestionVotes,
   recordQuestionVote,
 } from "../lib/benchmark/question-votes";
+import {
+  answersForQuestion,
+  isKnownQuestion,
+} from "../lib/benchmark/question-answers";
 import {
   TranslateValidationError,
   translateTexts,
@@ -90,6 +95,16 @@ router.get("/benchmark/config", (_req, res) => {
 
 router.get("/benchmark/questions", (_req, res) => {
   const data = ListQuestionsResponse.parse(listQuestions());
+  res.json(data);
+});
+
+router.get("/benchmark/questions/:questionId/answers", (req, res) => {
+  const questionId = req.params.questionId;
+  if (!isKnownQuestion(questionId)) {
+    res.status(404).json({ error: "Question inconnue" });
+    return;
+  }
+  const data = GetQuestionAnswersResponse.parse(answersForQuestion(questionId));
   res.json(data);
 });
 

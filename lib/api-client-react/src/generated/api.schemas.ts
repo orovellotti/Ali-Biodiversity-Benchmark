@@ -299,6 +299,21 @@ export interface ArenaVoteResult {
   leaderboard: ArenaLeaderboard;
 }
 
+export interface QuestionAnswer {
+  provider: string;
+  model: string;
+  response: string;
+  /** @nullable */
+  overallScore?: number | null;
+  /** @nullable */
+  verdict?: string | null;
+}
+
+export interface QuestionAnswers {
+  questionId: string;
+  answers: QuestionAnswer[];
+}
+
 export interface QuestionVoteCount {
   questionId: string;
   up: number;

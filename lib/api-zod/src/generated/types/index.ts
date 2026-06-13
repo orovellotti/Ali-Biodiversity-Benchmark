@@ -23,6 +23,8 @@ export * from './groupSummary';
 export * from './healthStatus';
 export * from './modelSummary';
 export * from './provider';
+export * from './questionAnswer';
+export * from './questionAnswers';
 export * from './questionPreview';
 export * from './questionVoteCount';
 export * from './questionVoteInput';

@@ -7,7 +7,10 @@ import {
   useListQuestionVotes,
   getListQuestionVotesQueryKey,
   useSubmitQuestionVote,
+  useGetQuestionAnswers,
+  getGetQuestionAnswersQueryKey,
   type QuestionVoteCount,
+  type QuestionAnswer,
 } from "@workspace/api-client-react";
 import { SiteHeader } from "@/components/site-header";
 import { Button } from "@/components/ui/button";
@@ -16,7 +19,16 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useI18n } from "@/lib/i18n";
 import { useTranslateMap } from "@/lib/use-translate";
-import { BookOpen, Search, MessageSquare, ArrowBigUp, ArrowBigDown, Loader2 } from "lucide-react";
+import {
+  BookOpen,
+  Search,
+  MessageSquare,
+  ArrowBigUp,
+  ArrowBigDown,
+  Loader2,
+  ChevronDown,
+  Sparkles,
+} from "lucide-react";
 
 type MyVote = "up" | "down";
 
@@ -47,6 +59,15 @@ export function Questions() {
   const [search, setSearch] = useState("");
   const [topic, setTopic] = useState("");
   const [difficulty, setDifficulty] = useState("");
+  const [expanded, setExpanded] = useState<Set<string>>(() => new Set());
+
+  const toggleExpanded = (id: string) =>
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
 
   const { data: questions, isLoading, isError } = useListQuestions({
     query: {
@@ -297,6 +318,29 @@ export function Questions() {
                         {trText(q.expectedAnswerShort)}
                       </p>
                     )}
+                    <button
+                      type="button"
+                      onClick={() => toggleExpanded(q.id)}
+                      aria-expanded={expanded.has(q.id)}
+                      className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:underline"
+                    >
+                      <Sparkles className="w-3.5 h-3.5" />
+                      {expanded.has(q.id)
+                        ? tr(
+                            "Masquer les réponses des modèles",
+                            "Hide model answers",
+                          )
+                        : tr(
+                            "Voir les réponses des modèles",
+                            "Show model answers",
+                          )}
+                      <ChevronDown
+                        className={`w-3.5 h-3.5 transition-transform ${
+                          expanded.has(q.id) ? "rotate-180" : ""
+                        }`}
+                      />
+                    </button>
+                    {expanded.has(q.id) && <ModelAnswers questionId={q.id} />}
                   </div>
                 </div>
               ))}
@@ -304,6 +348,113 @@ export function Questions() {
           )}
         </div>
       </main>
+    </div>
+  );
+}
+
+function scoreClass(score: number): string {
+  if (score >= 80) return "text-primary";
+  if (score >= 50) return "text-foreground";
+  return "text-destructive";
+}
+
+function ModelAnswers({ questionId }: { questionId: string }) {
+  const { tr } = useI18n();
+  const { data, isLoading, isError } = useGetQuestionAnswers(questionId, {
+    query: {
+      queryKey: getGetQuestionAnswersQueryKey(questionId),
+      staleTime: 5 * 60 * 1000,
+    },
+  });
+
+  const answers = data?.answers ?? [];
+
+  // Translate answer text + judge verdicts to EN (cached, no-op in FR).
+  const translatable = useMemo(() => {
+    const out: string[] = [];
+    for (const a of answers) {
+      out.push(a.response);
+      if (a.verdict) out.push(a.verdict);
+    }
+    return out;
+  }, [answers]);
+  const { tr: trText, loading: trLoading } = useTranslateMap(translatable);
+
+  if (isLoading) {
+    return (
+      <div className="mt-3 space-y-2">
+        <Skeleton className="h-16 w-full rounded-md" />
+        <Skeleton className="h-16 w-full rounded-md" />
+      </div>
+    );
+  }
+  if (isError) {
+    return (
+      <p className="mt-3 text-xs text-destructive">
+        {tr(
+          "Erreur lors du chargement des réponses.",
+          "Error loading answers.",
+        )}
+      </p>
+    );
+  }
+  if (answers.length === 0) {
+    return (
+      <p className="mt-3 text-xs text-muted-foreground">
+        {tr(
+          "Aucun modèle n'a encore répondu à cette question.",
+          "No model has answered this question yet.",
+        )}
+      </p>
+    );
+  }
+
+  return (
+    <div className="mt-3 border-t border-card-border pt-3">
+      <div className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-muted-foreground font-mono mb-3">
+        {tr(
+          `Réponses des modèles (${answers.length})`,
+          `Model answers (${answers.length})`,
+        )}
+        {trLoading && (
+          <span className="inline-flex items-center gap-1.5 text-primary normal-case tracking-normal">
+            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            {tr("Traduction…", "Translating…")}
+          </span>
+        )}
+      </div>
+      <div className="space-y-3">
+        {answers.map((a: QuestionAnswer) => (
+          <div
+            key={`${a.provider}::${a.model}`}
+            className="rounded-md border border-card-border bg-background/60 p-3"
+          >
+            <div className="flex items-center justify-between gap-2 mb-1.5">
+              <span className="font-mono text-xs font-semibold text-foreground break-all">
+                {a.model}
+              </span>
+              {a.overallScore != null && (
+                <span
+                  className={`font-mono text-sm font-semibold tabular-nums shrink-0 ${scoreClass(
+                    a.overallScore,
+                  )}`}
+                >
+                  {Math.round(a.overallScore)}
+                  <span className="text-muted-foreground text-xs">/100</span>
+                </span>
+              )}
+            </div>
+            <p className="text-sm whitespace-pre-wrap leading-relaxed">
+              {trText(a.response)}
+            </p>
+            {a.verdict && (
+              <p className="text-xs text-muted-foreground italic mt-2 border-l-2 border-card-border pl-2">
+                {trText(a.verdict)}
+              </p>
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

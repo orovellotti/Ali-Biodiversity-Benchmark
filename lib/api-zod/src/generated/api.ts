@@ -223,6 +223,26 @@ export const ListQuestionsResponse = zod.array(ListQuestionsResponseItem)
 
 
 /**
+ * Reuses already-stored run results — no live model calls. Returns the most recent usable answer per model, sorted by overall score.
+ * @summary Model answers (with judge scores) for a single dataset question
+ */
+export const GetQuestionAnswersParams = zod.object({
+  "questionId": zod.coerce.string()
+})
+
+export const GetQuestionAnswersResponse = zod.object({
+  "questionId": zod.string(),
+  "answers": zod.array(zod.object({
+  "provider": zod.string(),
+  "model": zod.string(),
+  "response": zod.string(),
+  "overallScore": zod.number().nullish(),
+  "verdict": zod.string().nullish()
+}))
+})
+
+
+/**
  * @summary Send a message to Natural Solutions
  */
 export const submitContactBodyNameMax = 120;

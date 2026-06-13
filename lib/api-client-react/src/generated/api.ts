@@ -29,6 +29,7 @@ import type {
   ContactResult,
   Error,
   HealthStatus,
+  QuestionAnswers,
   QuestionPreview,
   QuestionVoteCount,
   QuestionVoteInput,
@@ -715,6 +716,84 @@ export function useListQuestions<TData = Awaited<ReturnType<typeof listQuestions
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getListQuestionsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getGetQuestionAnswersUrl = (questionId: string,) => {
+
+
+
+
+  return `/api/benchmark/questions/${questionId}/answers`
+}
+
+/**
+ * Reuses already-stored run results — no live model calls. Returns the most recent usable answer per model, sorted by overall score.
+ * @summary Model answers (with judge scores) for a single dataset question
+ */
+export const getQuestionAnswers = async (questionId: string, options?: RequestInit): Promise<QuestionAnswers> => {
+
+  return customFetch<QuestionAnswers>(getGetQuestionAnswersUrl(questionId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetQuestionAnswersQueryKey = (questionId: string,) => {
+    return [
+    `/api/benchmark/questions/${questionId}/answers`
+    ] as const;
+    }
+
+
+export const getGetQuestionAnswersQueryOptions = <TData = Awaited<ReturnType<typeof getQuestionAnswers>>, TError = ErrorType<Error>>(questionId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getQuestionAnswers>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetQuestionAnswersQueryKey(questionId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getQuestionAnswers>>> = ({ signal }) => getQuestionAnswers(questionId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(questionId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getQuestionAnswers>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetQuestionAnswersQueryResult = NonNullable<Awaited<ReturnType<typeof getQuestionAnswers>>>
+export type GetQuestionAnswersQueryError = ErrorType<Error>
+
+
+/**
+ * @summary Model answers (with judge scores) for a single dataset question
+ */
+
+export function useGetQuestionAnswers<TData = Awaited<ReturnType<typeof getQuestionAnswers>>, TError = ErrorType<Error>>(
+ questionId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getQuestionAnswers>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetQuestionAnswersQueryOptions(questionId,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

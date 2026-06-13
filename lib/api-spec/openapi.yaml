@@ -183,6 +183,31 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/QuestionPreview"
+  /benchmark/questions/{questionId}/answers:
+    get:
+      operationId: getQuestionAnswers
+      tags: [benchmark]
+      summary: Model answers (with judge scores) for a single dataset question
+      description: Reuses already-stored run results — no live model calls. Returns the most recent usable answer per model, sorted by overall score.
+      parameters:
+        - name: questionId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Model answers for the question
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuestionAnswers"
+        "404":
+          description: Unknown question
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
   /benchmark/contact:
     post:
       operationId: submitContact
@@ -743,6 +768,30 @@ components:
           type: number
         leaderboard:
           $ref: "#/components/schemas/ArenaLeaderboard"
+    QuestionAnswer:
+      type: object
+      required: [provider, model, response]
+      properties:
+        provider:
+          type: string
+        model:
+          type: string
+        response:
+          type: string
+        overallScore:
+          type: ["number", "null"]
+        verdict:
+          type: ["string", "null"]
+    QuestionAnswers:
+      type: object
+      required: [questionId, answers]
+      properties:
+        questionId:
+          type: string
+        answers:
+          type: array
+          items:
+            $ref: "#/components/schemas/QuestionAnswer"
     QuestionVoteCount:
       type: object
       required: [questionId, up, down, score]
