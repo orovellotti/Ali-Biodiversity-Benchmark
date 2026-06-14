@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
 import { useTranslateMap } from "@/lib/use-translate";
 import { Run, RunResults } from "@workspace/api-client-react";
-import { Download, CheckCircle2, AlertTriangle, Award, ShieldCheck, Compass, ChevronUp, ChevronDown, ChevronsUpDown, Loader2 } from "lucide-react";
+import { Download, CheckCircle2, AlertTriangle, Award, ShieldCheck, Compass, ChevronUp, ChevronDown, ChevronsUpDown, Loader2, Lock, Unlock } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const CHART_COLORS = [
@@ -385,11 +385,16 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
           {results.summaryByModel.map((modelSummary, index) => (
             <Card
               key={modelSummary.model}
-              className={`relative overflow-hidden hairline-top ${index === 0 ? "border-primary shadow-md" : ""}`}
+              className={`relative overflow-hidden hairline-top pl-1.5 ${index === 0 ? "border-primary shadow-md" : ""} ${modelSummary.openSource ? "bg-primary/[0.035]" : ""}`}
             >
               {index === 0 && (
                 <div className="absolute top-0 left-0 right-0 h-1 bg-primary" />
               )}
+              {/* Open vs proprietary accent stripe */}
+              <div
+                className={`absolute top-0 left-0 bottom-0 w-1.5 ${modelSummary.openSource ? "bg-primary" : "bg-muted-foreground/30"}`}
+                aria-hidden="true"
+              />
               <CardContent className="p-5">
                 <div className="flex justify-between items-start mb-3">
                   <span className="index-tag">
@@ -402,7 +407,21 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
                 <div className="font-display font-semibold text-lg leading-tight">
                   {modelSummary.model}
                 </div>
-                <div className="flex items-center gap-2 mb-4 mt-1">
+                {/* Open / proprietary status — shown for both, strong visual contrast */}
+                <div className="mt-2 mb-3">
+                  {modelSummary.openSource ? (
+                    <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-primary text-primary-foreground">
+                      <Unlock className="w-3.5 h-3.5" />
+                      {tr("Open source", "Open source")}
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full border border-border bg-background text-muted-foreground">
+                      <Lock className="w-3.5 h-3.5" />
+                      {tr("Propriétaire", "Proprietary")}
+                    </span>
+                  )}
+                </div>
+                <div className="flex items-center gap-2 mb-4">
                   <span className="text-xs font-mono text-muted-foreground">
                     {modelSummary.provider}
                   </span>
@@ -414,11 +433,6 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
                       {modelSummary.size && modelSummary.params
                         ? ` · ${modelSummary.params}`
                         : ""}
-                    </Badge>
-                  )}
-                  {modelSummary.openSource && (
-                    <Badge variant="secondary" className="text-xs">
-                      {tr("Open source", "Open source")}
                     </Badge>
                   )}
                 </div>
