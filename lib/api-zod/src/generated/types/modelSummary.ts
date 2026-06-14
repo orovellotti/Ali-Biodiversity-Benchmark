@@ -19,6 +19,8 @@ export interface ModelSummary {
      * @nullable
      */
   params?: string | null;
+  /** True for open-source / open-weight models (served via OpenRouter or Ollama); false for proprietary API models */
+  openSource: boolean;
   nQuestions: number;
   nErrors: number;
   /** @nullable */

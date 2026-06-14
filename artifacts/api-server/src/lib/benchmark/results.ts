@@ -8,7 +8,7 @@ import type {
 } from "@workspace/api-zod";
 import { runDir } from "./paths";
 import { getRun } from "./runner";
-import { modelSize, modelParams } from "./config";
+import { modelSize, modelParams, isOpenSource } from "./config";
 
 interface RawRow {
   question_id?: string;
@@ -127,6 +127,7 @@ function summarizeModels(rows: ResultRow[]): ModelSummary[] {
       model: first.model,
       size: modelSize(first.model),
       params: modelParams(first.model),
+      openSource: isOpenSource(first.provider),
       nQuestions: group.length,
       nErrors: group.filter((r) => r.error).length,
       avgLatency: avg(latencies),

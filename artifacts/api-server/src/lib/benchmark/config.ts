@@ -116,6 +116,28 @@ export function modelParams(model: string | null | undefined): string | null {
   return null;
 }
 
+// Open-source / open-weight models: those served via OpenRouter (the Replit AI
+// integration) plus the local Ollama runner. Proprietary API models
+// (OpenAI / Anthropic / Gemini / Mistral's hosted "-latest") are NOT open
+// source. Keyed by provider id so the classification stays explicit and is the
+// single source of truth shared by the dashboard "open source" tag.
+const OPEN_SOURCE_PROVIDERS = new Set<string>([
+  "ollama",
+  "llama-3.2-3b",
+  "llama-3.2-1b",
+  "qwen-2.5-7b",
+  "ministral-8b",
+  "gemma-3-4b",
+  "llama-3.3-70b",
+  "mistral-small-24b",
+  "gemma-2-27b",
+]);
+
+export function isOpenSource(providerId: string | null | undefined): boolean {
+  if (!providerId) return false;
+  return OPEN_SOURCE_PROVIDERS.has(providerId);
+}
+
 export function judgeModel(): string {
   return process.env["OPENAI_JUDGE_MODEL"] ?? "gpt-4o-mini";
 }

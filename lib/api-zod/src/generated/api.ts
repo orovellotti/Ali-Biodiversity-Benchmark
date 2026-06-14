@@ -148,6 +148,7 @@ export const GetRunResultsResponse = zod.object({
   "model": zod.string(),
   "size": zod.string().nullish().describe('Approximate model size tier as an i18n key (small, medium, large), translated in the UI'),
   "params": zod.string().nullish().describe('Officially published parameter count (e.g. 8B, 70B) for open-weight models; null when the provider does not disclose it'),
+  "openSource": zod.boolean().describe('True for open-source \/ open-weight models (served via OpenRouter or Ollama); false for proprietary API models'),
   "nQuestions": zod.number(),
   "nErrors": zod.number(),
   "avgLatency": zod.number().nullish(),

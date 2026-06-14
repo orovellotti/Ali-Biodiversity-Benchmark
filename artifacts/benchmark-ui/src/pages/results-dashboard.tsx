@@ -416,6 +416,11 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
                         : ""}
                     </Badge>
                   )}
+                  {modelSummary.openSource && (
+                    <Badge variant="secondary" className="text-xs">
+                      {tr("Open source", "Open source")}
+                    </Badge>
+                  )}
                 </div>
 
                 <div className="font-display text-4xl font-semibold text-primary tabular-nums mb-4">
