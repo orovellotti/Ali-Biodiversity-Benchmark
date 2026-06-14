@@ -18,6 +18,8 @@ import {
   ArrowRight,
   CheckCircle2,
   AlertTriangle,
+  Lock,
+  Unlock,
 } from "lucide-react";
 
 function SectionLabel({ n, children }: { n: string; children: React.ReactNode }) {
@@ -429,6 +431,62 @@ export function Landing() {
                   </div>
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* §05 Modèles propriétaires & open source */}
+      <section className="border-t border-border">
+        <div className="max-w-[1180px] mx-auto px-6 py-20">
+          <div className="max-w-2xl mb-12">
+            <SectionLabel n="05">{tr("Les modèles", "The models")}</SectionLabel>
+            <h2 className="font-display text-3xl md:text-4xl font-semibold tracking-tight">
+              {tr(
+                "Modèles propriétaires et open source, côte à côte",
+                "Proprietary and open-source models, side by side",
+              )}
+            </h2>
+            <p className="text-muted-foreground mt-4 leading-relaxed">
+              {tr(
+                "Le banc d'essai ne se limite pas aux grands modèles fermés. Il confronte les API propriétaires de pointe aux modèles open source, dont les poids sont publics et qui peuvent être audités, auto-hébergés et exécutés sans dépendre d'un fournisseur unique. Pour une mission d'intérêt général comme la protection du vivant, cette transparence compte : elle rend l'évaluation reproductible, la souveraineté possible et les coûts maîtrisables.",
+                "The benchmark is not limited to large closed models. It pits cutting-edge proprietary APIs against open-source models, whose weights are public and which can be audited, self-hosted and run without depending on a single vendor. For a public-interest mission like protecting the living world, this transparency matters: it makes evaluation reproducible, sovereignty possible and costs controllable.",
+              )}
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 gap-5">
+            <div className="rounded-xl border border-card-border bg-card p-7 hairline-top">
+              <span className="flex items-center justify-center w-11 h-11 rounded-lg bg-primary/10 text-primary mb-4">
+                <Lock className="w-5 h-5" />
+              </span>
+              <h3 className="font-display font-semibold text-xl">
+                {tr("Modèles propriétaires", "Proprietary models")}
+              </h3>
+              <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
+                {tr(
+                  "Accessibles uniquement via API, leurs poids restent fermés. On y retrouve les modèles de pointe d'OpenAI, Anthropic, Google (Gemini) et Mistral.",
+                  "Accessible only via API, their weights stay closed. These include the cutting-edge models from OpenAI, Anthropic, Google (Gemini) and Mistral.",
+                )}
+              </p>
+            </div>
+            <div className="rounded-xl border border-card-border bg-card p-7 hairline-top">
+              <span className="flex items-center justify-center w-11 h-11 rounded-lg bg-primary/10 text-primary mb-4">
+                <Unlock className="w-5 h-5" />
+              </span>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h3 className="font-display font-semibold text-xl">
+                  {tr("Modèles open source", "Open-source models")}
+                </h3>
+                <span className="text-[11px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">
+                  {tr("open source", "open source")}
+                </span>
+              </div>
+              <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
+                {tr(
+                  "Poids publics, auditables et auto-hébergeables. Les familles Llama (Meta), Mistral, Gemma (Google) et Qwen sont évaluées ici via OpenRouter (ou en local via Ollama), du petit modèle de 1B au grand modèle de 70B.",
+                  "Public, auditable and self-hostable weights. The Llama (Meta), Mistral, Gemma (Google) and Qwen families are evaluated here via OpenRouter (or locally via Ollama), from the small 1B model up to the large 70B one.",
+                )}
+              </p>
             </div>
           </div>
         </div>
