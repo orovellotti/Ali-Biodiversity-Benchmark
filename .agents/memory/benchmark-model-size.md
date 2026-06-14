@@ -16,9 +16,13 @@ sonnet/haiku/opus), Google (Gemini flash/pro), and Mistral's hosted
 number for these; the helper returns null and the UI shows only the tier.
 
 Real counts are only known for open-weight families (Llama, Ministral, Mixtral,
-open Mistral). Their model ids carry multiple sizes, so the matcher is
-substring-based and **ordered most-specific-first** (e.g. `llama3.1:70b` before
-the `llama3.1` family default of 8B), or the bigger variant would be mislabeled.
+open Mistral, Gemma, Qwen). Their model ids carry multiple sizes, so the matcher
+is substring-based and **ordered most-specific-first** (e.g. `llama3.1:70b`
+before the `llama3.1` family default of 8B), or the bigger variant would be
+mislabeled. Same trap on the SIZE tier table: a specific rule must precede the
+generic family rule — e.g. `mistral-small-24b` → medium MUST sit before
+`mistral-small` → small, otherwise the 24B model is mislabeled "small". Tiers
+are qualitative: ≤~8B = small, ~20–30B (e.g. 24B/27B) = medium, ~70B+ = large.
 
 **Why:** this is a credibility constraint for a benchmark — a fabricated
 parameter figure would discredit the whole comparison. The user explicitly

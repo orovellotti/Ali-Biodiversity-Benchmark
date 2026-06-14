@@ -91,3 +91,15 @@ class Ministral8BProvider(OpenRouterProvider):
 
 class Gemma3_4BProvider(OpenRouterProvider):
     name = "gemma-3-4b"
+
+
+class Llama33_70BProvider(OpenRouterProvider):
+    name = "llama-3.3-70b"
+
+
+class MistralSmall24BProvider(OpenRouterProvider):
+    name = "mistral-small-24b"
+
+
+class Gemma2_27BProvider(OpenRouterProvider):
+    name = "gemma-2-27b"

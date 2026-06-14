@@ -32,6 +32,9 @@ PROVIDER_API_KEYS = {
     "qwen-2.5-7b": "AI_INTEGRATIONS_OPENROUTER_API_KEY",
     "ministral-8b": "AI_INTEGRATIONS_OPENROUTER_API_KEY",
     "gemma-3-4b": "AI_INTEGRATIONS_OPENROUTER_API_KEY",
+    "llama-3.3-70b": "AI_INTEGRATIONS_OPENROUTER_API_KEY",
+    "mistral-small-24b": "AI_INTEGRATIONS_OPENROUTER_API_KEY",
+    "gemma-2-27b": "AI_INTEGRATIONS_OPENROUTER_API_KEY",
 }
 
 ALL_PROVIDERS = list(PROVIDER_API_KEYS.keys())
@@ -51,6 +54,9 @@ DEFAULT_MODELS = {
     "qwen-2.5-7b": os.environ.get("QWEN25_7B_MODEL", "qwen/qwen-2.5-7b-instruct"),
     "ministral-8b": os.environ.get("MINISTRAL_8B_MODEL", "mistralai/ministral-8b-2512"),
     "gemma-3-4b": os.environ.get("GEMMA3_4B_MODEL", "google/gemma-3-4b-it"),
+    "llama-3.3-70b": os.environ.get("LLAMA33_70B_MODEL", "meta-llama/llama-3.3-70b-instruct"),
+    "mistral-small-24b": os.environ.get("MISTRAL_SMALL_24B_MODEL", "mistralai/mistral-small-24b-instruct-2501"),
+    "gemma-2-27b": os.environ.get("GEMMA2_27B_MODEL", "google/gemma-2-27b-it"),
 }
 
 # Modèle utilisé par le juge LLM-as-judge (OpenAI par défaut).

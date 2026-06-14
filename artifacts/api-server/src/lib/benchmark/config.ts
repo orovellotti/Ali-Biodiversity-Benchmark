@@ -27,6 +27,10 @@ const PROVIDER_DEFS: ProviderDef[] = [
   { id: "qwen-2.5-7b", envKey: "AI_INTEGRATIONS_OPENROUTER_API_KEY", defaultModel: process.env["QWEN25_7B_MODEL"] ?? "qwen/qwen-2.5-7b-instruct" },
   { id: "ministral-8b", envKey: "AI_INTEGRATIONS_OPENROUTER_API_KEY", defaultModel: process.env["MINISTRAL_8B_MODEL"] ?? "mistralai/ministral-8b-2512" },
   { id: "gemma-3-4b", envKey: "AI_INTEGRATIONS_OPENROUTER_API_KEY", defaultModel: process.env["GEMMA3_4B_MODEL"] ?? "google/gemma-3-4b-it" },
+  // Larger open-source models via OpenRouter (mid / large tiers).
+  { id: "llama-3.3-70b", envKey: "AI_INTEGRATIONS_OPENROUTER_API_KEY", defaultModel: process.env["LLAMA33_70B_MODEL"] ?? "meta-llama/llama-3.3-70b-instruct" },
+  { id: "mistral-small-24b", envKey: "AI_INTEGRATIONS_OPENROUTER_API_KEY", defaultModel: process.env["MISTRAL_SMALL_24B_MODEL"] ?? "mistralai/mistral-small-24b-instruct-2501" },
+  { id: "gemma-2-27b", envKey: "AI_INTEGRATIONS_OPENROUTER_API_KEY", defaultModel: process.env["GEMMA2_27B_MODEL"] ?? "google/gemma-2-27b-it" },
 ];
 
 export const VALID_PROVIDERS = PROVIDER_DEFS.map((p) => p.id);
@@ -44,6 +48,7 @@ const SIZE_RULES: { match: string; size: "small" | "medium" | "large" }[] = [
   { match: "haiku", size: "small" },
   { match: "sonnet", size: "large" },
   { match: "opus", size: "large" },
+  { match: "mistral-small-24b", size: "medium" },
   { match: "mistral-small", size: "small" },
   { match: "ministral", size: "small" },
   { match: "mistral-large", size: "large" },
@@ -59,6 +64,8 @@ const SIZE_RULES: { match: string; size: "small" | "medium" | "large" }[] = [
   { match: "qwen-2.5-7b", size: "small" },
   { match: "qwen3-8b", size: "small" },
   { match: "gemma-3-4b", size: "small" },
+  { match: "llama-3.3", size: "large" },
+  { match: "gemma-2-27b", size: "medium" },
 ];
 
 export function modelSize(model: string | null | undefined): string | null {
@@ -95,6 +102,9 @@ const PARAM_RULES: { match: string; params: string }[] = [
   { match: "qwen-2.5-7b", params: "7B" },
   { match: "qwen3-8b", params: "8B" },
   { match: "gemma-3-4b", params: "4B" },
+  { match: "llama-3.3", params: "70B" },
+  { match: "mistral-small-24b", params: "24B" },
+  { match: "gemma-2-27b", params: "27B" },
 ];
 
 export function modelParams(model: string | null | undefined): string | null {
