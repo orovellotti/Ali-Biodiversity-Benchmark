@@ -64,8 +64,8 @@ export function Landing() {
       knowledge_graph_reasoning: {
         icon: Network,
         description: tr(
-          "Raisonnement strictement à partir d'un graphe de connaissances fourni : on teste la fidélité aux faits donnés et la résistance à l'invention.",
-          "Reasoning strictly from a provided knowledge graph: we test fidelity to the given facts and resistance to fabrication.",
+          "Raisonnement à partir d'une base de faits fournie : on vérifie que le modèle s'en tient aux faits donnés sans rien inventer.",
+          "Reasoning from a provided set of facts: we check that the model sticks to the given facts without making anything up.",
         ),
       },
       moral_dilemmas: {
@@ -93,16 +93,16 @@ export function Landing() {
         icon: MessageSquare,
         title: tr("Interrogation des modèles", "Querying the models"),
         description: tr(
-          "Chaque modèle répond exactement aux mêmes questions, dans les mêmes conditions. Pour les questions sur graphe, on lui demande de ne s'appuyer que sur le graphe fourni.",
-          "Each model answers exactly the same questions, under the same conditions. For graph questions, it is asked to rely solely on the provided graph.",
+          "Chaque IA répond exactement aux mêmes questions, dans les mêmes conditions. Pour les questions à base de faits, on lui demande de ne s'appuyer que sur la fiche de faits fournie.",
+          "Each AI answers exactly the same questions, under the same conditions. For fact-based questions, it is asked to rely solely on the provided fact sheet.",
         ),
       },
       {
         icon: Gavel,
-        title: tr("Évaluation par un juge LLM", "Evaluation by an LLM judge"),
+        title: tr("Notation par une IA juge", "Scoring by an AI judge"),
         description: tr(
-          "Un modèle « juge » note chaque réponse sur cinq dimensions, avec un verdict, des points forts et des points faibles — une notation homogène pour tous les modèles.",
-          "A “judge” model scores each answer across five dimensions, with a verdict, strengths and weaknesses — consistent scoring for every model.",
+          "Une IA « juge », indépendante, note chaque réponse sur cinq critères, avec un verdict, des points forts et des points faibles — la même grille pour toutes les IA, sans favoritisme.",
+          "An independent “judge” AI scores each answer on five criteria, with a verdict, strengths and weaknesses — the same grid for every AI, with no favouritism.",
         ),
       },
       {
@@ -186,14 +186,14 @@ export function Landing() {
           <div className="eyebrow mb-6">
             <Leaf className="w-3.5 h-3.5 text-primary" />
             {tr(
-              "Évaluation rigoureuse des LLM · biodiversité",
-              "Rigorous evaluation of LLMs · biodiversity",
+              "Comparatif indépendant des IA · biodiversité",
+              "Independent AI comparison · biodiversity",
             )}
           </div>
           <h1 className="font-display text-[2.7rem] md:text-6xl font-semibold tracking-[-0.02em] max-w-4xl leading-[1.05]">
             {tr(
-              "Quel modèle de langage juge le mieux les enjeux de",
-              "Which language model best judges the challenges of",
+              "Quelle intelligence artificielle juge le mieux les enjeux de",
+              "Which artificial intelligence best judges the challenges of",
             )}{" "}
             <span className="italic text-primary">
               {tr("biodiversité", "biodiversity")}
@@ -202,8 +202,8 @@ export function Landing() {
           </h1>
           <p className="text-lg text-muted-foreground mt-7 max-w-2xl leading-relaxed">
             {tr(
-              "Sur les sujets de biodiversité et de réglementation environnementale, une réponse fausse ou une règle inventée peut coûter cher. Ce carnet de terrain mesure, de façon comparable et reproductible, la fiabilité des grands modèles de langage — leur exactitude, leur prudence et leur résistance à l'hallucination.",
-              "On topics of biodiversity and environmental regulation, a wrong answer or a made-up rule can be costly. This field notebook measures, in a comparable and reproducible way, the reliability of large language models — their accuracy, their caution and their resistance to hallucination.",
+              "Sur les sujets de biodiversité et de réglementation environnementale, une réponse fausse ou une règle inventée peut coûter cher. Ce carnet de terrain mesure, de façon comparable et vérifiable, la fiabilité des intelligences artificielles (comme ChatGPT) — leur exactitude, leur prudence, et leur tendance à inventer des informations qui paraissent crédibles mais sont fausses.",
+              "On topics of biodiversity and environmental regulation, a wrong answer or a made-up rule can be costly. This field notebook measures, in a comparable and verifiable way, the reliability of artificial intelligences (like ChatGPT) — their accuracy, their caution, and their tendency to make up information that sounds credible but is false.",
             )}
           </p>
           <p className="text-base text-muted-foreground/90 mt-5 max-w-2xl leading-relaxed">
@@ -346,8 +346,8 @@ export function Landing() {
           </h2>
           <p className="text-muted-foreground mt-4 leading-relaxed">
             {tr(
-              "Chaque réponse est notée de 0 à 5 sur cinq axes, agrégés en un score global sur 100. L'accent est mis sur la prudence et l'absence d'hallucination, pas seulement sur la justesse.",
-              "Each answer is scored from 0 to 5 on five axes, aggregated into an overall score out of 100. The emphasis is on caution and the absence of hallucination, not only on accuracy.",
+              "Chaque réponse est notée de 0 à 5 sur cinq critères, combinés en un score global sur 100. L'accent est mis sur la prudence et le fait de ne pas inventer d'informations, pas seulement sur la justesse.",
+              "Each answer is scored from 0 to 5 on five criteria, combined into an overall score out of 100. The emphasis is on caution and on not making up information, not only on accuracy.",
             )}
           </p>
         </div>
@@ -401,12 +401,12 @@ export function Landing() {
             </span>
             <div>
               <h2 className="font-display text-2xl md:text-3xl font-semibold tracking-tight">
-                {tr("Une notation par « LLM-as-judge »", "Scoring with “LLM-as-judge”")}
+                {tr("Une IA qui note, en toute transparence", "An AI that scores, transparently")}
               </h2>
               <p className="text-muted-foreground mt-3 leading-relaxed max-w-2xl">
                 {tr(
-                  "Plutôt qu'une grille rigide, c'est un modèle de langage dédié qui évalue chaque réponse selon une consigne stricte et la même rubrique pour tous. Il restitue un verdict argumenté, ce qui rend chaque note traçable et vérifiable dans le détail par question.",
-                  "Rather than a rigid grid, a dedicated language model evaluates each answer following a strict prompt and the same rubric for all. It returns a reasoned verdict, making each score traceable and verifiable in detail, question by question.",
+                  "Plutôt qu'une grille de correction rigide, c'est une intelligence artificielle dédiée qui évalue chaque réponse selon une consigne stricte et les mêmes critères pour toutes. Elle rédige un verdict argumenté, ce qui rend chaque note explicable et vérifiable, question par question.",
+                  "Rather than a rigid marking grid, a dedicated artificial intelligence evaluates each answer following a strict brief and the same criteria for all. It writes a reasoned verdict, making each score explainable and verifiable, question by question.",
                 )}
                 {judge && (
                   <>
@@ -443,14 +443,14 @@ export function Landing() {
             <SectionLabel n="05">{tr("Les modèles", "The models")}</SectionLabel>
             <h2 className="font-display text-3xl md:text-4xl font-semibold tracking-tight">
               {tr(
-                "Modèles propriétaires et open source, côte à côte",
-                "Proprietary and open-source models, side by side",
+                "IA propriétaires et IA ouvertes, côte à côte",
+                "Proprietary and open AIs, side by side",
               )}
             </h2>
             <p className="text-muted-foreground mt-4 leading-relaxed">
               {tr(
-                "Le banc d'essai ne se limite pas aux grands modèles fermés. Il confronte les API propriétaires de pointe aux modèles open source, dont les poids sont publics et qui peuvent être audités, auto-hébergés et exécutés sans dépendre d'un fournisseur unique. Pour une mission d'intérêt général comme la protection du vivant, cette transparence compte : elle rend l'évaluation reproductible, la souveraineté possible et les coûts maîtrisables.",
-                "The benchmark is not limited to large closed models. It pits cutting-edge proprietary APIs against open-source models, whose weights are public and which can be audited, self-hosted and run without depending on a single vendor. For a public-interest mission like protecting the living world, this transparency matters: it makes evaluation reproducible, sovereignty possible and costs controllable.",
+                "Le banc d'essai ne se limite pas aux IA commerciales fermées. Il confronte les IA propriétaires de pointe aux IA « ouvertes », dont le fonctionnement est public et qui peuvent être vérifiées, installées sur ses propres serveurs et utilisées sans dépendre d'un seul fournisseur. Pour une mission d'intérêt général comme la protection du vivant, cette transparence compte : elle rend l'évaluation vérifiable, l'autonomie possible et les coûts maîtrisables.",
+                "The benchmark is not limited to closed commercial AIs. It pits cutting-edge proprietary AIs against “open” AIs, whose inner workings are public and which can be inspected, installed on your own servers and used without depending on a single vendor. For a public-interest mission like protecting the living world, this transparency matters: it makes evaluation verifiable, independence possible and costs controllable.",
               )}
             </p>
           </div>
@@ -460,12 +460,12 @@ export function Landing() {
                 <Lock className="w-5 h-5" />
               </span>
               <h3 className="font-display font-semibold text-xl">
-                {tr("Modèles propriétaires", "Proprietary models")}
+                {tr("IA propriétaires", "Proprietary AIs")}
               </h3>
               <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
                 {tr(
-                  "Accessibles uniquement via API, leurs poids restent fermés. On y retrouve les modèles de pointe d'OpenAI, Anthropic, Google (Gemini) et Mistral.",
-                  "Accessible only via API, their weights stay closed. These include the cutting-edge models from OpenAI, Anthropic, Google (Gemini) and Mistral.",
+                  "Accessibles uniquement en ligne, via leur fournisseur ; leur fonctionnement interne reste secret. On y retrouve les IA de pointe d'OpenAI (ChatGPT), Anthropic (Claude), Google (Gemini) et Mistral.",
+                  "Accessible only online, through their provider; their inner workings stay secret. These include the cutting-edge AIs from OpenAI (ChatGPT), Anthropic (Claude), Google (Gemini) and Mistral.",
                 )}
               </p>
             </div>
@@ -475,7 +475,7 @@ export function Landing() {
               </span>
               <div className="flex items-center gap-2 flex-wrap">
                 <h3 className="font-display font-semibold text-xl">
-                  {tr("Modèles open source", "Open-source models")}
+                  {tr("IA ouvertes", "Open AIs")}
                 </h3>
                 <span className="text-[11px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">
                   {tr("open source", "open source")}
@@ -483,8 +483,8 @@ export function Landing() {
               </div>
               <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
                 {tr(
-                  "Poids publics, auditables et auto-hébergeables. Les familles Llama (Meta), Mistral, Gemma (Google) et Qwen sont évaluées ici via OpenRouter (ou en local via Ollama), du petit modèle de 1B au grand modèle de 70B.",
-                  "Public, auditable and self-hostable weights. The Llama (Meta), Mistral, Gemma (Google) and Qwen families are evaluated here via OpenRouter (or locally via Ollama), from the small 1B model up to the large 70B one.",
+                  "Fonctionnement public, vérifiable et installable sur ses propres serveurs. Les familles Llama (Meta), Mistral, Gemma (Google) et Qwen sont évaluées ici, des plus petits modèles aux plus grands.",
+                  "Public inner workings, verifiable and installable on your own servers. The Llama (Meta), Mistral, Gemma (Google) and Qwen families are evaluated here, from the smallest models up to the largest.",
                 )}
               </p>
             </div>

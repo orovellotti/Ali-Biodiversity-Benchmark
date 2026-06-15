@@ -101,8 +101,8 @@ export function Arena() {
           </h1>
           <p className="text-muted-foreground mt-3 max-w-2xl text-[15px]">
             {tr(
-              "Comparez deux réponses de modèles anonymes à une même question, puis votez pour la meilleure. Les identités sont révélées après le vote, et chaque duel met à jour le classement Elo communautaire.",
-              "Compare two anonymous model answers to the same question, then vote for the best one. Identities are revealed after voting, and each duel updates the community Elo leaderboard.",
+              "Comparez deux réponses d'IA anonymes à une même question, puis votez pour la meilleure. Les identités sont révélées après le vote, et chaque vote met à jour le classement communautaire (score Elo, le même principe qu'aux échecs : on monte en battant les meilleurs).",
+              "Compare two anonymous AI answers to the same question, then vote for the best one. Identities are revealed after voting, and each vote updates the community leaderboard (Elo score, the same principle as in chess: you climb by beating the strongest).",
             )}
           </p>
         </div>
@@ -365,8 +365,8 @@ function Leaderboard() {
           </h3>
           <p className="text-sm text-muted-foreground max-w-md mx-auto">
             {tr(
-              "Soyez le premier à voter dans l'arène pour faire émerger un classement Elo.",
-              "Be the first to vote in the arena to build an Elo leaderboard.",
+              "Soyez le premier à voter dans l'arène pour faire émerger un classement communautaire.",
+              "Be the first to vote in the arena to build a community leaderboard.",
             )}
           </p>
         </CardContent>
