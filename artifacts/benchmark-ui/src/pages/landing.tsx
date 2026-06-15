@@ -20,6 +20,7 @@ import {
   AlertTriangle,
   Lock,
   Unlock,
+  Github,
 } from "lucide-react";
 
 function SectionLabel({ n, children }: { n: string; children: React.ReactNode }) {
@@ -527,6 +528,15 @@ export function Landing() {
             ALI Biodiversity Benchmark
           </div>
           <div className="flex items-center gap-4">
+            <a
+              href="https://github.com/orovellotti/Ali-Biodiversity-Benchmark"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors underline-offset-4 hover:underline"
+            >
+              <Github className="w-4 h-4" />
+              {tr("Code source", "Source code")}
+            </a>
             <a
               href="https://www.natural-solutions.eu"
               target="_blank"
