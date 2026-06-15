@@ -737,7 +737,7 @@ export const getGetQuestionAnswersUrl = (questionId: string,) => {
 }
 
 /**
- * Reuses already-stored run results — no live model calls. Returns the most recent usable answer per model, sorted by overall score.
+ * Reuses already-stored run results — no live model calls. Returns the most recent usable answer per model, sorted by comparative rank ascending (best first), falling back to overall score; unranked answers come last.
  * @summary Model answers (with judge scores) for a single dataset question
  */
 export const getQuestionAnswers = async (questionId: string, options?: RequestInit): Promise<QuestionAnswers> => {

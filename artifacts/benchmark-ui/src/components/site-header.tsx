@@ -18,6 +18,7 @@ export function SiteHeader({
     { href: "/", label: tr("Démarche", "About") },
     { href: "/resultats", label: tr("Résultats", "Results") },
     { href: "/questions", label: tr("Questions", "Questions") },
+    { href: "/comparer", label: tr("Comparer", "Compare") },
     { href: "/arena", label: tr("Arène", "Arena") },
     { href: "/contact", label: tr("Contact", "Contact") },
   ];

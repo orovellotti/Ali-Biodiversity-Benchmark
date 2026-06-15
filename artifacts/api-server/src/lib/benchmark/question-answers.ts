@@ -15,6 +15,7 @@ export interface QuestionAnswer {
   model: string;
   response: string;
   overallScore: number | null;
+  rankInQuestion: number | null;
   verdict: string | null;
 }
 
@@ -52,12 +53,24 @@ export function answersForQuestion(questionId: string): QuestionAnswers {
         model: row.model,
         response,
         overallScore: row.overallScore ?? null,
+        rankInQuestion: row.rankInQuestion ?? null,
         verdict: row.verdict ?? null,
       });
     }
   }
-  const answers = [...seen.values()].sort(
-    (a, b) => (b.overallScore ?? -1) - (a.overallScore ?? -1),
-  );
+  // Sort by comparative rank (lower = better) when available, falling back to
+  // the overall score; unranked/unscored answers sink to the bottom.
+  const answers = [...seen.values()].sort((a, b) => {
+    if (a.rankInQuestion != null && b.rankInQuestion != null) {
+      if (a.rankInQuestion !== b.rankInQuestion) {
+        return a.rankInQuestion - b.rankInQuestion;
+      }
+    } else if (a.rankInQuestion != null) {
+      return -1;
+    } else if (b.rankInQuestion != null) {
+      return 1;
+    }
+    return (b.overallScore ?? -1) - (a.overallScore ?? -1);
+  });
   return { questionId, answers };
 }

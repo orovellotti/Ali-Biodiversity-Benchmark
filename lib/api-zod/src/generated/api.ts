@@ -229,7 +229,7 @@ export const ListQuestionsResponse = zod.array(ListQuestionsResponseItem)
 
 
 /**
- * Reuses already-stored run results — no live model calls. Returns the most recent usable answer per model, sorted by overall score.
+ * Reuses already-stored run results — no live model calls. Returns the most recent usable answer per model, sorted by comparative rank ascending (best first), falling back to overall score; unranked answers come last.
  * @summary Model answers (with judge scores) for a single dataset question
  */
 export const GetQuestionAnswersParams = zod.object({
@@ -243,6 +243,7 @@ export const GetQuestionAnswersResponse = zod.object({
   "model": zod.string(),
   "response": zod.string(),
   "overallScore": zod.number().nullish(),
+  "rankInQuestion": zod.number().nullish().describe('Average comparative rank of this answer among all models on this question (1 = best); null if not ranked'),
   "verdict": zod.string().nullish()
 }))
 })

@@ -12,6 +12,11 @@ export interface QuestionAnswer {
   response: string;
   /** @nullable */
   overallScore?: number | null;
+  /**
+     * Average comparative rank of this answer among all models on this question (1 = best); null if not ranked
+     * @nullable
+     */
+  rankInQuestion?: number | null;
   /** @nullable */
   verdict?: string | null;
 }

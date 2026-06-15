@@ -188,7 +188,7 @@ paths:
       operationId: getQuestionAnswers
       tags: [benchmark]
       summary: Model answers (with judge scores) for a single dataset question
-      description: Reuses already-stored run results — no live model calls. Returns the most recent usable answer per model, sorted by overall score.
+      description: Reuses already-stored run results — no live model calls. Returns the most recent usable answer per model, sorted by comparative rank ascending (best first), falling back to overall score; unranked answers come last.
       parameters:
         - name: questionId
           in: path
@@ -799,6 +799,9 @@ components:
           type: string
         overallScore:
           type: ["number", "null"]
+        rankInQuestion:
+          type: ["number", "null"]
+          description: "Average comparative rank of this answer among all models on this question (1 = best); null if not ranked"
         verdict:
           type: ["string", "null"]
     QuestionAnswers:

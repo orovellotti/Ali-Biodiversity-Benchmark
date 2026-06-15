@@ -9,6 +9,7 @@ import { Landing } from "@/pages/landing";
 import { RunDetail } from "@/pages/run-detail";
 import { Results } from "@/pages/results";
 import { Questions } from "@/pages/questions";
+import { Compare } from "@/pages/compare";
 import { Arena } from "@/pages/arena";
 import { Contact } from "@/pages/contact";
 import { ADMIN_TOKEN_KEY } from "@/lib/admin";
@@ -32,6 +33,7 @@ function Router() {
       <Route path="/" component={Landing} />
       <Route path="/resultats" component={Results} />
       <Route path="/questions" component={Questions} />
+      <Route path="/comparer" component={Compare} />
       <Route path="/arena" component={Arena} />
       <Route path="/contact" component={Contact} />
       <Route path="/runs/:id" component={RunDetail} />
