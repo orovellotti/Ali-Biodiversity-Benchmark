@@ -78,8 +78,11 @@ export interface BenchmarkConfig {
   topics: string[];
   difficulties: string[];
   questionTypes: string[];
+  /** Human-readable judge panel (comma-joined provider:model labels) used for comparative ranking */
   judgeModel: string;
   judgeAvailable: boolean;
+  /** Number of judges in the panel; one judge call is issued per question per judge (not per answer) */
+  judgeCount?: number;
   totalQuestions: number;
   /** Server-enforced ceiling on the number of model requests (models × questions) a single non-simulation run may issue. A safeguard against accidentally consuming all API credits. */
   maxRequestsPerRun: number;
@@ -143,6 +146,16 @@ export interface ModelSummary {
   params?: string | null;
   /** True for open-source / open-weight models (served via OpenRouter or Ollama); false for proprietary API models */
   openSource: boolean;
+  /**
+     * Final leaderboard rank (1 = best), with ties sharing the same rank; null if the model has no comparative ranks
+     * @nullable
+     */
+  rank?: number | null;
+  /**
+     * Average comparative rank across questions (lower is better); primary ranking metric, null when no judge ranks exist
+     * @nullable
+     */
+  meanRank?: number | null;
   nQuestions: number;
   nErrors: number;
   /** @nullable */
@@ -214,6 +227,16 @@ export interface ResultRow {
   regulatoryHallucinationRisk?: number | null;
   /** @nullable */
   overallScore?: number | null;
+  /**
+     * Average comparative rank of this answer among all models on this question (1 = best); null if not ranked
+     * @nullable
+     */
+  rankInQuestion?: number | null;
+  /**
+     * Number of judges whose ranks were averaged for this answer (after self-evaluation exclusion)
+     * @nullable
+     */
+  nJudges?: number | null;
   /** @nullable */
   strengths?: string | null;
   /** @nullable */

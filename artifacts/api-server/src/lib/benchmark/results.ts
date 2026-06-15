@@ -29,6 +29,8 @@ interface RawRow {
   source_awareness?: number | null;
   regulatory_hallucination_risk?: number | null;
   overall_score?: number | null;
+  rank_in_question?: number | null;
+  n_judges?: number | null;
   strengths?: string | null;
   weaknesses?: string | null;
   verdict?: string | null;
@@ -41,6 +43,7 @@ const SCORE_FIELDS = [
   "sourceAwareness",
   "regulatoryHallucinationRisk",
   "overallScore",
+  "rankInQuestion",
 ] as const;
 
 function nullableNum(v: unknown): number | null {
@@ -71,6 +74,8 @@ function toRow(raw: RawRow): ResultRow {
     sourceAwareness: nullableNum(raw.source_awareness),
     regulatoryHallucinationRisk: nullableNum(raw.regulatory_hallucination_risk),
     overallScore: nullableNum(raw.overall_score),
+    rankInQuestion: nullableNum(raw.rank_in_question),
+    nJudges: raw.n_judges != null ? nullableNum(raw.n_judges) : null,
     strengths: nullableStr(raw.strengths),
     weaknesses: nullableStr(raw.weaknesses),
     verdict: nullableStr(raw.verdict),
@@ -128,6 +133,8 @@ function summarizeModels(rows: ResultRow[]): ModelSummary[] {
       size: modelSize(first.model),
       params: modelParams(first.model),
       openSource: isOpenSource(first.provider),
+      rank: null,
+      meanRank: avg(collect(group, "rankInQuestion")),
       nQuestions: group.length,
       nErrors: group.filter((r) => r.error).length,
       avgLatency: avg(latencies),
@@ -139,7 +146,36 @@ function summarizeModels(rows: ResultRow[]): ModelSummary[] {
       overallScore: avg(collect(group, "overallScore")),
     });
   }
-  out.sort((a, b) => (b.overallScore ?? -1) - (a.overallScore ?? -1));
+  // Primary ranking is the comparative mean rank (lower = better); overallScore
+  // is the secondary tiebreaker (higher = better). Models with no comparative
+  // rank (meanRank null — e.g. all answers errored, or a no-judge run) sort
+  // last but keep their score ordering.
+  out.sort((a, b) => {
+    const ar = a.meanRank;
+    const br = b.meanRank;
+    if (ar != null && br != null && ar !== br) return ar - br;
+    if (ar != null && br == null) return -1;
+    if (ar == null && br != null) return 1;
+    return (b.overallScore ?? -1) - (a.overallScore ?? -1);
+  });
+  // Assign final leaderboard ranks (1 = best). Models sharing the same meanRank
+  // are ex æquo and share a rank; the next distinct meanRank skips accordingly
+  // (standard "1224" competition ranking). Null meanRank → no rank.
+  let lastMeanRank: number | null = null;
+  let lastRank = 0;
+  out.forEach((m, i) => {
+    if (m.meanRank == null) {
+      m.rank = null;
+      return;
+    }
+    if (lastMeanRank != null && m.meanRank === lastMeanRank) {
+      m.rank = lastRank;
+    } else {
+      m.rank = i + 1;
+      lastRank = i + 1;
+      lastMeanRank = m.meanRank;
+    }
+  });
   return out;
 }
 

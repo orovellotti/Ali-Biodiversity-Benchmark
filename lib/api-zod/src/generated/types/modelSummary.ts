@@ -21,6 +21,16 @@ export interface ModelSummary {
   params?: string | null;
   /** True for open-source / open-weight models (served via OpenRouter or Ollama); false for proprietary API models */
   openSource: boolean;
+  /**
+     * Final leaderboard rank (1 = best), with ties sharing the same rank; null if the model has no comparative ranks
+     * @nullable
+     */
+  rank?: number | null;
+  /**
+     * Average comparative rank across questions (lower is better); primary ranking metric, null when no judge ranks exist
+     * @nullable
+     */
+  meanRank?: number | null;
   nQuestions: number;
   nErrors: number;
   /** @nullable */

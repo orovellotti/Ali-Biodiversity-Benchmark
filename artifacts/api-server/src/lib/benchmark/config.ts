@@ -138,8 +138,71 @@ export function isOpenSource(providerId: string | null | undefined): boolean {
   return OPEN_SOURCE_PROVIDERS.has(providerId);
 }
 
+// Judge panel mirror of the Python engine (config.py JUDGE_MODELS).
+// Comparative ranking issues ONE judge call per question per judge (NOT per
+// answer), so cost scales with judges × questions, not models × questions.
+// Cross-provider judges + family-level self-evaluation exclusion. Overridable
+// via BENCHMARK_JUDGES = "openai:gpt-4o,anthropic:claude-...,gemini:...".
+interface JudgeDef {
+  provider: string;
+  envKey: string | null;
+  model: string;
+}
+
+// A judge can be ANY benchmark provider, so derive its env key from the single
+// source of truth (PROVIDER_DEFS) rather than a hardcoded subset. This keeps
+// availability/count parity with the Python engine under BENCHMARK_JUDGES
+// overrides (e.g. openai-small, anthropic-small, OpenRouter providers), so the
+// credit guard never undercounts paid judge calls. Unknown ids → null envKey
+// (treated unavailable for the paid-credit estimate).
+const PROVIDER_ENV_KEYS: Record<string, string | null> = Object.fromEntries(
+  PROVIDER_DEFS.map((p) => [p.id, p.envKey]),
+);
+
+function judgeEnvKey(provider: string): string | null {
+  return provider in PROVIDER_ENV_KEYS ? PROVIDER_ENV_KEYS[provider]! : null;
+}
+
+const DEFAULT_JUDGE_DEFS: JudgeDef[] = [
+  { provider: "openai", envKey: judgeEnvKey("openai"), model: process.env["JUDGE_OPENAI_MODEL"] ?? "gpt-4o" },
+  { provider: "anthropic", envKey: judgeEnvKey("anthropic"), model: process.env["JUDGE_ANTHROPIC_MODEL"] ?? "claude-sonnet-4-5-20250929" },
+  { provider: "gemini", envKey: judgeEnvKey("gemini"), model: process.env["JUDGE_GEMINI_MODEL"] ?? "gemini-2.0-flash" },
+];
+
+function judgeDefs(): JudgeDef[] {
+  const override = process.env["BENCHMARK_JUDGES"];
+  if (override && override.trim()) {
+    const defs: JudgeDef[] = [];
+    for (const item of override.split(",")) {
+      // Split on the FIRST colon only, mirroring Python's str.partition(":"),
+      // so model names containing colons (e.g. ollama "llama3.1:70b") survive.
+      const trimmed = item.trim();
+      const idx = trimmed.indexOf(":");
+      if (idx <= 0) continue;
+      const provider = trimmed.slice(0, idx).trim().toLowerCase();
+      const model = trimmed.slice(idx + 1).trim();
+      if (provider && model) {
+        defs.push({ provider, envKey: judgeEnvKey(provider), model });
+      }
+    }
+    if (defs.length) return defs;
+  }
+  return DEFAULT_JUDGE_DEFS;
+}
+
+function availableJudges(): JudgeDef[] {
+  return judgeDefs().filter((j) => providerAvailable(j.envKey));
+}
+
+/** Number of judges that will actually run (key available). Drives cost estimate. */
+export function judgeCount(): number {
+  return availableJudges().length;
+}
+
 export function judgeModel(): string {
-  return process.env["OPENAI_JUDGE_MODEL"] ?? "gpt-4o-mini";
+  const judges = availableJudges();
+  const list = judges.length ? judges : judgeDefs();
+  return list.map((j) => `${j.provider}:${j.model}`).join(", ");
 }
 
 /**
@@ -155,7 +218,7 @@ export function maxRequestsPerRun(): number {
 }
 
 export function judgeAvailable(): boolean {
-  return Boolean(process.env["OPENAI_API_KEY"]);
+  return judgeCount() > 0;
 }
 
 function providerAvailable(envKey: string | null): boolean {
@@ -187,6 +250,7 @@ export function getBenchmarkConfig(): BenchmarkConfig {
     questionTypes: questionTypes(),
     judgeModel: judgeModel(),
     judgeAvailable: judgeAvailable(),
+    judgeCount: judgeCount(),
     totalQuestions: totalQuestions(),
     maxRequestsPerRun: maxRequestsPerRun(),
   };

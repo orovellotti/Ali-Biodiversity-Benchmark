@@ -12,8 +12,11 @@ export interface BenchmarkConfig {
   topics: string[];
   difficulties: string[];
   questionTypes: string[];
+  /** Human-readable judge panel (comma-joined provider:model labels) used for comparative ranking */
   judgeModel: string;
   judgeAvailable: boolean;
+  /** Number of judges in the panel; one judge call is issued per question per judge (not per answer) */
+  judgeCount?: number;
   totalQuestions: number;
   /** Server-enforced ceiling on the number of model requests (models × questions) a single non-simulation run may issue. A safeguard against accidentally consuming all API credits. */
   maxRequestsPerRun: number;

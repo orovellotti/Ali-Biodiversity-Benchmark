@@ -19,12 +19,16 @@ SCORE_COLS = [
     "overall_score",
 ]
 
+# Rang comparatif (1 = meilleure réponse) attribué par les juges sur chaque
+# question ; plus bas = mieux. Métrique de classement principale.
+RANK_COL = "rank_in_question"
+
 
 def _load_dataframe(evaluated: list[dict]) -> pd.DataFrame:
     df = pd.DataFrame(evaluated)
     if df.empty:
         return df
-    for col in SCORE_COLS:
+    for col in [*SCORE_COLS, RANK_COL]:
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors="coerce")
     return df
@@ -48,10 +52,11 @@ def write_comparison_csv(df: pd.DataFrame, path: str) -> None:
 
 
 def write_summary_by_model(df: pd.DataFrame, path: str) -> pd.DataFrame:
-    """summary_by_model.csv : moyennes par modèle."""
+    """summary_by_model.csv : moyennes par modèle, classées par rang moyen."""
     ok = df[df["error"].isna() | (df["error"] == "")]
+    agg_cols = [c for c in [*SCORE_COLS, RANK_COL] if c in ok.columns]
     grouped = (
-        ok.groupby(["provider", "model"])[SCORE_COLS]
+        ok.groupby(["provider", "model"])[agg_cols]
         .mean()
         .round(2)
         .reset_index()
@@ -67,7 +72,14 @@ def write_summary_by_model(df: pd.DataFrame, path: str) -> pd.DataFrame:
         .reset_index()
     )
     summary = counts.merge(grouped, on=["provider", "model"], how="left")
-    summary = summary.sort_values("overall_score", ascending=False)
+    # Classement principal : rang moyen croissant (1 = meilleur). On retombe sur
+    # le score global décroissant si les rangs sont absents (anciens jeux).
+    if RANK_COL in summary.columns and summary[RANK_COL].notna().any():
+        summary = summary.sort_values(
+            [RANK_COL, "overall_score"], ascending=[True, False]
+        )
+    else:
+        summary = summary.sort_values("overall_score", ascending=False)
     summary.to_csv(path, index=False)
     return summary
 
@@ -88,14 +100,17 @@ def write_summary_by_topic(df: pd.DataFrame, path: str) -> pd.DataFrame:
 
 def _ranking_table(summary_model: pd.DataFrame) -> str:
     lines = [
-        "| Rang | Fournisseur | Modèle | Score global | Exactitude | "
+        "| Rang | Fournisseur | Modèle | Rang moyen | Score global | Exactitude | "
         "Incertitudes | Justification | Sources | Anti-hallucination | "
         "Questions | Erreurs |",
-        "|---|---|---|---|---|---|---|---|---|---|---|",
+        "|---|---|---|---|---|---|---|---|---|---|---|---|",
     ]
     for i, (_, r) in enumerate(summary_model.iterrows(), start=1):
+        mean_rank = r.get(RANK_COL, float("nan"))
+        mean_rank_txt = f"{mean_rank:.2f}" if pd.notna(mean_rank) else "—"
         lines.append(
             f"| {i} | {r['provider']} | {r['model']} | "
+            f"{mean_rank_txt} | "
             f"{r.get('overall_score', float('nan')):.1f} | "
             f"{r.get('accuracy', float('nan')):.2f} | "
             f"{r.get('uncertainty_handling', float('nan')):.2f} | "

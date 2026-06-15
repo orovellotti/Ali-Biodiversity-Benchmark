@@ -255,6 +255,15 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
 
   const showVerdict = !run.noEval && !run.dryRun && results.summaryByModel.length > 0;
 
+  // How many models share each final rank, so ex æquo (ties) can be flagged.
+  const rankCounts = useMemo(() => {
+    const counts = new Map<number, number>();
+    for (const m of results.summaryByModel) {
+      if (m.rank != null) counts.set(m.rank, (counts.get(m.rank) ?? 0) + 1);
+    }
+    return counts;
+  }, [results.summaryByModel]);
+
   // Best overall = first ranked model. Best at prudence = highest (inverted)
   // hallucination score, since that is the dimension an ecologist cares about
   // most when relying on the answers.
@@ -317,11 +326,11 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
                     {bestOverall.model}
                   </div>
                   <div className="text-sm text-muted-foreground mt-0.5">
-                    {tr("Meilleur score global", "Best overall score")}
-                    {bestOverall.overallScore != null && (
+                    {tr("Meilleur classement comparatif", "Best comparative ranking")}
+                    {bestOverall.meanRank != null && (
                       <span className="font-mono text-foreground">
                         {" "}
-                        — {bestOverall.overallScore.toFixed(1)}/100
+                        — {tr("rang moyen", "mean rank")} {bestOverall.meanRank.toFixed(2)}
                       </span>
                     )}
                   </div>
@@ -382,12 +391,19 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
           {tr("Classement des modèles", "Model ranking")}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {results.summaryByModel.map((modelSummary, index) => (
+          {results.summaryByModel.map((modelSummary, index) => {
+            const finalRank = modelSummary.rank;
+            const isTop = finalRank === 1;
+            const isTie =
+              finalRank != null && (rankCounts.get(finalRank) ?? 0) > 1;
+            const rankText =
+              finalRank != null ? String(finalRank).padStart(2, "0") : "—";
+            return (
             <Card
               key={modelSummary.model}
-              className={`relative overflow-hidden hairline-top pl-1.5 ${index === 0 ? "border-primary shadow-md" : ""} ${modelSummary.openSource ? "bg-primary/[0.035]" : ""}`}
+              className={`relative overflow-hidden hairline-top pl-1.5 ${isTop ? "border-primary shadow-md" : ""} ${modelSummary.openSource ? "bg-primary/[0.035]" : ""}`}
             >
-              {index === 0 && (
+              {isTop && (
                 <div className="absolute top-0 left-0 right-0 h-1 bg-primary" />
               )}
               {/* Open vs proprietary accent stripe */}
@@ -398,10 +414,13 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
               <CardContent className="p-5">
                 <div className="flex justify-between items-start mb-3">
                   <span className="index-tag">
-                    {tr("rang", "rank")} {String(index + 1).padStart(2, "0")}
+                    {tr("rang", "rank")} {rankText}
+                    {isTie && (
+                      <span className="ml-1 text-primary">{tr("(ex æquo)", "(tied)")}</span>
+                    )}
                   </span>
-                  <Badge variant={index === 0 ? "default" : "secondary"}>
-                    #{index + 1}
+                  <Badge variant={isTop ? "default" : "secondary"}>
+                    {finalRank != null ? `#${finalRank}` : "—"}
                   </Badge>
                 </div>
                 <div className="font-display font-semibold text-lg leading-tight">
@@ -437,18 +456,36 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
                   )}
                 </div>
 
-                <div className="font-display text-4xl font-semibold text-primary tabular-nums mb-4">
-                  {modelSummary.overallScore != null
-                    ? modelSummary.overallScore.toFixed(1)
-                    : "N/A"}
-                  {modelSummary.overallScore != null && (
-                    <span className="text-base text-muted-foreground font-sans font-normal">
-                      /100
-                    </span>
+                {/* Headline metric is the comparative rang moyen (lower =
+                    better); the absolute /100 score is kept as secondary. */}
+                <div className="mb-4">
+                  {modelSummary.meanRank != null ? (
+                    <>
+                      <div className="font-display text-4xl font-semibold text-primary tabular-nums leading-none">
+                        {modelSummary.meanRank.toFixed(2)}
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        {tr("rang moyen (plus bas = meilleur)", "mean rank (lower = better)")}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="font-display text-4xl font-semibold text-muted-foreground tabular-nums leading-none">
+                      N/A
+                    </div>
                   )}
                 </div>
 
                 <div className="space-y-1.5 pt-3 border-t border-border">
+                  {modelSummary.overallScore != null && (
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs text-muted-foreground">
+                        {tr("Score global", "Overall score")}
+                      </span>
+                      <span className="text-xs font-mono font-medium tabular-nums">
+                        {modelSummary.overallScore.toFixed(1)}/100
+                      </span>
+                    </div>
+                  )}
                   <div className="flex justify-between items-center">
                     <span className="text-xs text-muted-foreground">
                       {tr("Réponses en échec", "Failed answers")}
@@ -472,7 +509,8 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
                 </div>
               </CardContent>
             </Card>
-          ))}
+            );
+          })}
         </div>
       </div>
 

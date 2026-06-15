@@ -40,6 +40,16 @@ export interface ResultRow {
   regulatoryHallucinationRisk?: number | null;
   /** @nullable */
   overallScore?: number | null;
+  /**
+     * Average comparative rank of this answer among all models on this question (1 = best); null if not ranked
+     * @nullable
+     */
+  rankInQuestion?: number | null;
+  /**
+     * Number of judges whose ranks were averaged for this answer (after self-evaluation exclusion)
+     * @nullable
+     */
+  nJudges?: number | null;
   /** @nullable */
   strengths?: string | null;
   /** @nullable */

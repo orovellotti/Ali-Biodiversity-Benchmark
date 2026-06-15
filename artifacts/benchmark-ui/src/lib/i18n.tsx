@@ -27,6 +27,7 @@ const DATA_LABELS: Record<string, { fr: string; en: string }> = {
     en: "Implicit relational reasoning",
   },
   moral_dilemmas: { fr: "Dilemmes moraux", en: "Moral dilemmas" },
+  factual_trap: { fr: "Pièges factuels", en: "Factual traps" },
 
   // Anciens topics (jeu 800 questions)
   taxonomie: { fr: "Taxonomie", en: "Taxonomy" },
@@ -79,6 +80,7 @@ const DATA_LABELS: Record<string, { fr: string; en: string }> = {
 
   // Question types (ancien jeu)
   factuel: { fr: "Factuel", en: "Factual" },
+  piege_factuel: { fr: "Piège factuel", en: "Factual trap" },
   raisonnement: { fr: "Raisonnement", en: "Reasoning" },
   arbitrage: { fr: "Arbitrage", en: "Trade-off" },
   critique: { fr: "Critique", en: "Critique" },

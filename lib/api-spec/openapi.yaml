@@ -475,8 +475,12 @@ components:
             type: string
         judgeModel:
           type: string
+          description: "Human-readable judge panel (comma-joined provider:model labels) used for comparative ranking"
         judgeAvailable:
           type: boolean
+        judgeCount:
+          type: integer
+          description: "Number of judges in the panel; one judge call is issued per question per judge (not per answer)"
         totalQuestions:
           type: integer
         maxRequestsPerRun:
@@ -574,6 +578,12 @@ components:
         openSource:
           type: boolean
           description: "True for open-source / open-weight models (served via OpenRouter or Ollama); false for proprietary API models"
+        rank:
+          type: ["integer", "null"]
+          description: "Final leaderboard rank (1 = best), with ties sharing the same rank; null if the model has no comparative ranks"
+        meanRank:
+          type: ["number", "null"]
+          description: "Average comparative rank across questions (lower is better); primary ranking metric, null when no judge ranks exist"
         nQuestions:
           type: integer
         nErrors:
@@ -655,6 +665,12 @@ components:
           type: ["number", "null"]
         overallScore:
           type: ["number", "null"]
+        rankInQuestion:
+          type: ["number", "null"]
+          description: "Average comparative rank of this answer among all models on this question (1 = best); null if not ranked"
+        nJudges:
+          type: ["integer", "null"]
+          description: "Number of judges whose ranks were averaged for this answer (after self-evaluation exclusion)"
         strengths:
           type: ["string", "null"]
         weaknesses:

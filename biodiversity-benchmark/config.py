@@ -60,18 +60,79 @@ DEFAULT_MODELS = {
 }
 
 # Modèle utilisé par le juge LLM-as-judge (OpenAI par défaut).
+# Conservé pour compatibilité / rétro-compatibilité ; l'évaluation utilise
+# désormais un PANEL de juges (JUDGE_MODELS) — cf. ci-dessous.
 JUDGE_MODEL = os.environ.get("OPENAI_JUDGE_MODEL", "gpt-4o-mini")
+
+# --------------------------------------------------------------------------- #
+# Panel de juges (multi-juges, évaluation comparative par classement).
+# --------------------------------------------------------------------------- #
+# Plusieurs juges récents et issus de fournisseurs DIFFÉRENTS notent et classent
+# les réponses, puis on agrège (moyenne). Cela limite les biais d'auto-complaisance
+# d'un juge unique. Un juge ne note jamais une réponse produite par un modèle de
+# SA PROPRE famille (exclusion d'auto-évaluation, cf. provider_family + agrégation).
+#
+# Format : liste de (provider, model). Le provider doit exister dans
+# PROVIDER_CLASSES. Surchargeable via la variable d'environnement
+# BENCHMARK_JUDGES = "openai:gpt-4o,anthropic:claude-...,gemini:gemini-2.0-flash".
+DEFAULT_JUDGE_SPECS = [
+    ("openai", os.environ.get("JUDGE_OPENAI_MODEL", "gpt-4o")),
+    ("anthropic", os.environ.get("JUDGE_ANTHROPIC_MODEL", "claude-sonnet-4-5-20250929")),
+    ("gemini", os.environ.get("JUDGE_GEMINI_MODEL", "gemini-2.0-flash")),
+]
+
+
+def _parse_judges_env(value: str | None) -> list[tuple[str, str]] | None:
+    if not value or not value.strip():
+        return None
+    specs: list[tuple[str, str]] = []
+    for item in value.split(","):
+        item = item.strip()
+        if not item:
+            continue
+        provider, _, model = item.partition(":")
+        provider = provider.strip().lower()
+        model = model.strip()
+        if provider and model:
+            specs.append((provider, model))
+    return specs or None
+
+
+JUDGE_MODELS: list[tuple[str, str]] = (
+    _parse_judges_env(os.environ.get("BENCHMARK_JUDGES")) or DEFAULT_JUDGE_SPECS
+)
+
+
+def provider_family(provider: str) -> str:
+    """Famille d'un fournisseur, pour l'exclusion d'auto-évaluation.
+
+    Ex. ``openai`` et ``openai-small`` partagent la famille ``openai`` ; un juge
+    OpenAI ne notera donc aucune réponse de ces deux fournisseurs.
+    """
+    base = (provider or "").lower()
+    for fam in ("openai", "anthropic", "gemini", "mistral"):
+        if base.startswith(fam):
+            return fam
+    return base
 
 # URL du serveur Ollama local.
 OLLAMA_HOST = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
 
 # Paramètres de génération.
-MAX_TOKENS = int(os.environ.get("BENCHMARK_MAX_TOKENS", "1200"))
+# Réponses volontairement plus courtes : plus faciles à comparer et à juger,
+# et moins coûteuses en tokens. Surchargeable via BENCHMARK_MAX_TOKENS.
+MAX_TOKENS = int(os.environ.get("BENCHMARK_MAX_TOKENS", "600"))
 TEMPERATURE = float(os.environ.get("BENCHMARK_TEMPERATURE", "0.2"))
 REQUEST_TIMEOUT = int(os.environ.get("BENCHMARK_TIMEOUT", "120"))
 
 # Nombre de tentatives (retries) en cas d'erreur réseau / API.
 MAX_RETRIES = int(os.environ.get("BENCHMARK_MAX_RETRIES", "3"))
+
+# Paramètres spécifiques aux juges : déterministe (température 0) et budget de
+# tokens plus large car un juge comparatif renvoie un JSON couvrant TOUTES les
+# réponses d'une question.
+JUDGE_TEMPERATURE = float(os.environ.get("BENCHMARK_JUDGE_TEMPERATURE", "0.0"))
+JUDGE_MAX_TOKENS = int(os.environ.get("BENCHMARK_JUDGE_MAX_TOKENS", "2500"))
 
 # --------------------------------------------------------------------------- #
 # Prompt standard envoyé aux modèles testés.
@@ -80,20 +141,23 @@ SYSTEM_PROMPT = (
     "Tu es un assistant expert en biodiversité, réglementation "
     "environnementale, séquence ERC, études d'impact et restauration "
     "écologique.\n"
-    "Réponds de manière professionnelle, nuancée et vérifiable.\n"
+    "Réponds de manière professionnelle, nuancée et vérifiable, mais SOIS "
+    "CONCIS : va droit au but, sans remplissage ni longues digressions.\n"
     "Si une information réglementaire dépend du pays, de la région, de la "
     "date ou d'un arrêté, indique qu'elle doit être vérifiée dans une source "
     "officielle.\n"
-    "Ne fabrique pas de statut réglementaire."
+    "Ne fabrique pas de statut réglementaire, et ne valide jamais un fait, une "
+    "espèce ou un texte réglementaire dont tu n'es pas sûr de l'existence."
 )
 
 USER_PROMPT_TEMPLATE = (
     "Question :\n{question}\n\n"
-    "Format de sortie :\n"
-    "- Réponse synthétique\n"
-    "- Raisonnement\n"
-    "- Sources ou types de sources à vérifier\n"
-    "- Incertitudes / points nécessitant validation humaine"
+    "Réponds de façon SUCCINCTE (idéalement 4 à 8 phrases, pas de pavé) en "
+    "couvrant brièvement :\n"
+    "- Réponse synthétique (l'essentiel d'abord)\n"
+    "- Justification courte\n"
+    "- Sources / types de sources à vérifier (si pertinent)\n"
+    "- Incertitudes éventuelles nécessitant une validation humaine"
 )
 
 # Consigne spécifique aux questions de raisonnement sur graphe de connaissance.
@@ -227,6 +291,111 @@ def build_judge_prompt(question: dict, model_answer: str) -> str:
         expected_answer=question.get("expected_answer_short", "(non fournie)"),
         evaluation_criteria=criteria_txt,
         model_answer=model_answer,
+    )
+
+
+# --------------------------------------------------------------------------- #
+# Prompt du juge — évaluation COMPARATIVE par classement (multi-réponses).
+# --------------------------------------------------------------------------- #
+JUDGE_RANK_SYSTEM_PROMPT = (
+    "Tu es un évaluateur expert et impartial. On te présente PLUSIEURS réponses "
+    "anonymisées (de modèles d'IA différents) à une même question de "
+    "biodiversité, réglementation environnementale, séquence ERC, études "
+    "d'impact, restauration écologique ou arbitrages socio-écologiques.\n"
+    "Ta tâche : noter chaque réponse sur des critères précis ET les CLASSER de "
+    "la meilleure (rang 1) à la moins bonne. Les ex æquo sont autorisés (même "
+    "rang). Juge le contenu, jamais la longueur ou le style. Tu renvoies "
+    "UNIQUEMENT un objet JSON valide, sans texte ni bloc Markdown."
+)
+
+JUDGE_RANK_USER_TEMPLATE = """Classe et note les réponses ci-dessous.
+
+# Question posée
+{question}
+
+# Type de question
+{question_type} (topic : {topic}, difficulté : {difficulty})
+{graph_section}
+# Réponse attendue (squelette générique, non exhaustif)
+{expected_answer}
+
+# Critères d'évaluation officiels
+{evaluation_criteria}
+
+# Réponses à évaluer (anonymisées)
+{answers_block}
+
+# Consignes de notation (pour CHAQUE réponse)
+- accuracy : exactitude scientifique (0 = fausse, 5 = excellente).
+- uncertainty_handling : prise en compte des incertitudes et des limites (0-5).
+- justification_quality : qualité et clarté du raisonnement (0-5).
+- source_awareness : mention des sources ou types de sources à vérifier (0-5).
+  Ne pénalise PAS l'absence de sources exactes si la question demande seulement
+  une stratégie ou une méthode.
+- regulatory_hallucination_risk : score INVERSÉ. 5 = aucun risque (aucun fait,
+  espèce, statut, arrêté ou loi inventé), 0 = fort risque. Pénalise fortement
+  toute affirmation factuelle ou réglementaire inventée ou non sourcée. Si la
+  question contient un PIÈGE (espèce, arrêté ou loi qui n'existe pas), une bonne
+  réponse REFUSE de valider et signale l'inexistence ; valider le piège = 0.
+- overall_score : note globale 0 à 100 synthétisant l'ensemble.
+- rank : rang de la réponse (1 = meilleure). Plusieurs réponses peuvent partager
+  le même rang (ex æquo) si leur qualité est équivalente.
+- verdict : une phrase de justification.
+- Pour les questions d'arbitrage, valorise la présentation équilibrée des
+  compromis plutôt qu'une position militante unique.
+- Pour les questions sur graphe de connaissance, vérifie la fidélité STRICTE au
+  graphe : pénalise tout fait ajouté absent des triplets.
+
+Renvoie STRICTEMENT ce JSON (un objet par réponse, en réutilisant son label) :
+{{
+  "evaluations": [
+    {{
+      "label": "{first_label}",
+      "accuracy": 0-5,
+      "uncertainty_handling": 0-5,
+      "justification_quality": 0-5,
+      "source_awareness": 0-5,
+      "regulatory_hallucination_risk": 0-5,
+      "overall_score": 0-100,
+      "rank": 1,
+      "verdict": "..."
+    }}
+  ]
+}}"""
+
+
+def build_ranking_judge_prompt(
+    question: dict, labeled_answers: list[tuple[str, str]]
+) -> str:
+    """Construit le prompt du juge comparatif.
+
+    ``labeled_answers`` est une liste de (label, texte_réponse) déjà anonymisée
+    et mélangée par l'appelant.
+    """
+    criteria = question.get("evaluation_criteria", [])
+    criteria_txt = "\n".join(f"- {c}" for c in criteria) if criteria else "- (non précisés)"
+    graph_block = format_graph_context(question.get("graph_context"))
+    graph_section = (
+        f"\n# Graphe de connaissance fourni au modèle (seule source autorisée)\n"
+        f"{graph_block}\n"
+        if graph_block
+        else ""
+    )
+    answers_block = "\n\n".join(
+        f"## Réponse {label}\n{text or '(réponse vide)'}"
+        for label, text in labeled_answers
+    )
+    first_label = labeled_answers[0][0] if labeled_answers else "A"
+    return JUDGE_RANK_USER_TEMPLATE.format(
+        question=question.get("question", ""),
+        question_type=question.get("question_type", "?"),
+        topic=question.get("topic") or question.get("section", "?"),
+        difficulty=question.get("difficulty", "?"),
+        graph_section=graph_section,
+        expected_answer=question.get("expected_answer_short", "(non fournie)"),
+        evaluation_criteria=criteria_txt,
+        answers_block=answers_block,
+        first_label=first_label,
     )
 
 

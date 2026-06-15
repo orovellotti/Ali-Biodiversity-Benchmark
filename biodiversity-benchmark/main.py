@@ -24,7 +24,7 @@ except Exception:  # pragma: no cover - dotenv optionnel
     pass
 
 import config
-from evaluator import Judge
+from evaluator import build_judge_panel, evaluate_run
 from providers import ProviderError, get_provider
 from report import generate_all_reports
 
@@ -220,63 +220,69 @@ def evaluate_results(
     questions_by_id: dict,
     dry_run: bool,
     progress_file: str | None = None,
-) -> list[dict]:
-    """Évalue chaque réponse via le juge et fusionne les scores."""
-    evaluated: list[dict] = []
-    total = len(raw_results)
-    completed = 0
-    write_progress(progress_file, "evaluate", completed, total)
+) -> tuple[list[dict], list]:
+    """Évalue les réponses par classement comparatif multi-juges.
 
-    judge = None
+    Renvoie (résultats évalués, panel de juges utilisé).
+    """
+    total = len(raw_results)
+    write_progress(progress_file, "evaluate", 0, total)
+
+    judges: list = []
     if not dry_run:
-        judge = Judge()
-        if not judge.is_available():
+        judges = build_judge_panel(dry_run=False)
+        if not judges:
             logger.error(
-                "OPENAI_API_KEY absente : impossible d'évaluer. Les réponses "
+                "Aucun juge disponible (clés d'API manquantes) : les réponses "
                 "brutes sont conservées sans notation."
             )
-            judge = None
 
-    for record in tqdm(raw_results, desc="Évaluation", unit="rép"):
+    pbar = tqdm(total=total, desc="Évaluation", unit="rép")
+    state = {"completed": 0}
+
+    def _progress(count: int) -> None:
+        state["completed"] += count
+        pbar.update(count)
+        write_progress(progress_file, "evaluate", state["completed"], total)
+
+    if dry_run or not judges:
+        evaluated = _evaluate_skip(raw_results, dry_run)
+        _progress(len(raw_results))
+        pbar.close()
+        return evaluated, judges
+
+    evaluated = evaluate_run(
+        raw_results, questions_by_id, judges, progress=_progress
+    )
+    pbar.close()
+    return evaluated, judges
+
+
+def _evaluate_skip(raw_results: list[dict], dry_run: bool) -> list[dict]:
+    """Conserve les réponses sans notation (dry-run ou aucun juge dispo)."""
+    from evaluator import CRIT_KEYS
+
+    evaluated: list[dict] = []
+    for record in raw_results:
         merged = dict(record)
-        # Valeurs par défaut des scores.
-        scores = {
-            "accuracy": None,
-            "uncertainty_handling": None,
-            "justification_quality": None,
-            "source_awareness": None,
-            "regulatory_hallucination_risk": None,
-            "overall_score": None,
-            "strengths": "",
-            "weaknesses": "",
-            "verdict": "",
-        }
-
-        if record["error"]:
+        scores = {key: None for key in CRIT_KEYS}
+        scores.update(
+            {
+                "overall_score": None,
+                "rank_in_question": None,
+                "n_judges": 0,
+                "strengths": "",
+                "weaknesses": "",
+            }
+        )
+        if record.get("error"):
             scores["verdict"] = "Non évalué (erreur d'appel du modèle)."
         elif dry_run:
             scores["verdict"] = "[DRY-RUN] Non évalué."
-        elif judge is None:
-            scores["verdict"] = "Non évalué (juge indisponible)."
         else:
-            question = questions_by_id.get(record["question_id"], {})
-            try:
-                evaluation = judge.evaluate(question, record["raw_response"])
-                scores.update(evaluation.model_dump())
-            except Exception as exc:
-                scores["verdict"] = f"Évaluation échouée : {exc}"
-                logger.error(
-                    "Échec d'évaluation %s/%s : %s",
-                    record["model"],
-                    record["question_id"],
-                    exc,
-                )
-
+            scores["verdict"] = "Non évalué (juge indisponible)."
         merged.update(scores)
         evaluated.append(merged)
-        completed += 1
-        write_progress(progress_file, "evaluate", completed, total)
-
     return evaluated
 
 
@@ -412,7 +418,7 @@ def main(argv: list[str] | None = None) -> int:
     # 2. Évaluation
     questions_by_id = {q.get("id"): q for q in all_questions}
     dry_or_skip = args.dry_run or args.no_eval
-    evaluated = evaluate_results(
+    evaluated, judges = evaluate_results(
         raw_results, questions_by_id, dry_or_skip, args.progress_file
     )
     eval_path = os.path.join(args.output_dir, "evaluated_results.jsonl")
@@ -422,7 +428,11 @@ def main(argv: list[str] | None = None) -> int:
     # 3. Rapports
     write_progress(args.progress_file, "report", len(evaluated), len(evaluated))
     meta = dict(meta)
-    meta["judge_model"] = config.JUDGE_MODEL
+    judge_labels = [j.label for j in judges] or [
+        f"{p}:{m}" for p, m in config.JUDGE_MODELS
+    ]
+    meta["judge_model"] = ", ".join(judge_labels)
+    meta["judges"] = judge_labels
     generate_all_reports(evaluated, args.output_dir, meta=meta)
 
     write_progress(args.progress_file, "done", len(evaluated), len(evaluated))

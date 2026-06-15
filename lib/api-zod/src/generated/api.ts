@@ -31,8 +31,9 @@ export const GetBenchmarkConfigResponse = zod.object({
   "topics": zod.array(zod.string()),
   "difficulties": zod.array(zod.string()),
   "questionTypes": zod.array(zod.string()),
-  "judgeModel": zod.string(),
+  "judgeModel": zod.string().describe('Human-readable judge panel (comma-joined provider:model labels) used for comparative ranking'),
   "judgeAvailable": zod.boolean(),
+  "judgeCount": zod.number().optional().describe('Number of judges in the panel; one judge call is issued per question per judge (not per answer)'),
   "totalQuestions": zod.number(),
   "maxRequestsPerRun": zod.number().describe('Server-enforced ceiling on the number of model requests (models × questions) a single non-simulation run may issue. A safeguard against accidentally consuming all API credits.')
 })
@@ -149,6 +150,8 @@ export const GetRunResultsResponse = zod.object({
   "size": zod.string().nullish().describe('Approximate model size tier as an i18n key (small, medium, large), translated in the UI'),
   "params": zod.string().nullish().describe('Officially published parameter count (e.g. 8B, 70B) for open-weight models; null when the provider does not disclose it'),
   "openSource": zod.boolean().describe('True for open-source \/ open-weight models (served via OpenRouter or Ollama); false for proprietary API models'),
+  "rank": zod.number().nullish().describe('Final leaderboard rank (1 = best), with ties sharing the same rank; null if the model has no comparative ranks'),
+  "meanRank": zod.number().nullish().describe('Average comparative rank across questions (lower is better); primary ranking metric, null when no judge ranks exist'),
   "nQuestions": zod.number(),
   "nErrors": zod.number(),
   "avgLatency": zod.number().nullish(),
@@ -200,6 +203,8 @@ export const GetRunResultsResponse = zod.object({
   "sourceAwareness": zod.number().nullish(),
   "regulatoryHallucinationRisk": zod.number().nullish(),
   "overallScore": zod.number().nullish(),
+  "rankInQuestion": zod.number().nullish().describe('Average comparative rank of this answer among all models on this question (1 = best); null if not ranked'),
+  "nJudges": zod.number().nullish().describe('Number of judges whose ranks were averaged for this answer (after self-evaluation exclusion)'),
   "strengths": zod.string().nullish(),
   "weaknesses": zod.string().nullish(),
   "verdict": zod.string().nullish()

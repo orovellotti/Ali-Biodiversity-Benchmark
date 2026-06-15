@@ -7,6 +7,7 @@ import { benchmarkDir, runDir, runsDir } from "./paths";
 import { questionCount, totalQuestions, topics } from "./dataset";
 import {
   judgeAvailable,
+  judgeCount,
   judgeModel,
   maxRequestsPerRun,
   VALID_PROVIDERS,
@@ -211,19 +212,21 @@ export function createRun(input: RunInput): Run {
 
   // Safeguard 2 — hard ceiling on real API requests so a single launch can
   // never drain all credits. Counts BOTH answer-generation calls (models ×
-  // questions) AND judge-scoring calls (another models × questions when the run
-  // is evaluated and a judge is configured), since both bill against credits.
-  // Simulations are free, so skip.
+  // questions) AND comparative judge calls. The comparative judge issues ONE
+  // call per question per judge (it sees ALL models' answers at once), so judge
+  // cost is judges × questions — NOT models × questions. Both bill against
+  // credits. Simulations are free, so skip.
   if (!dryRun) {
     const planned = questionCount(topic, limit, offset) ?? totalQuestions();
     const answerRequests = models.length * planned;
     const judged = !noEval && judgeAvailable();
-    const judgeRequests = judged ? models.length * planned : 0;
+    const judges = judged ? judgeCount() : 0;
+    const judgeRequests = judges * planned;
     const estimatedRequests = answerRequests + judgeRequests;
     const cap = maxRequestsPerRun();
     if (estimatedRequests > cap) {
       const breakdown = judged
-        ? `${models.length} modèle(s) × ${planned} questions × 2 (réponses + juge)`
+        ? `${models.length} modèle(s) × ${planned} questions (réponses) + ${judges} juge(s) × ${planned} questions`
         : `${models.length} modèle(s) × ${planned} questions`;
       throw new ValidationError(
         `Cette analyse déclencherait ~${estimatedRequests} requêtes (${breakdown}), au-dessus de la limite de ${cap}. Réduisez le nombre de modèles ou la limite de questions, ou utilisez le mode simulation.`,

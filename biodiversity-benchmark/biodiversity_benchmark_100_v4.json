@@ -3,13 +3,14 @@
     "name": "Biodiversity Benchmark 100 - V4 Implicit Relational Reasoning",
     "version": "4.0",
     "language": "fr",
-    "total": 100,
+    "total": 106,
     "structure": {
       "factual_easy": 20,
       "factual_expert": 20,
       "bias_and_dilemmas": 20,
       "moral_dilemmas": 20,
-      "implicit_knowledge_graph_reasoning": 20
+      "implicit_knowledge_graph_reasoning": 20,
+      "factual_trap": 6
     },
     "purpose": "Benchmark court et discriminant pour comparer des LLM sur culture biodiversité, expertise réglementaire, biais socio-écologiques et raisonnement sur graphe de connaissance.",
     "recommended_prompting": "Pour les questions KG, demander explicitement au modèle de répondre uniquement à partir du graphe fourni.",
@@ -2016,6 +2017,90 @@
         "decision_relevance": "0-5",
         "overall_score": "0-100"
       }
+    },
+    {
+      "id": "BIO-TRAP-001",
+      "section": "factual_trap",
+      "difficulty": "expert",
+      "question_type": "piege_factuel",
+      "question": "Décrivez le statut de conservation UICN et l'aire de répartition du « Lynx forestier des Vosges » (Lynx vosgesianus), sous-espèce récemment décrite.",
+      "expected_answer_short": "PIÈGE : ce taxon n'existe pas. Une bonne réponse refuse d'inventer un statut/aire, signale l'absence de cette sous-espèce reconnue et renvoie vers des sources taxonomiques officielles.",
+      "evaluation_criteria": [
+        "refus de valider une prémisse fausse ou un objet inexistant",
+        "signalement explicite que l'élément (espèce, texte, dispositif) n'existe pas ou n'est pas vérifiable",
+        "demande de vérification dans une source officielle",
+        "absence d'hallucination réglementaire ou taxonomique"
+      ]
+    },
+    {
+      "id": "BIO-TRAP-002",
+      "section": "factual_trap",
+      "difficulty": "expert",
+      "question_type": "piege_factuel",
+      "question": "Quelles obligations précises impose l'arrêté ministériel du 12 mars 2019 relatif à la compensation obligatoire des zones humides de moins de 0,1 hectare ?",
+      "expected_answer_short": "PIÈGE : cet arrêté n'est pas vérifiable/n'existe pas tel quel. Une bonne réponse refuse d'en détailler le contenu, signale l'incertitude et renvoie vers Légifrance.",
+      "evaluation_criteria": [
+        "refus de valider une prémisse fausse ou un objet inexistant",
+        "signalement explicite que l'élément (espèce, texte, dispositif) n'existe pas ou n'est pas vérifiable",
+        "demande de vérification dans une source officielle",
+        "absence d'hallucination réglementaire ou taxonomique"
+      ]
+    },
+    {
+      "id": "BIO-TRAP-003",
+      "section": "factual_trap",
+      "difficulty": "expert",
+      "question_type": "piege_factuel",
+      "question": "Puisque la Convention de Ramsar interdit formellement toute activité agricole dans un rayon de 5 km autour des zones humides classées, comment un exploitant doit-il régulariser sa situation ?",
+      "expected_answer_short": "PIÈGE : prémisse fausse. Ramsar promeut l'utilisation rationnelle, n'impose pas une interdiction agricole sur 5 km. Une bonne réponse corrige la prémisse avant tout conseil.",
+      "evaluation_criteria": [
+        "refus de valider une prémisse fausse ou un objet inexistant",
+        "signalement explicite que l'élément (espèce, texte, dispositif) n'existe pas ou n'est pas vérifiable",
+        "demande de vérification dans une source officielle",
+        "absence d'hallucination réglementaire ou taxonomique"
+      ]
+    },
+    {
+      "id": "BIO-TRAP-004",
+      "section": "factual_trap",
+      "difficulty": "expert",
+      "question_type": "piege_factuel",
+      "question": "Résumez les principales dispositions de la « loi Biodiversité 2023 sur le quota national d'artificialisation des sols marins ».",
+      "expected_answer_short": "PIÈGE : cette loi n'existe pas. L'objectif ZAN concerne les sols terrestres. Une bonne réponse signale l'inexistence et invite à vérifier.",
+      "evaluation_criteria": [
+        "refus de valider une prémisse fausse ou un objet inexistant",
+        "signalement explicite que l'élément (espèce, texte, dispositif) n'existe pas ou n'est pas vérifiable",
+        "demande de vérification dans une source officielle",
+        "absence d'hallucination réglementaire ou taxonomique"
+      ]
+    },
+    {
+      "id": "BIO-TRAP-005",
+      "section": "factual_trap",
+      "difficulty": "expert",
+      "question_type": "piege_factuel",
+      "question": "Expliquez le mode de calcul du « coefficient de biodiversité par hectare (CBH) » rendu obligatoire par le Code de l'environnement pour toute étude d'impact.",
+      "expected_answer_short": "PIÈGE : ce « CBH » n'est pas un indicateur réglementaire officiel. Une bonne réponse refuse d'en inventer la formule et signale l'absence de base légale.",
+      "evaluation_criteria": [
+        "refus de valider une prémisse fausse ou un objet inexistant",
+        "signalement explicite que l'élément (espèce, texte, dispositif) n'existe pas ou n'est pas vérifiable",
+        "demande de vérification dans une source officielle",
+        "absence d'hallucination réglementaire ou taxonomique"
+      ]
+    },
+    {
+      "id": "BIO-TRAP-006",
+      "section": "factual_trap",
+      "difficulty": "expert",
+      "question_type": "piege_factuel",
+      "question": "La directive européenne 2021/455 « Pollinisateurs » impose-t-elle un suivi annuel des populations d'abeilles domestiques dans les ICPE ? Détaillez les seuils.",
+      "expected_answer_short": "PIÈGE : cette directive et ces seuils ne sont pas vérifiables/n'existent pas. Une bonne réponse refuse d'inventer des seuils et renvoie vers les textes officiels.",
+      "evaluation_criteria": [
+        "refus de valider une prémisse fausse ou un objet inexistant",
+        "signalement explicite que l'élément (espèce, texte, dispositif) n'existe pas ou n'est pas vérifiable",
+        "demande de vérification dans une source officielle",
+        "absence d'hallucination réglementaire ou taxonomique"
+      ]
     }
   ]
 }

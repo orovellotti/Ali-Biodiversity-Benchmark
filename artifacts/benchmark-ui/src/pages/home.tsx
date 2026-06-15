@@ -162,11 +162,16 @@ export function Home() {
   const plannedQuestions = config
     ? selectedLimit || config.totalQuestions
     : 0;
-  // Mirror the server cap: count answer calls plus judge-scoring calls (another
-  // models × questions when the run is evaluated and a judge is configured).
+  // Mirror the server cap: count answer calls (models × questions) plus
+  // comparative judge calls. The comparative judge issues ONE call per question
+  // per judge (it ranks all models' answers at once), so judge cost is
+  // judges × questions — NOT models × questions.
   const answerRequests = selectedModels.length * plannedQuestions;
   const judged = !noEval && (config?.judgeAvailable ?? false);
-  const estimatedRequests = answerRequests + (judged ? answerRequests : 0);
+  const judgeRequests = judged
+    ? (config?.judgeCount ?? 0) * plannedQuestions
+    : 0;
+  const estimatedRequests = answerRequests + judgeRequests;
   const cap = config?.maxRequestsPerRun ?? 0;
   // A real (non-simulation) run over the server-enforced ceiling is refused.
   const overCap = !dryRun && cap > 0 && estimatedRequests > cap;
@@ -698,8 +703,8 @@ export function Home() {
                       {judged && (
                         <p className="text-xs text-muted-foreground pt-1">
                           {tr(
-                            "Inclut les appels de réponse et de notation par le juge.",
-                            "Includes both answer and judge-scoring calls.",
+                            `Inclut ${answerRequests} appels de réponse + ${judgeRequests} appels de juge (${config?.judgeCount ?? 0} juge(s) × ${plannedQuestions} questions, le juge comparatif évalue tous les modèles en un appel).`,
+                            `Includes ${answerRequests} answer calls + ${judgeRequests} judge calls (${config?.judgeCount ?? 0} judge(s) × ${plannedQuestions} questions; the comparative judge ranks all models in one call).`,
                           )}
                         </p>
                       )}
