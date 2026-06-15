@@ -5,6 +5,12 @@ description: How to run + merge a full benchmark re-run safely, and the Gemini z
 
 # Running and merging a full benchmark re-run
 
+## Ranking engine mechanics (why rank ≠ a per-row score)
+- Scoring is **comparative**: the evaluator makes **one ranking-judge call per (question, judge)** that ranks **all models' answers to that question together** in a single prompt (`evaluator.evaluate_run` + `RankingJudge`). It is NOT a per-model independent score later sorted. → **`rank_in_question` cannot be recomputed from `overall_score` at merge time**; it only exists because models were judged head-to-head in the same call.
+- Consequence for cost: judge calls = `judges × questions` (NOT `× models`) — adding models to a run does not multiply judge cost, only generation cost (`models × questions`).
+- **Anti-self-eval:** a judge is excluded from scoring any model of its **same provider family** (e.g. the openai judge does not rank the openai model). So a model's effective judge panel can be smaller than the full panel; keep ≥2 judges of different families so every model is judged by ≥1.
+- A genuinely fair all-models leaderboard therefore requires generating every model's answers on the same question set and running `evaluate_run` over all of them at once (one comparative ranking per question) — see the cross-context caveat below.
+
 ## Launching
 - Launch runs via `POST /api/benchmark/runs` with `Authorization: Bearer $BENCHMARK_ADMIN_PASSWORD`. Body: `{models:[...], offset, limit, dryRun, noEval}`.
 - Only ONE run may be active at a time (concurrency lock → 409), so paid batches must be launched **sequentially**: launch, poll `GET /runs/:id` until `status==="completed"`, then launch the next.
