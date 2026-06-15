@@ -6,3 +6,5 @@
 - [Benchmark run batching](benchmark-run-batching.md) — full ~800-call runs freeze on dev-workspace idle pause (not a bug); use `offset` to launch ~30min batches (topic→offset→limit).
 - [Benchmark EN translation](benchmark-translation.md) — EN now translates dataset+answers (display-only, reverses "stays French"); public translate endpoint cost-bounded by corpus gate + permanent cache + mutex.
 - [Benchmark model size + params](benchmark-model-size.md) — proprietary LLMs don't publish param counts (never fabricate); only open-weight get numbers; size = i18n tier keys; EN is now the default UI language (saved pref wins).
+- [Benchmark re-run ops](benchmark-rerun-ops.md) — launch batches sequentially (1 active run max); Gemini free-tier key = zero quota (drop from models AND BENCHMARK_JUDGES); merge offset batches into one synthetic run dir for a full leaderboard.
+- [Benchmark comparative ranking](benchmark-comparative-ranking.md) — leaderboard sorts by meanRank asc (ties = shared competition rank); comparative judge ranks all models per question in ONE call; factual_trap baits detect fabrication.

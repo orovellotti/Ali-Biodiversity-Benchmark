@@ -69,7 +69,8 @@ A French-language control room for benchmarking LLMs (OpenAI, Anthropic, Mistral
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- **Clé Gemini en quota zéro (free-tier).** La `GEMINI_API_KEY` actuelle a un quota `limit: 0` pour `gemini-2.0-flash` → toute requête renvoie HTTP 429 `RESOURCE_EXHAUSTED`. Gemini ne peut donc ni **répondre** (lignes vides, exclues du classement) ni **juger**. Il est retiré du panel de juges via l'env `BENCHMARK_JUDGES="openai:gpt-4o,anthropic:claude-sonnet-4-5-20250929"` (penser à redémarrer `artifacts/api-server: API Server` après modif). Pour réactiver Gemini : fournir une clé avec un quota payant, puis l'ajouter aux modèles et à `BENCHMARK_JUDGES`.
+- **Le dashboard de résultats est par-run, pas agrégé.** Un dataset lancé en plusieurs batches `offset` apparaît comme N runs distincts. Pour un classement unique sur tout le dataset, fusionner les batches dans un run synthétique (concaténer `evaluated_results.jsonl` + `raw_results.jsonl` dans un nouveau dossier `runs/<id>/` avec `meta.json` status `completed` + `status.json`) — `results.ts` recalcule les rangs sur l'ensemble. Voir `.agents/memory/benchmark-rerun-ops.md`.
 
 ## Pointers
 

@@ -43,3 +43,4 @@ externalPort = 3000
 
 [userenv.shared]
 BENCHMARK_MAX_REQUESTS_PER_RUN = "800"
+BENCHMARK_JUDGES = "openai:gpt-4o,anthropic:claude-sonnet-4-5-20250929"
