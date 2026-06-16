@@ -2,7 +2,8 @@ import { useState, useMemo } from "react";
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, 
   Tooltip as RechartsTooltip, Legend, ResponsiveContainer,
-  RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar
+  RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar,
+  ScatterChart, Scatter, ZAxis, ReferenceLine, ReferenceArea, LabelList, Cell
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -14,8 +15,16 @@ import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
 import { useTranslateMap } from "@/lib/use-translate";
 import { Run, RunResults } from "@workspace/api-client-react";
-import { Download, CheckCircle2, AlertTriangle, Award, ShieldCheck, Compass, ChevronUp, ChevronDown, ChevronsUpDown, Loader2, Lock, Unlock } from "lucide-react";
+import { Download, CheckCircle2, AlertTriangle, Award, ShieldCheck, Compass, ChevronUp, ChevronDown, ChevronsUpDown, Loader2, Lock, Unlock, ShieldQuestion, Check, X } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  trustTier,
+  trustIndex,
+  trafficStatus,
+  evaluateUseCases,
+  type TrustTier,
+  type TrafficStatus,
+} from "@/lib/trust";
 
 const CHART_COLORS = [
   "#2f6b4f", // forest green
@@ -34,6 +43,18 @@ const SCORE_LABEL_KEYS = [
   "sourceAwareness",
   "regulatoryHallucinationRisk",
 ] as const;
+
+// Traffic-light / trust-tier palette (kept on-brand: green / ochre / terracotta).
+const TRUST_TIER_HEX: Record<TrustTier, string> = {
+  trusted: "#2f6b4f",
+  review: "#c98a2b",
+  expert: "#c2603b",
+};
+const TRAFFIC_DOT_CLASS: Record<TrafficStatus, string> = {
+  green: "bg-[#2f6b4f]",
+  amber: "bg-[#c98a2b]",
+  red: "bg-[#c2603b]",
+};
 
 function exportToCSV(filename: string, data: any[], headers: string[]) {
   if (data.length === 0) return;
@@ -293,6 +314,159 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
     );
   };
 
+  // ── "Can I trust this model?" ─────────────────────────────────────────────
+  // Tier labels + plain-language meaning for a non-technical audience.
+  const TRUST_TIER_META: Record<
+    TrustTier,
+    { label: string; meaning: string }
+  > = {
+    trusted: {
+      label: tr("Fiable", "Trusted"),
+      meaning: tr(
+        "Sûr et performant — exploitable tel quel.",
+        "Safe and strong — usable as-is.",
+      ),
+    },
+    review: {
+      label: tr("À vérifier", "Review required"),
+      meaning: tr(
+        "Correct, mais à relire par un humain avant usage.",
+        "Decent, but have a human review before use.",
+      ),
+    },
+    expert: {
+      label: tr("Validation experte", "Expert validation"),
+      meaning: tr(
+        "À faire valider par un expert avant toute utilisation.",
+        "Have an expert validate before any use.",
+      ),
+    },
+  };
+
+  const TRUST_TIER_STATUS: Record<TrustTier, TrafficStatus> = {
+    trusted: "green",
+    review: "amber",
+    expert: "red",
+  };
+
+  const TrustBadge = ({ tier, full }: { tier: TrustTier; full?: boolean }) => {
+    const meta = TRUST_TIER_META[tier];
+    const cls =
+      tier === "trusted"
+        ? "border-[#2f6b4f]/40 text-[#2f6b4f] dark:text-[#7bbf97] bg-[#2f6b4f]/10"
+        : tier === "review"
+          ? "border-[#c98a2b]/40 text-[#9a6a1f] dark:text-[#d6a24e] bg-[#c98a2b]/10"
+          : "border-[#c2603b]/40 text-[#c2603b] dark:text-[#e08a6a] bg-[#c2603b]/10";
+    return (
+      <span
+        className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] font-medium whitespace-nowrap ${cls}`}
+      >
+        <span
+          className={`w-1.5 h-1.5 rounded-full shrink-0 ${TRAFFIC_DOT_CLASS[TRUST_TIER_STATUS[tier]]}`}
+        />
+        {meta.label}
+        {full && (
+          <span className="font-normal text-muted-foreground">
+            {" "}
+            · {meta.meaning}
+          </span>
+        )}
+      </span>
+    );
+  };
+
+  const TrafficDot = ({ status }: { status: TrafficStatus | null }) => (
+    <span
+      className={`inline-block w-2.5 h-2.5 rounded-full shrink-0 ${status ? TRAFFIC_DOT_CLASS[status] : "bg-muted"}`}
+    />
+  );
+
+  const TRUST_DIMS: {
+    key: keyof typeof results.summaryByModel[number];
+    label: string;
+  }[] = [
+    { key: "accuracy", label: tr("Exactitude", "Accuracy") },
+    { key: "justificationQuality", label: tr("Justification", "Justification") },
+    { key: "sourceAwareness", label: tr("Sources", "Sources") },
+    { key: "uncertaintyHandling", label: tr("Incertitude", "Uncertainty") },
+    {
+      key: "regulatoryHallucinationRisk",
+      label: tr("Anti-hallucination", "Anti-hallucination"),
+    },
+  ];
+
+  const USE_CASE_LABELS: Record<
+    ReturnType<typeof evaluateUseCases>[number]["key"],
+    string
+  > = {
+    species_info: tr(
+      "Informations sur les espèces et habitats",
+      "Species & habitat information",
+    ),
+    draft_reports: tr(
+      "Rédiger un état initial / rapport écologique",
+      "Draft an ecological report / baseline",
+    ),
+    flag_uncertainty: tr(
+      "Signaler les incertitudes et nuances",
+      "Flag uncertainties and nuance",
+    ),
+    cite_sources: tr("Citer des sources et protocoles", "Cite sources & protocols"),
+    regulatory_signoff: tr(
+      "Validation réglementaire / signature",
+      "Regulatory validation / sign-off",
+    ),
+  };
+
+  const scorableModels = useMemo(
+    () =>
+      results.summaryByModel.filter(
+        (m) => m.overallScore != null && m.regulatoryHallucinationRisk != null,
+      ),
+    [results.summaryByModel],
+  );
+
+  const [trustModelName, setTrustModelName] = useState<string>("");
+  const selectedTrust = useMemo(
+    () =>
+      scorableModels.find((m) => m.model === trustModelName) ??
+      scorableModels[0] ??
+      null,
+    [scorableModels, trustModelName],
+  );
+
+  // Hallucination (safety) vs overall score (power). Higher is better on both
+  // axes, so the top-right is the "trusted zone".
+  const scatterData = useMemo(
+    () =>
+      scorableModels.map((m) => ({
+        model: m.model,
+        label: m.model.length > 16 ? `${m.model.slice(0, 15)}…` : m.model,
+        x: m.overallScore as number,
+        y: m.regulatoryHallucinationRisk as number,
+        tier: trustTier(m),
+      })),
+    [scorableModels],
+  );
+
+  const ScatterTooltip = ({ active, payload }: any) => {
+    if (!active || !payload || payload.length === 0) return null;
+    const p = payload[0].payload;
+    return (
+      <div className="bg-background border rounded-md shadow-md p-3 text-sm">
+        <div className="font-semibold mb-1">{p.model}</div>
+        <div className="text-muted-foreground">
+          {tr("Score global", "Overall score")}:{" "}
+          <span className="font-medium text-foreground">{p.x.toFixed(1)}</span>
+        </div>
+        <div className="text-muted-foreground">
+          {tr("Anti-hallucination", "Anti-hallucination")}:{" "}
+          <span className="font-medium text-foreground">{p.y.toFixed(1)}/5</span>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-8">
       {/* Reading guide & verdict — for a non-technical, scientific audience */}
@@ -411,6 +585,11 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
                       {tr("Score global", "Overall score")}
                     </TableHead>
                   )}
+                  {showVerdict && (
+                    <TableHead className="text-center whitespace-nowrap">
+                      {tr("Confiance", "Trust")}
+                    </TableHead>
+                  )}
                   <TableHead className="text-right whitespace-nowrap">
                     {tr("Échecs", "Failed")}
                   </TableHead>
@@ -498,6 +677,27 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
                           )}
                         </TableCell>
                       )}
+                      {showVerdict && (
+                        <TableCell className="text-center">
+                          {(() => {
+                            const tier = trustTier(m);
+                            return tier ? (
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <span className="inline-flex">
+                                    <TrustBadge tier={tier} />
+                                  </span>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  {TRUST_TIER_META[tier].meaning}
+                                </TooltipContent>
+                              </Tooltip>
+                            ) : (
+                              <span className="text-xs text-muted-foreground">—</span>
+                            );
+                          })()}
+                        </TableCell>
+                      )}
                       <TableCell
                         className={`text-right font-mono tabular-nums whitespace-nowrap ${m.nErrors > 0 ? "text-destructive" : "text-muted-foreground"}`}
                       >
@@ -516,6 +716,176 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
           </div>
         </Card>
       </div>
+
+      {/* Can I trust this model? — turns scores into a usage recommendation */}
+      {showVerdict && selectedTrust && (
+        <div>
+          <div className="eyebrow mb-1.5 flex items-center gap-1.5">
+            <ShieldQuestion className="w-3.5 h-3.5" />
+            {tr("Confiance", "Trust")}
+          </div>
+          <h2 className="font-display text-2xl font-semibold tracking-tight mb-1">
+            {tr("Puis-je faire confiance à ce modèle ?", "Can I trust this model?")}
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4 max-w-3xl">
+            {tr(
+              "Au-delà du score brut, voici pour quels usages écologiques ce modèle est fiable — la priorité étant qu'il n'invente ni faits ni règles.",
+              "Beyond the raw score, here is which ecology tasks this model can be trusted for — the priority being that it does not invent facts or rules.",
+            )}
+          </p>
+          <Card className="hairline-top">
+            <CardContent className="p-6 space-y-6">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-3 flex-wrap">
+                  <div>
+                    <div className="text-xs text-muted-foreground">
+                      {tr("Modèle évalué", "Model assessed")}
+                    </div>
+                    <div className="font-display text-xl font-semibold leading-tight">
+                      {selectedTrust.model}
+                    </div>
+                  </div>
+                  {(() => {
+                    const tier = trustTier(selectedTrust);
+                    return tier ? <TrustBadge tier={tier} full /> : null;
+                  })()}
+                </div>
+                <div className="flex items-center gap-4">
+                  {(() => {
+                    const idx = trustIndex(selectedTrust);
+                    return idx != null ? (
+                      <div className="text-right">
+                        <div className="text-xs text-muted-foreground">
+                          {tr("Indice de confiance", "Trust Index")}
+                        </div>
+                        <div className="font-mono text-2xl font-semibold tabular-nums leading-none mt-0.5">
+                          {idx.toFixed(1)}
+                          <span className="text-sm text-muted-foreground">/10</span>
+                        </div>
+                      </div>
+                    ) : null;
+                  })()}
+                  <Select
+                    value={selectedTrust.model}
+                    onValueChange={setTrustModelName}
+                  >
+                    <SelectTrigger className="w-44">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {scorableModels.map((m) => (
+                        <SelectItem key={m.model} value={m.model}>
+                          {m.model}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div>
+                <div className="text-sm font-medium mb-3">
+                  {tr("Profil de fiabilité (0–5)", "Reliability profile (0–5)")}
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-2.5">
+                  {TRUST_DIMS.map((dim) => {
+                    const v = selectedTrust[dim.key] as number | null;
+                    return (
+                      <div key={dim.label} className="flex items-center gap-2.5">
+                        <TrafficDot status={trafficStatus(v)} />
+                        <span className="text-sm flex-1">{dim.label}</span>
+                        <span className="font-mono text-sm tabular-nums text-muted-foreground">
+                          {v != null ? v.toFixed(1) : "—"}/5
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {(() => {
+                const verdicts = evaluateUseCases(selectedTrust);
+                const ok = verdicts.filter((v) => v.ok);
+                const notOk = verdicts.filter((v) => !v.ok);
+                return (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                      <div className="text-sm font-medium mb-2 flex items-center gap-1.5 text-[#2f6b4f] dark:text-[#7bbf97]">
+                        <Check className="w-4 h-4" />
+                        {tr("Recommandé pour", "Recommended for")}
+                      </div>
+                      {ok.length ? (
+                        <ul className="space-y-1.5">
+                          {ok.map((v) => (
+                            <li
+                              key={v.key}
+                              className="flex items-start gap-2 text-sm"
+                            >
+                              <Check className="w-3.5 h-3.5 mt-0.5 text-[#2f6b4f] dark:text-[#7bbf97] shrink-0" />
+                              <span>{USE_CASE_LABELS[v.key]}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="text-sm text-muted-foreground">
+                          {tr(
+                            "Aucun usage recommandé sans relecture humaine.",
+                            "No task recommended without human review.",
+                          )}
+                        </p>
+                      )}
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium mb-2 flex items-center gap-1.5 text-[#c2603b] dark:text-[#e08a6a]">
+                        <X className="w-4 h-4" />
+                        {tr("Déconseillé pour", "Not recommended for")}
+                      </div>
+                      {notOk.length ? (
+                        <ul className="space-y-1.5">
+                          {notOk.map((v) => (
+                            <li
+                              key={v.key}
+                              className="flex items-start gap-2 text-sm"
+                            >
+                              <X className="w-3.5 h-3.5 mt-0.5 text-[#c2603b] dark:text-[#e08a6a] shrink-0" />
+                              <span>{USE_CASE_LABELS[v.key]}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="text-sm text-muted-foreground">
+                          {tr(
+                            "Fiable pour tous les usages testés.",
+                            "Trusted for all tested tasks.",
+                          )}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                );
+              })()}
+
+              <div className="text-xs text-muted-foreground border-t pt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5">
+                <span className="max-w-xl">
+                  {tr(
+                    "L'indice de confiance pondère surtout l'anti-hallucination (0,45), puis le score global (0,35) et l'exactitude (0,20).",
+                    "The Trust Index weights anti-hallucination most (0.45), then overall score (0.35) and accuracy (0.20).",
+                  )}
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <TrafficDot status="green" /> ≥ 4/5
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <TrafficDot status="amber" /> ≥ 2,5/5
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <TrafficDot status="red" /> &lt; 2,5/5
+                </span>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       {!run.noEval && !run.dryRun && (
         <>
@@ -561,6 +931,104 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
                   ))}
                 </RadarChart>
               </ResponsiveContainer>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Hallucination vs performance — the trade-off that matters for ecology */}
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="font-display tracking-tight">
+                {tr("Hallucinations vs performance", "Hallucination vs performance")}
+              </CardTitle>
+              <p className="text-sm text-muted-foreground">
+                {tr(
+                  "Chaque point est un modèle. En haut à droite = la zone de confiance : performant ET sûr.",
+                  "Each dot is a model. Top-right = the trusted zone: powerful AND safe.",
+                )}
+              </p>
+            </CardHeader>
+            <CardContent>
+              {scatterData.length === 0 ? (
+                <div className="flex h-[440px] items-center justify-center text-center">
+                  <p className="text-sm text-muted-foreground">
+                    {tr("Aucune note exploitable pour ce run.", "No usable scores for this run.")}
+                  </p>
+                </div>
+              ) : (
+                <ResponsiveContainer width="100%" height={460} debounce={0}>
+                  <ScatterChart margin={{ top: 24, right: 36, bottom: 40, left: 12 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+                    <XAxis
+                      type="number"
+                      dataKey="x"
+                      domain={[0, 100]}
+                      tick={{ fontSize: 12, fill: tickColor }}
+                      stroke={tickColor}
+                      label={{
+                        value: tr("Score global (puissance) →", "Overall score (power) →"),
+                        position: "insideBottom",
+                        offset: -20,
+                        fill: tickColor,
+                        fontSize: 12,
+                      }}
+                    />
+                    <YAxis
+                      type="number"
+                      dataKey="y"
+                      domain={[0, 5]}
+                      tickCount={6}
+                      tick={{ fontSize: 12, fill: tickColor }}
+                      stroke={tickColor}
+                      label={{
+                        value: tr("Anti-hallucination (sûreté) →", "Anti-hallucination (safety) →"),
+                        angle: -90,
+                        position: "insideLeft",
+                        offset: 18,
+                        fill: tickColor,
+                        fontSize: 12,
+                        style: { textAnchor: "middle" },
+                      }}
+                    />
+                    <ZAxis range={[150, 150]} />
+                    <ReferenceArea
+                      x1={70}
+                      x2={100}
+                      y1={3.5}
+                      y2={5}
+                      fill="#2f6b4f"
+                      fillOpacity={0.07}
+                      stroke="none"
+                      label={{
+                        value: tr("Zone de confiance", "Trusted zone"),
+                        position: "insideTopRight",
+                        fill: "#2f6b4f",
+                        fontSize: 11,
+                      }}
+                    />
+                    <ReferenceLine x={70} stroke={gridColor} strokeDasharray="4 4" />
+                    <ReferenceLine y={3.5} stroke={gridColor} strokeDasharray="4 4" />
+                    <RechartsTooltip
+                      content={<ScatterTooltip />}
+                      isAnimationActive={false}
+                      cursor={{ strokeDasharray: "3 3" }}
+                    />
+                    <Scatter data={scatterData} isAnimationActive={false}>
+                      {scatterData.map((d, i) => (
+                        <Cell
+                          key={i}
+                          fill={d.tier ? TRUST_TIER_HEX[d.tier] : "#9ca3af"}
+                          fillOpacity={0.85}
+                        />
+                      ))}
+                      <LabelList
+                        dataKey="label"
+                        position="top"
+                        style={{ fontSize: 10, fill: tickColor }}
+                      />
+                    </Scatter>
+                  </ScatterChart>
+                </ResponsiveContainer>
               )}
             </CardContent>
           </Card>

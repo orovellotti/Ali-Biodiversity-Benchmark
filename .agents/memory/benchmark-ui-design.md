@@ -9,7 +9,7 @@ The benchmark-ui artifact (French control room for the biodiversity LLM benchmar
 
 - **Type**: Fraunces (display serif, via `.font-display`), Inter (UI), JetBrains Mono (data readouts, eyebrow labels via `.eyebrow`).
 - **Palette**: warm paper light background + deep botanical green primary + nocturne-forest dark mode. Tokens in `src/index.css`.
-- **Ochre accent** (`--ochre` token, `text-ochre`/`bg-ochre/…` utilities) is reserved for the INVERTED hallucination-risk treatment (5 = no risk). `--accent` is intentionally kept green for shadcn hover states — do not repurpose it.
+- **Ochre accent** (`--ochre` token, `text-ochre`/`bg-ochre/…` utilities) is reserved for the INVERTED hallucination-risk treatment (5 = no risk) AND, by extension, the **amber/"review required" trust tier** (justified: the trust tier is anti-hallucination-driven, so ochre = caution stays semantically consistent). The trust traffic-light uses green `#2f6b4f` / ochre `#c98a2b` / terracotta `#c2603b`. `--accent` is intentionally kept green for shadcn hover states — do not repurpose it.
 - **Motifs**: numbered sections (§01…), mono small-caps eyebrow labels, hairline rules, specimen-label cards, `.paper-grid` dotted texture.
 - Charts use a hardcoded field-naturalist hex palette (`CHART_COLORS` in results-dashboard), separate from the CSS chart vars.
 
