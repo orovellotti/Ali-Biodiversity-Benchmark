@@ -21,6 +21,9 @@ import {
   Lock,
   Unlock,
   Github,
+  Shuffle,
+  Users,
+  ListOrdered,
 } from "lucide-react";
 
 function SectionLabel({ n, children }: { n: string; children: React.ReactNode }) {
@@ -100,10 +103,10 @@ export function Landing() {
       },
       {
         icon: Gavel,
-        title: tr("Notation par une IA juge", "Scoring by an AI judge"),
+        title: tr("Notation par un panel de juges", "Scoring by a panel of judges"),
         description: tr(
-          "Une IA « juge », indépendante, note chaque réponse sur cinq critères, avec un verdict, des points forts et des points faibles — la même grille pour toutes les IA, sans favoritisme.",
-          "An independent “judge” AI scores each answer on five criteria, with a verdict, strengths and weaknesses — the same grid for every AI, with no favouritism.",
+          "Plusieurs IA « juges », indépendantes, notent les réponses à l'aveugle sur cinq critères, avec un verdict, des points forts et des points faibles — la même grille pour toutes les IA, sans favoritisme.",
+          "Several independent “judge” AIs blindly score the answers on five criteria, with a verdict, strengths and weaknesses — the same grid for every AI, with no favouritism.",
         ),
       },
       {
@@ -165,6 +168,7 @@ export function Landing() {
   const totalQuestions = config?.totalQuestions ?? 100;
   const sections = config?.topics ?? Object.keys(SECTION_META);
   const judge = config?.judgeModel;
+  const judgeCount = config?.judgeCount;
   const models =
     config?.providers?.filter((p) => p.available && p.id !== "ollama") ?? [];
   const modelsCount = config ? models.length : 5;
@@ -395,24 +399,97 @@ export function Landing() {
       {/* §04 Le juge */}
       <section className="border-t border-border bg-secondary/30">
         <div className="max-w-[1180px] mx-auto px-6 py-20">
-          <SectionLabel n="04">{tr("L'examen", "The assessment")}</SectionLabel>
+          <div className="max-w-2xl mb-12">
+            <SectionLabel n="04">{tr("L'examen", "The assessment")}</SectionLabel>
+            <h2 className="font-display text-3xl md:text-4xl font-semibold tracking-tight">
+              {tr("Un panel de juges, en aveugle", "A panel of judges, blind")}
+            </h2>
+            <p className="text-muted-foreground mt-4 leading-relaxed">
+              {tr(
+                "Pour éviter qu'une seule IA impose son avis — ou favorise les siennes —, la notation est confiée à plusieurs IA juges de fournisseurs différents. Elles ne voient jamais quel modèle a écrit quelle réponse, et comparent toutes les réponses d'une même question côte à côte.",
+                "To prevent a single AI from imposing its view — or favouring its own — scoring is entrusted to several judge AIs from different providers. They never see which model wrote which answer, and they compare all answers to a given question side by side.",
+              )}
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+            {[
+              {
+                icon: Shuffle,
+                title: tr("Réponses anonymisées", "Anonymized answers"),
+                body: tr(
+                  "Les réponses sont mélangées et étiquetées A, B, C… : le juge ignore quel modèle a écrit quoi.",
+                  "Answers are shuffled and labeled A, B, C… so the judge can't tell which model wrote what.",
+                ),
+              },
+              {
+                icon: Users,
+                title: tr("Panel multi-fournisseurs", "Multi-provider panel"),
+                body: tr(
+                  "Plusieurs IA juges notent. Une IA ne note jamais un modèle de sa propre famille, pour éviter l'auto-complaisance.",
+                  "Several judge AIs grade. An AI never scores a model from its own family, to avoid self-favouritism.",
+                ),
+              },
+              {
+                icon: ListOrdered,
+                title: tr("Notation comparative", "Comparative scoring"),
+                body: tr(
+                  "En un seul passage par question, le juge classe les réponses (1 = meilleure) et les note sur les cinq critères, face à une réponse de référence.",
+                  "In a single pass per question, the judge ranks the answers (1 = best) and scores them on the five criteria, against a reference answer.",
+                ),
+              },
+              {
+                icon: Scale,
+                title: tr("Notes agrégées", "Aggregated scores"),
+                body: tr(
+                  "Les notes des juges sont moyennées. Le classement final repose sur le rang moyen, le score global départageant les ex æquo.",
+                  "Judge scores are averaged. The final ranking is based on mean rank, with the overall score breaking ties.",
+                ),
+              },
+            ].map((m, i) => {
+              const Icon = m.icon;
+              return (
+                <div
+                  key={m.title}
+                  className="rounded-xl border border-card-border bg-card p-6 hairline-top relative"
+                >
+                  <span className="index-tag absolute top-5 right-5">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10 text-primary mb-4">
+                    <Icon className="w-5 h-5" />
+                  </span>
+                  <h3 className="font-display font-semibold text-lg">{m.title}</h3>
+                  <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
+                    {m.body}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+
           <div className="rounded-2xl border border-card-border bg-card p-8 md:p-10 flex flex-col md:flex-row gap-8 items-start">
             <span className="flex items-center justify-center w-14 h-14 rounded-xl bg-primary text-primary-foreground shrink-0">
               <Gavel className="w-6 h-6" />
             </span>
             <div>
-              <h2 className="font-display text-2xl md:text-3xl font-semibold tracking-tight">
-                {tr("Une IA qui note, en toute transparence", "An AI that scores, transparently")}
-              </h2>
+              <h3 className="font-display text-2xl md:text-3xl font-semibold tracking-tight">
+                {tr("Des verdicts explicables, pas une boîte noire", "Explainable verdicts, not a black box")}
+              </h3>
               <p className="text-muted-foreground mt-3 leading-relaxed max-w-2xl">
                 {tr(
-                  "Plutôt qu'une grille de correction rigide, c'est une intelligence artificielle dédiée qui évalue chaque réponse selon une consigne stricte et les mêmes critères pour toutes. Elle rédige un verdict argumenté, ce qui rend chaque note explicable et vérifiable, question par question.",
-                  "Rather than a rigid marking grid, a dedicated artificial intelligence evaluates each answer following a strict brief and the same criteria for all. It writes a reasoned verdict, making each score explainable and verifiable, question by question.",
+                  "Chaque juge suit une consigne stricte et la même grille pour toutes les IA, puis rédige un verdict argumenté avec points forts et points faibles. Chaque note est ainsi explicable et vérifiable, question par question.",
+                  "Each judge follows a strict brief and the same grid for every AI, then writes a reasoned verdict with strengths and weaknesses. Every score is therefore explainable and verifiable, question by question.",
                 )}
                 {judge && (
                   <>
                     {" "}
-                    {tr("Le juge utilisé par défaut est", "The default judge is")}{" "}
+                    {judgeCount && judgeCount > 1
+                      ? tr(
+                          `Le panel par défaut compte ${judgeCount} IA juges, dont`,
+                          `The default panel has ${judgeCount} judge AIs, including`,
+                        )
+                      : tr("Le juge utilisé par défaut est", "The default judge is")}{" "}
                     <span className="font-mono text-foreground">{judge}</span>.
                   </>
                 )}
