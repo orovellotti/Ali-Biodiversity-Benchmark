@@ -8,6 +8,13 @@ rule — can be costly. This project measures, in a comparable and verifiable wa
 how accurate the models are, how cautious they are, and how prone they are to
 inventing information that sounds credible but is false.
 
+**▶ Try the live tool:** https://8b754886-cda9-4b02-8f5a-68165efb0aa1-00-2tsza85kwwx3i.riker.replit.dev/
+
+[![13-model biodiversity leaderboard — results dashboard](docs/leaderboard.jpg)](https://8b754886-cda9-4b02-8f5a-68165efb0aa1-00-2tsza85kwwx3i.riker.replit.dev/)
+
+*The results dashboard: a comparative leaderboard of 13 models across all 106
+questions, judged together by the same cross-provider panel.*
+
 The project brings together three parts:
 
 | Part | Role | Location |
