@@ -169,6 +169,12 @@ export function Landing() {
   const sections = config?.topics ?? Object.keys(SECTION_META);
   const judge = config?.judgeModel;
   const judgeCount = config?.judgeCount;
+  const judgeList = judge
+    ? judge
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean)
+    : [];
   const models =
     config?.providers?.filter((p) => p.available && p.id !== "ollama") ?? [];
   const modelsCount = config ? models.length : 5;
@@ -481,19 +487,41 @@ export function Landing() {
                   "Chaque juge suit une consigne stricte et la même grille pour toutes les IA, puis rédige un verdict argumenté avec points forts et points faibles. Chaque note est ainsi explicable et vérifiable, question par question.",
                   "Each judge follows a strict brief and the same grid for every AI, then writes a reasoned verdict with strengths and weaknesses. Every score is therefore explainable and verifiable, question by question.",
                 )}
-                {judge && (
+                {judgeList.length > 0 && (
                   <>
                     {" "}
-                    {judgeCount && judgeCount > 1
+                    {judgeList.length > 1
                       ? tr(
-                          `Le panel par défaut compte ${judgeCount} IA juges, dont`,
-                          `The default panel has ${judgeCount} judge AIs, including`,
+                          `La notation est confiée à un panel de ${judgeList.length} IA juges, de fournisseurs différents.`,
+                          `Scoring is entrusted to a panel of ${judgeList.length} judge AIs, from different providers.`,
                         )
-                      : tr("Le juge utilisé par défaut est", "The default judge is")}{" "}
-                    <span className="font-mono text-foreground">{judge}</span>.
+                      : tr(
+                          "Le juge utilisé par défaut est :",
+                          "The default judge is:",
+                        )}
                   </>
                 )}
               </p>
+              {judgeList.length > 0 && (
+                <div className="mt-6">
+                  <div className="eyebrow mb-3">
+                    {judgeList.length > 1
+                      ? tr(`Le panel de juges (${judgeList.length})`, `The judge panel (${judgeList.length})`)
+                      : tr("Modèle juge", "Judge model")}
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {judgeList.map((j) => (
+                      <span
+                        key={j}
+                        className="inline-flex items-center gap-1.5 text-xs font-mono px-2.5 py-1 rounded-full border border-primary/30 bg-primary/5 text-foreground"
+                      >
+                        <Gavel className="w-3 h-3 text-primary" />
+                        {j}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
               {models.length > 0 && (
                 <div className="mt-6">
                   <div className="eyebrow mb-3">{tr("Modèles évalués par défaut", "Models evaluated by default")}</div>
