@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { toast } from "@/hooks/use-toast";
 import { useI18n } from "@/lib/i18n";
-import { Share2, Link2 } from "lucide-react";
+import { Share2, Link2, ImageDown } from "lucide-react";
 
 export function XIcon({ className }: { className?: string }) {
   return (
@@ -52,6 +52,12 @@ export interface ShareMenuProps {
   /** Custom trigger element. Falls back to a "Share" text button. */
   trigger?: ReactNode;
   align?: "start" | "center" | "end";
+  /**
+   * Optional handler for a "Download share card" item. When provided, an extra
+   * menu item is shown at the top that lets the user export a branded PNG image
+   * (e.g. the leaderboard summary) for richer social posts. May be async.
+   */
+  onDownloadCard?: () => void | Promise<void>;
 }
 
 /**
@@ -66,8 +72,24 @@ export function ShareMenu({
   title = "ALI Biodiversity Benchmark",
   trigger,
   align = "start",
+  onDownloadCard,
 }: ShareMenuProps) {
   const { tr } = useI18n();
+
+  const handleDownloadCard = async () => {
+    if (!onDownloadCard) return;
+    try {
+      await onDownloadCard();
+    } catch {
+      toast({
+        title: tr("Échec de la génération", "Generation failed"),
+        description: tr(
+          "Impossible de générer la carte. Réessayez.",
+          "Could not generate the card. Please try again.",
+        ),
+      });
+    }
+  };
 
   const openIntent = (href: string) =>
     window.open(href, "_blank", "noopener,noreferrer");
@@ -122,7 +144,16 @@ export function ShareMenu({
           </button>
         )}
       </DropdownMenuTrigger>
-      <DropdownMenuContent align={align} className="w-52">
+      <DropdownMenuContent align={align} className="w-56">
+        {onDownloadCard && (
+          <>
+            <DropdownMenuItem onClick={handleDownloadCard}>
+              <ImageDown className="w-4 h-4" />
+              {tr("Télécharger la carte", "Download share card")}
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+          </>
+        )}
         {nativeShareSupported && (
           <>
             <DropdownMenuItem onClick={handleNativeShare}>

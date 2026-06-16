@@ -9,6 +9,8 @@ import {
 import { SiteHeader } from "@/components/site-header";
 import { PrintButton } from "@/components/controls";
 import { ShareMenu } from "@/components/share-menu";
+import { downloadShareCard } from "@/lib/share-card";
+import { toast } from "@/hooks/use-toast";
 import { useI18n } from "@/lib/i18n";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -120,6 +122,65 @@ export function RunDetail() {
       : `${headline}${winnerPart}`;
   })();
 
+  // Branded PNG "share card" of the leaderboard summary — only available once a
+  // completed run has results. Built here so all i18n strings are resolved.
+  const canDownloadCard = !!(
+    run.status === "completed" && results?.summaryByModel?.length
+  );
+  const handleDownloadCard = async () => {
+    if (!results?.summaryByModel?.length) return;
+    const judged = !run.noEval && !run.dryRun;
+    const statsParts = [
+      modelCount
+        ? tr(`${modelCount} modèles d'IA`, `${modelCount} AI models`)
+        : null,
+      questionCount
+        ? tr(`${questionCount} questions`, `${questionCount} questions`)
+        : null,
+      judged && run.judgeModel
+        ? tr(`juge : ${run.judgeModel}`, `judge: ${run.judgeModel}`)
+        : null,
+    ].filter(Boolean);
+    const top = results.summaryByModel.slice(0, 5).map((m) => ({
+      rank: m.rank,
+      model: m.model,
+      provider: m.provider,
+      meanRank: m.meanRank,
+      overallScore: m.overallScore,
+    }));
+    const winnerSummary = judged ? results.summaryByModel[0] : undefined;
+    await downloadShareCard({
+      eyebrow: tr("Benchmark biodiversité", "Biodiversity benchmark"),
+      title: tr("Benchmark Biodiversité ALI", "ALI Biodiversity Benchmark"),
+      statsLine: statsParts.join("  ·  "),
+      winnerLabel: winnerSummary
+        ? tr("Modèle le plus fiable", "Most reliable model")
+        : null,
+      winnerName: winnerSummary?.model ?? null,
+      winnerSub:
+        winnerSummary && winnerSummary.meanRank != null
+          ? tr(
+              `Rang moyen ${winnerSummary.meanRank.toFixed(2)}`,
+              `Mean rank ${winnerSummary.meanRank.toFixed(2)}`,
+            )
+          : null,
+      rankingTitle: tr("Classement des modèles", "Model ranking"),
+      meanRankLabel: tr("Rang moyen", "Mean rank"),
+      scoreLabel: tr("Score global", "Overall score"),
+      showScore: judged,
+      models: top,
+      footer: `${formatDateTime(run.createdAt)}  ·  ${shareUrl}`,
+      filename: `ali-benchmark-${run.id.split("-").pop() || "run"}.png`,
+    });
+    toast({
+      title: tr("Carte téléchargée", "Card downloaded"),
+      description: tr(
+        "Joignez-la à votre publication LinkedIn pour un meilleur aperçu.",
+        "Attach it to your LinkedIn post for a richer preview.",
+      ),
+    });
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader maxWidth="max-w-[1400px]">
@@ -127,6 +188,7 @@ export function RunDetail() {
           url={shareUrl}
           text={shareText}
           align="end"
+          onDownloadCard={canDownloadCard ? handleDownloadCard : undefined}
           trigger={
             <button
               type="button"
