@@ -8,11 +8,12 @@ import {
 } from "@workspace/api-client-react";
 import { SiteHeader } from "@/components/site-header";
 import { PrintButton } from "@/components/controls";
+import { ShareMenu } from "@/components/share-menu";
 import { useI18n } from "@/lib/i18n";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ChevronLeft, Loader2, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { ChevronLeft, Loader2, AlertTriangle, CheckCircle2, Share2 } from "lucide-react";
 import { ResultsDashboard } from "./results-dashboard";
 
 export function RunDetail() {
@@ -86,9 +87,57 @@ export function RunDetail() {
   const progress =
     run.total > 0 ? Math.round((run.completed / run.total) * 100) : 0;
 
+  // Shareable deep link to this run, with a summary text for social posts.
+  const shareUrl =
+    typeof window !== "undefined" ? window.location.href : "";
+  // Only claim a "top model" when the run was actually judged.
+  const winner =
+    !run.noEval && !run.dryRun
+      ? results?.summaryByModel?.[0]?.model
+      : undefined;
+  const modelCount = run.models.length;
+  const questionCount = run.total || run.limit || undefined;
+  const shareText = (() => {
+    const counts = [
+      modelCount
+        ? tr(`${modelCount} modèles d'IA`, `${modelCount} AI models`)
+        : null,
+      questionCount
+        ? tr(`${questionCount} questions`, `${questionCount} questions`)
+        : null,
+    ]
+      .filter(Boolean)
+      .join(tr(" · ", " · "));
+    const headline = tr(
+      "Benchmark Biodiversité ALI",
+      "ALI Biodiversity Benchmark",
+    );
+    const winnerPart = winner
+      ? tr(` — modèle le plus fiable : ${winner}.`, ` — top model: ${winner}.`)
+      : ".";
+    return counts
+      ? `${headline} : ${counts}${winnerPart}`
+      : `${headline}${winnerPart}`;
+  })();
+
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader maxWidth="max-w-[1400px]">
+        <ShareMenu
+          url={shareUrl}
+          text={shareText}
+          align="end"
+          trigger={
+            <button
+              type="button"
+              className="flex items-center gap-1.5 px-2.5 h-[30px] rounded-md bg-secondary text-secondary-foreground/80 hover:bg-secondary/70 transition-colors text-[12px] print:hidden"
+              aria-label={tr("Partager ce run", "Share this run")}
+            >
+              <Share2 className="w-3.5 h-3.5" />
+              {tr("Partager", "Share")}
+            </button>
+          }
+        />
         <PrintButton disabled={isActive} />
       </SiteHeader>
 

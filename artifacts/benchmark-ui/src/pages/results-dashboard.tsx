@@ -384,134 +384,137 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
         </Card>
       )}
 
-      {/* Overview Rankings — specimen cards */}
+      {/* Model ranking — compact, screenshot-friendly leaderboard */}
       <div>
         <div className="eyebrow mb-1.5">{tr("Classement", "Ranking")}</div>
-        <h2 className="font-display text-2xl font-semibold tracking-tight mb-4">
+        <h2 className="font-display text-2xl font-semibold tracking-tight mb-1">
           {tr("Classement des modèles", "Model ranking")}
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {results.summaryByModel.map((modelSummary, index) => {
-            const finalRank = modelSummary.rank;
-            const isTop = finalRank === 1;
-            const isTie =
-              finalRank != null && (rankCounts.get(finalRank) ?? 0) > 1;
-            const rankText =
-              finalRank != null ? String(finalRank).padStart(2, "0") : "—";
-            return (
-            <Card
-              key={modelSummary.model}
-              className={`relative overflow-hidden hairline-top pl-1.5 ${isTop ? "border-primary shadow-md" : ""} ${modelSummary.openSource ? "bg-primary/[0.035]" : ""}`}
-            >
-              {isTop && (
-                <div className="absolute top-0 left-0 right-0 h-1 bg-primary" />
-              )}
-              {/* Open vs proprietary accent stripe */}
-              <div
-                className={`absolute top-0 left-0 bottom-0 w-1.5 ${modelSummary.openSource ? "bg-primary" : "bg-muted-foreground/30"}`}
-                aria-hidden="true"
-              />
-              <CardContent className="p-5">
-                <div className="flex justify-between items-start mb-3">
-                  <span className="index-tag">
-                    {tr("rang", "rank")} {rankText}
-                    {isTie && (
-                      <span className="ml-1 text-primary">{tr("(ex æquo)", "(tied)")}</span>
-                    )}
-                  </span>
-                  <Badge variant={isTop ? "default" : "secondary"}>
-                    {finalRank != null ? `#${finalRank}` : "—"}
-                  </Badge>
-                </div>
-                <div className="font-display font-semibold text-lg leading-tight">
-                  {modelSummary.model}
-                </div>
-                {/* Open / proprietary status — shown for both, strong visual contrast */}
-                <div className="mt-2 mb-3">
-                  {modelSummary.openSource ? (
-                    <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-primary text-primary-foreground">
-                      <Unlock className="w-3.5 h-3.5" />
-                      {tr("Open source", "Open source")}
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full border border-border bg-background text-muted-foreground">
-                      <Lock className="w-3.5 h-3.5" />
-                      {tr("Propriétaire", "Proprietary")}
-                    </span>
+        <p className="text-sm text-muted-foreground mb-4">
+          {tr(
+            `${results.summaryByModel.length} modèles · classés par rang moyen (plus bas = meilleur)`,
+            `${results.summaryByModel.length} models · ranked by mean rank (lower = better)`,
+          )}
+        </p>
+        <Card className="overflow-hidden hairline-top">
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-12 text-center">#</TableHead>
+                  <TableHead>{tr("Modèle", "Model")}</TableHead>
+                  <TableHead className="text-right whitespace-nowrap">
+                    {tr("Rang moyen", "Mean rank")}
+                  </TableHead>
+                  {showVerdict && (
+                    <TableHead className="min-w-[150px]">
+                      {tr("Score global", "Overall score")}
+                    </TableHead>
                   )}
-                </div>
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="text-xs font-mono text-muted-foreground">
-                    {modelSummary.provider}
-                  </span>
-                  {(modelSummary.size || modelSummary.params) && (
-                    <Badge variant="outline" className="text-xs">
-                      {modelSummary.size
-                        ? t(`size_${modelSummary.size}`)
-                        : modelSummary.params}
-                      {modelSummary.size && modelSummary.params
-                        ? ` · ${modelSummary.params}`
-                        : ""}
-                    </Badge>
-                  )}
-                </div>
-
-                {/* Headline metric is the comparative rang moyen (lower =
-                    better); the absolute /100 score is kept as secondary. */}
-                <div className="mb-4">
-                  {modelSummary.meanRank != null ? (
-                    <>
-                      <div className="font-display text-4xl font-semibold text-primary tabular-nums leading-none">
-                        {modelSummary.meanRank.toFixed(2)}
-                      </div>
-                      <div className="text-xs text-muted-foreground mt-1">
-                        {tr("rang moyen (plus bas = meilleur)", "mean rank (lower = better)")}
-                      </div>
-                    </>
-                  ) : (
-                    <div className="font-display text-4xl font-semibold text-muted-foreground tabular-nums leading-none">
-                      N/A
-                    </div>
-                  )}
-                </div>
-
-                <div className="space-y-1.5 pt-3 border-t border-border">
-                  {modelSummary.overallScore != null && (
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs text-muted-foreground">
-                        {tr("Score global", "Overall score")}
-                      </span>
-                      <span className="text-xs font-mono font-medium tabular-nums">
-                        {modelSummary.overallScore.toFixed(1)}/100
-                      </span>
-                    </div>
-                  )}
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-muted-foreground">
-                      {tr("Réponses en échec", "Failed answers")}
-                    </span>
-                    <span
-                      className={`text-xs font-mono font-medium tabular-nums ${modelSummary.nErrors > 0 ? "text-destructive" : ""}`}
+                  <TableHead className="text-right whitespace-nowrap">
+                    {tr("Échecs", "Failed")}
+                  </TableHead>
+                  <TableHead className="text-right whitespace-nowrap">
+                    {tr("Latence", "Latency")}
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {results.summaryByModel.map((m) => {
+                  const finalRank = m.rank;
+                  const isTop = finalRank === 1;
+                  const isTie =
+                    finalRank != null && (rankCounts.get(finalRank) ?? 0) > 1;
+                  const sizeLabel = m.size
+                    ? t(`size_${m.size}`)
+                    : m.params ?? "";
+                  const sizeSuffix =
+                    m.size && m.params ? ` · ${m.params}` : "";
+                  return (
+                    <TableRow
+                      key={m.model}
+                      className={isTop ? "bg-primary/[0.06]" : undefined}
                     >
-                      {modelSummary.nErrors} / {modelSummary.nQuestions}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-muted-foreground">
-                      {tr("Temps de réponse moy.", "Avg. response time")}
-                    </span>
-                    <span className="text-xs font-mono font-medium tabular-nums">
-                      {modelSummary.avgLatency != null
-                        ? `${modelSummary.avgLatency.toFixed(1)}s`
-                        : "N/A"}
-                    </span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            );
-          })}
-        </div>
+                      <TableCell className="text-center">
+                        <span
+                          className={`inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-mono font-semibold tabular-nums ${isTop ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"}`}
+                        >
+                          {finalRank ?? "—"}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          {isTop && (
+                            <Award className="w-4 h-4 text-primary shrink-0" />
+                          )}
+                          <span className="font-display font-semibold leading-tight">
+                            {m.model}
+                          </span>
+                          {m.openSource ? (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-primary text-primary-foreground">
+                              <Unlock className="w-3 h-3" />
+                              {tr("Open source", "Open source")}
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full border border-border text-muted-foreground">
+                              <Lock className="w-3 h-3" />
+                              {tr("Propriétaire", "Proprietary")}
+                            </span>
+                          )}
+                          {isTie && (
+                            <span className="text-[10px] text-primary">
+                              {tr("(ex æquo)", "(tied)")}
+                            </span>
+                          )}
+                        </div>
+                        {(m.provider || sizeLabel) && (
+                          <div className="text-[11px] font-mono text-muted-foreground mt-0.5">
+                            {m.provider}
+                            {sizeLabel && ` · ${sizeLabel}${sizeSuffix}`}
+                          </div>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-right font-mono tabular-nums font-medium whitespace-nowrap">
+                        {m.meanRank != null ? m.meanRank.toFixed(2) : "N/A"}
+                      </TableCell>
+                      {showVerdict && (
+                        <TableCell>
+                          {m.overallScore != null ? (
+                            <div className="flex items-center gap-2">
+                              <div className="flex-1 h-1.5 rounded-full bg-muted overflow-hidden min-w-[60px]">
+                                <div
+                                  className="h-full rounded-full bg-primary"
+                                  style={{
+                                    width: `${Math.max(0, Math.min(100, m.overallScore))}%`,
+                                  }}
+                                />
+                              </div>
+                              <span className="text-xs font-mono tabular-nums font-medium w-12 text-right">
+                                {m.overallScore.toFixed(1)}
+                              </span>
+                            </div>
+                          ) : (
+                            <span className="text-xs text-muted-foreground">—</span>
+                          )}
+                        </TableCell>
+                      )}
+                      <TableCell
+                        className={`text-right font-mono tabular-nums whitespace-nowrap ${m.nErrors > 0 ? "text-destructive" : "text-muted-foreground"}`}
+                      >
+                        {m.nErrors} / {m.nQuestions}
+                      </TableCell>
+                      <TableCell className="text-right font-mono tabular-nums text-muted-foreground whitespace-nowrap">
+                        {m.avgLatency != null
+                          ? `${m.avgLatency.toFixed(1)}s`
+                          : "N/A"}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </div>
+        </Card>
       </div>
 
       {!run.noEval && !run.dryRun && (
