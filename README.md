@@ -1,86 +1,84 @@
 # ALI Biodiversity Benchmark
 
-Banc d'essai indépendant qui compare la fiabilité de plusieurs intelligences
-artificielles (OpenAI, Anthropic, Mistral, ainsi que des modèles *open-weight* via
-OpenRouter) sur les **106 questions** du *Biodiversity Judgment Benchmark*. Sur des
-sujets de biodiversité et de réglementation environnementale, une réponse fausse —
-ou une règle inventée — peut coûter cher : ce projet mesure, de façon comparable et
-vérifiable, l'exactitude des modèles, leur prudence, et leur tendance à inventer des
-informations crédibles mais fausses.
+An independent benchmark that compares how reliably different artificial
+intelligences (OpenAI, Anthropic, Mistral, plus *open-weight* models via
+OpenRouter) handle the **106 questions** of the *Biodiversity Judgment Benchmark*.
+On biodiversity and environmental-regulation topics, a wrong answer — or a made-up
+rule — can be costly. This project measures, in a comparable and verifiable way,
+how accurate the models are, how cautious they are, and how prone they are to
+inventing information that sounds credible but is false.
 
-Le projet réunit trois éléments :
+The project brings together three parts:
 
-| Élément | Rôle | Emplacement |
+| Part | Role | Location |
 |---|---|---|
-| **Interface web** | Salle de contrôle (FR/EN) : lancer des runs, suivre la progression, explorer les classements, l'Arène et la base de questions. | `artifacts/benchmark-ui` |
-| **Serveur d'API** | Pilote la CLI Python, lit les résultats sur disque, expose `/api`. | `artifacts/api-server` |
-| **CLI Python** | Le moteur : interroge les modèles, fait juger les réponses, produit les rapports. | `biodiversity-benchmark/` |
+| **Web interface** | Control room (FR/EN): launch runs, watch progress, explore rankings, the Arena, and the question browser. | `artifacts/benchmark-ui` |
+| **API server** | Drives the Python CLI, reads results from disk, exposes `/api`. | `artifacts/api-server` |
+| **Python CLI** | The engine: queries the models, has the answers judged, produces the reports. | `biodiversity-benchmark/` |
 
-## Démarrage rapide
+## Quick start
 
-> Les applications tournent via des *workflows* Replit, pas via `pnpm dev` à la
-> racine. Utilisez le panneau d'aperçu ou redémarrez les workflows au besoin.
+> The apps run via Replit *workflows*, not via `pnpm dev` at the root. Use the
+> preview pane or restart the workflows as needed.
 
-- **Interface web + API** : les workflows `artifacts/benchmark-ui: web` et
-  `artifacts/api-server: API Server` servent l'application (aperçu sur `/`).
-- **Vérifier la CLI sans dépenser de crédits** :
+- **Web interface + API**: the `artifacts/benchmark-ui: web` and
+  `artifacts/api-server: API Server` workflows serve the app (preview at `/`).
+- **Check the CLI without spending credits**:
   ```bash
   cd biodiversity-benchmark && python main.py --dry-run --limit 5
   ```
-- **Un vrai test court** :
+- **A real short test**:
   ```bash
   cd biodiversity-benchmark && python main.py --models openai,mistral --limit 10
   ```
 
-La documentation complète de la CLI (dataset, secrets, options, lecture des
-résultats) est dans **[`biodiversity-benchmark/README.md`](biodiversity-benchmark/README.md)**.
+Full CLI documentation (dataset, secrets, options, reading the results) is in
+**[`biodiversity-benchmark/README.md`](biodiversity-benchmark/README.md)**.
 
-## Méthodologie d'évaluation (en bref)
+## Evaluation methodology (in brief)
 
-- **Classement comparatif.** Pour chaque question, un juge classe ensemble toutes
-  les réponses (anonymisées et mélangées). Le classement final trie par **rang
-  moyen** croissant (plus bas = meilleur) ; le score sur 100 est secondaire.
-- **Panel de juges cross-fournisseurs** (défaut : `openai:gpt-4o` +
-  `anthropic:claude-sonnet-4-5`), surchargeable via `BENCHMARK_JUDGES`.
-- **Anti-auto-évaluation** : un modèle n'est jamais noté par un juge de sa propre
-  famille.
-- **`regulatory_hallucination_risk` est inversé** : 5 = faible risque, 0 = fort
-  risque. L'interface l'étiquette pour qu'un score plus élevé se lise toujours
-  comme « meilleur ».
+- **Comparative ranking.** For each question, a judge ranks all the answers
+  together (anonymized and shuffled). The final ranking sorts by **mean rank**,
+  ascending (lower = better); the score out of 100 is secondary.
+- **Cross-provider judge panel** (default: `openai:gpt-4o` +
+  `anthropic:claude-sonnet-4-5`), overridable via `BENCHMARK_JUDGES`.
+- **Anti-self-evaluation**: a model is never scored by a judge from its own
+  family.
+- **`regulatory_hallucination_risk` is inverted**: 5 = low risk, 0 = high risk.
+  The interface labels it so that a higher score always reads as "better".
 
-## Le classement « équitable » 13 modèles
+## The "fair" 13-model leaderboard
 
-Le run de référence compare **13 modèles** sur l'ensemble des 106 questions, tous
-jugés ensemble par le même panel comparatif — la seule façon d'obtenir un
-classement juste (les modèles ne sont comparables que s'ils sont notés dans le même
-appel de classement).
+The reference run compares **13 models** across all 106 questions, all judged
+together by the same comparative panel — the only way to get a fair ranking
+(models are only comparable when scored within the same ranking call).
 
-Principe d'économie de crédits : **on ne relance un modèle que si c'est
-nécessaire** (questions modifiées, nouveau modèle ajouté, ou changement du juge).
-Les réponses déjà générées sont relues sur disque, jamais recalculées.
+Credit-saving principle: **a model is only re-run when necessary** (questions
+changed, a new model added, or the judge changed). Already-generated answers are
+read back from disk, never recomputed.
 
-### Reproduire ou étendre le classement
+### Reproduce or extend the leaderboard
 
-Le pilote `biodiversity-benchmark/fair13_chunk.py` génère et juge un classement
-multi-modèles de façon **résistante aux pannes et reprenable** :
+The `biodiversity-benchmark/fair13_chunk.py` driver generates and judges a
+multi-model leaderboard in a **crash-safe, resumable** way:
 
-- génération en parallèle (concurrence limitée à 3), chaque réponse écrite sur
-  disque immédiatement ;
-- une reprise saute les couples `(modèle, question)` déjà réussis — **aucun
-  crédit n'est dépensé deux fois** ;
-- évaluation reprenable à la question près ;
-- réutilise les réponses déjà stockées (`REUSE_SRC`) au lieu de les régénérer.
+- parallel generation (concurrency capped at 3), each answer written to disk
+  immediately;
+- a resume skips `(model, question)` pairs already completed — **no credit is
+  ever spent twice**;
+- evaluation is resumable at the per-question level;
+- it reuses already-stored answers (`REUSE_SRC`) instead of regenerating them.
 
-Pour les runs longs (≈ 2 h), il est lancé par lots `--offset` via un *workflow*
-Replit persistant qui survit aux interruptions, puis les lots sont concaténés en un
-seul run consolidé que l'interface affiche comme classement unique.
+For long runs (≈ 2 h), it is launched in `--offset` batches via a persistent
+Replit *workflow* that survives interruptions, then the batches are concatenated
+into a single consolidated run that the interface shows as one leaderboard.
 
-> ⚠️ **Quotas.** Une clé d'API en palier gratuit à **quota nul** échoue (HTTP 429) :
-> ses réponses sont vides et le modèle est exclu du classement. Vérifiez que les
-> clés utilisées comme **juges** disposent d'un quota payant.
+> ⚠️ **Quotas.** An API key on a free tier with a **zero quota** fails (HTTP 429):
+> its answers come back empty and the model is excluded from the ranking. Make
+> sure the keys used as **judges** have a paid quota.
 
-## Architecture et préférences
+## Architecture and preferences
 
-L'architecture détaillée (contrat OpenAPI, persistance fichier, Arène, traduction
-EN, garde-fous de crédits, i18n…) et les préférences de fonctionnement sont
-documentées dans **[`replit.md`](replit.md)** à la racine.
+The detailed architecture (OpenAPI contract, file-based persistence, Arena, EN
+translation, credit safeguards, i18n…) and the operating preferences are
+documented in **[`replit.md`](replit.md)** at the root.
