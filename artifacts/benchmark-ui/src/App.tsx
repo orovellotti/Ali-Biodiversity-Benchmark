@@ -12,6 +12,7 @@ import { Questions } from "@/pages/questions";
 import { Compare } from "@/pages/compare";
 import { Arena } from "@/pages/arena";
 import { Review } from "@/pages/review";
+import { Methodology } from "@/pages/methodology";
 import { Contact } from "@/pages/contact";
 import { ADMIN_TOKEN_KEY } from "@/lib/admin";
 
@@ -37,6 +38,7 @@ function Router() {
       <Route path="/comparer" component={Compare} />
       <Route path="/arena" component={Arena} />
       <Route path="/revue" component={Review} />
+      <Route path="/methode" component={Methodology} />
       <Route path="/contact" component={Contact} />
       <Route path="/runs/:id" component={RunDetail} />
       <Route component={NotFound} />

@@ -28,6 +28,7 @@ const DATA_LABELS: Record<string, { fr: string; en: string }> = {
   },
   moral_dilemmas: { fr: "Dilemmes moraux", en: "Moral dilemmas" },
   factual_trap: { fr: "Pièges factuels", en: "Factual traps" },
+  taxonomy_expert: { fr: "Taxonomie experte", en: "Expert taxonomy" },
 
   // Anciens topics (jeu 800 questions)
   taxonomie: { fr: "Taxonomie", en: "Taxonomy" },
