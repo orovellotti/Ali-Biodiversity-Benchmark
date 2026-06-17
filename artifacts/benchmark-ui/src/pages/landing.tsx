@@ -24,6 +24,9 @@ import {
   Shuffle,
   Users,
   ListOrdered,
+  ClipboardCheck,
+  Eye,
+  Trophy,
 } from "lucide-react";
 
 function SectionLabel({ n, children }: { n: string; children: React.ReactNode }) {
@@ -230,8 +233,8 @@ export function Landing() {
               </Link>
             </Button>
             <Button size="lg" variant="outline" asChild>
-              <Link href="/questions">
-                <BookOpen className="w-4 h-4 mr-2" /> {tr("Voir les questions", "View the questions")}
+              <Link href="/revue">
+                <ClipboardCheck className="w-4 h-4 mr-2" /> {tr("Évaluer les réponses", "Score the answers")}
               </Link>
             </Button>
             <Button size="lg" variant="outline" asChild>
@@ -542,11 +545,81 @@ export function Landing() {
         </div>
       </section>
 
-      {/* §05 Modèles propriétaires & open source */}
+      {/* §05 Évaluation communautaire */}
       <section className="border-t border-border">
         <div className="max-w-[1180px] mx-auto px-6 py-20">
           <div className="max-w-2xl mb-12">
-            <SectionLabel n="05">{tr("Les modèles", "The models")}</SectionLabel>
+            <SectionLabel n="05">{tr("L'évaluation communautaire", "Community review")}</SectionLabel>
+            <h2 className="font-display text-3xl md:text-4xl font-semibold tracking-tight">
+              {tr("À votre tour de juger", "Your turn to judge")}
+            </h2>
+            <p className="text-muted-foreground mt-4 leading-relaxed">
+              {tr(
+                "Les IA juges notent à l'aveugle. Mais qu'en pensez-vous, vous ? Lisez une question tirée au hasard et la réponse de chaque modèle, puis notez-les sur les cinq mêmes critères. Vos notes alimentent un classement « humain » communautaire, à confronter au verdict des juges IA.",
+                "The judge AIs score blind. But what do you think? Read a randomly drawn question and each model's answer, then score them on the same five criteria. Your scores feed a community “human” leaderboard, to set against the AI judges' verdict.",
+              )}
+            </p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-5 mb-8">
+            {[
+              {
+                icon: ClipboardCheck,
+                title: tr("Les mêmes cinq critères", "The same five criteria"),
+                body: tr(
+                  "Vous notez chaque réponse de 0 à 5 sur exactement la grille des juges IA : exactitude, prudence, justification, sources, et risque d'invention.",
+                  "You score each answer from 0 to 5 on the exact grid the judge AIs use: accuracy, caution, justification, sources, and fabrication risk.",
+                ),
+              },
+              {
+                icon: Eye,
+                title: tr("Modèles à découvert", "Models in plain sight"),
+                body: tr(
+                  "Contrairement aux juges IA, vous voyez quel modèle a écrit quoi. Aucune requête n'est envoyée : vous notez des réponses déjà enregistrées.",
+                  "Unlike the judge AIs, you see which model wrote what. No request is sent: you score answers that are already stored.",
+                ),
+              },
+              {
+                icon: Trophy,
+                title: tr("Un classement communautaire", "A community leaderboard"),
+                body: tr(
+                  "Toutes les notes sont agrégées en un score humain par modèle, ouvert et anonyme — un contrepoint humain au verdict des machines.",
+                  "All scores are aggregated into a human score per model, open and anonymous — a human counterpoint to the machines' verdict.",
+                ),
+              },
+            ].map((m, i) => {
+              const Icon = m.icon;
+              return (
+                <div
+                  key={m.title}
+                  className="rounded-xl border border-card-border bg-card p-6 hairline-top relative"
+                >
+                  <span className="index-tag absolute top-5 right-5">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10 text-primary mb-4">
+                    <Icon className="w-5 h-5" />
+                  </span>
+                  <h3 className="font-display font-semibold text-lg">{m.title}</h3>
+                  <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
+                    {m.body}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+          <Button size="lg" asChild>
+            <Link href="/revue">
+              <ClipboardCheck className="w-4 h-4 mr-2" /> {tr("Évaluer les réponses", "Score the answers")}
+            </Link>
+          </Button>
+        </div>
+      </section>
+
+      {/* §06 Modèles propriétaires & open source */}
+      <section className="border-t border-border bg-secondary/30">
+        <div className="max-w-[1180px] mx-auto px-6 py-20">
+          <div className="max-w-2xl mb-12">
+            <SectionLabel n="06">{tr("Les modèles", "The models")}</SectionLabel>
             <h2 className="font-display text-3xl md:text-4xl font-semibold tracking-tight">
               {tr(
                 "IA propriétaires et IA ouvertes, côte à côte",
@@ -607,14 +680,19 @@ export function Landing() {
           </h2>
           <p className="text-muted-foreground mt-5 max-w-xl mx-auto leading-relaxed">
             {tr(
-              "Explorez les classements des modèles, les graphiques comparatifs par famille et difficulté, et le détail des réponses question par question.",
-              "Explore the model rankings, the comparative charts by family and difficulty, and the answer details question by question.",
+              "Explorez les classements des modèles, les graphiques comparatifs par famille et difficulté, et le détail des réponses question par question — puis donnez votre propre verdict.",
+              "Explore the model rankings, the comparative charts by family and difficulty, and the answer details question by question — then give your own verdict.",
             )}
           </p>
           <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
             <Button size="lg" asChild>
               <Link href="/resultats">
                 <BarChart3 className="w-4 h-4 mr-2" /> {tr("Voir les résultats", "View the results")}
+              </Link>
+            </Button>
+            <Button size="lg" variant="outline" asChild>
+              <Link href="/revue">
+                <ClipboardCheck className="w-4 h-4 mr-2" /> {tr("Évaluer les réponses", "Score the answers")}
               </Link>
             </Button>
             <Button size="lg" variant="outline" asChild>
