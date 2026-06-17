@@ -596,6 +596,21 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
                   <TableHead className="text-right whitespace-nowrap">
                     {tr("Latence", "Latency")}
                   </TableHead>
+                  <TableHead className="text-right whitespace-nowrap">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="inline-flex items-center gap-1 cursor-help">
+                          {tr("Prix*", "Price*")}
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        {tr(
+                          "Prix indicatif en USD par million de jetons (moyenne des tarifs publics entrée/sortie). Les tarifs évoluent.",
+                          "Indicative price in USD per million tokens (average of public input/output rates). Rates change over time.",
+                        )}
+                      </TooltipContent>
+                    </Tooltip>
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -707,6 +722,11 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
                         {m.avgLatency != null
                           ? `${m.avgLatency.toFixed(1)}s`
                           : "N/A"}
+                      </TableCell>
+                      <TableCell className="text-right font-mono tabular-nums text-muted-foreground whitespace-nowrap">
+                        {m.pricePerMTok != null
+                          ? `$${m.pricePerMTok.toFixed(2)}`
+                          : "—"}
                       </TableCell>
                     </TableRow>
                   );
@@ -897,7 +917,7 @@ export function ResultsDashboard({ results, run }: { results: RunResults; run: R
                 variant="ghost" 
                 size="icon" 
                 className="h-8 w-8"
-                onClick={() => exportToCSV("scores-dimensions.csv", results.summaryByModel, ["model", "size", "params", "accuracy", "uncertaintyHandling", "justificationQuality", "sourceAwareness", "regulatoryHallucinationRisk"])}
+                onClick={() => exportToCSV("scores-dimensions.csv", results.summaryByModel, ["model", "size", "params", "pricePerMTok", "accuracy", "uncertaintyHandling", "justificationQuality", "sourceAwareness", "regulatoryHallucinationRisk"])}
               >
                 <Download className="w-4 h-4" />
               </Button>

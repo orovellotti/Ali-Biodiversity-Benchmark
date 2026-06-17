@@ -19,6 +19,11 @@ export interface ModelSummary {
      * @nullable
      */
   params?: string | null;
+  /**
+     * Indicative blended price in USD per 1 million tokens (simple average of public input/output list prices); null when unknown. List prices change over time, so the UI labels this as indicative.
+     * @nullable
+     */
+  pricePerMTok?: number | null;
   /** True for open-source / open-weight models (served via OpenRouter or Ollama); false for proprietary API models */
   openSource: boolean;
   /**

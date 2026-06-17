@@ -8,7 +8,7 @@ import type {
 } from "@workspace/api-zod";
 import { runDir } from "./paths";
 import { getRun } from "./runner";
-import { modelSize, modelParams, isOpenSource } from "./config";
+import { modelSize, modelParams, modelPrice, isOpenSource } from "./config";
 
 interface RawRow {
   question_id?: string;
@@ -132,6 +132,7 @@ function summarizeModels(rows: ResultRow[]): ModelSummary[] {
       model: first.model,
       size: modelSize(first.model),
       params: modelParams(first.model),
+      pricePerMTok: modelPrice(first.model),
       openSource: isOpenSource(first.provider),
       rank: null,
       meanRank: avg(collect(group, "rankInQuestion")),

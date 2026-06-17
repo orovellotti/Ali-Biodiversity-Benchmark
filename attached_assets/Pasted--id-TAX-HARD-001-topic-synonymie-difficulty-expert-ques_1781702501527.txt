@@ -1,0 +1,221 @@
+[
+  {
+    "id": "TAX-HARD-001",
+    "topic": "synonymie",
+    "difficulty": "expert",
+    "question": "Le taxon végétal Armeria maritima a historiquement été décrit sous plusieurs synonymes. Pourquoi est-il risqué d'agréger automatiquement toutes les observations associées à ces synonymes dans une analyse de biodiversité ?",
+    "expected_skills": [
+      "synonymie taxonomique",
+      "gestion de l'incertitude",
+      "qualité des données"
+    ]
+  },
+  {
+    "id": "TAX-HARD-002",
+    "topic": "synonymie réglementaire",
+    "difficulty": "expert",
+    "question": "Une espèce apparaît sous un nom scientifique devenu obsolète dans un arrêté de protection. Peut-on conclure que la protection ne s'applique plus au taxon actuellement reconnu ? Expliquez.",
+    "expected_skills": [
+      "réglementation",
+      "synonymie",
+      "raisonnement juridique"
+    ]
+  },
+  {
+    "id": "TAX-HARD-003",
+    "topic": "taxonomic split",
+    "difficulty": "expert",
+    "question": "Une espèce historiquement reconnue a été divisée en trois espèces distinctes lors d'une révision taxonomique récente. Comment interpréter les observations historiques réalisées avant cette révision ?",
+    "expected_skills": [
+      "taxonomic split",
+      "gestion de l'incertitude",
+      "interprétation des données historiques"
+    ]
+  },
+  {
+    "id": "TAX-HARD-004",
+    "topic": "taxonomic lump",
+    "difficulty": "expert",
+    "question": "Deux espèces anciennement reconnues sont désormais fusionnées dans un même taxon. Quels impacts cela peut-il avoir sur les séries temporelles de biodiversité ?",
+    "expected_skills": [
+      "taxonomic lump",
+      "analyse temporelle",
+      "qualité des données"
+    ]
+  },
+  {
+    "id": "TAX-HARD-005",
+    "topic": "concept taxonomique",
+    "difficulty": "expert",
+    "question": "Quelle différence existe entre un changement de nom scientifique et un changement de concept taxonomique ?",
+    "expected_skills": [
+      "taxonomie",
+      "épistémologie",
+      "raisonnement scientifique"
+    ]
+  },
+  {
+    "id": "TAX-HARD-006",
+    "topic": "espèces cryptiques",
+    "difficulty": "expert",
+    "question": "Pourquoi les complexes d'espèces cryptiques représentent-ils un défi particulier pour les études d'impact environnemental ?",
+    "expected_skills": [
+      "espèces cryptiques",
+      "écologie",
+      "évaluation environnementale"
+    ]
+  },
+  {
+    "id": "TAX-HARD-007",
+    "topic": "adn environnemental",
+    "difficulty": "expert",
+    "question": "Un résultat d'ADN environnemental est attribué à un complexe d'espèces. Peut-on conclure à la présence d'une espèce précise ? Pourquoi ?",
+    "expected_skills": [
+      "eDNA",
+      "incertitude",
+      "interprétation écologique"
+    ]
+  },
+  {
+    "id": "TAX-HARD-008",
+    "topic": "taxref",
+    "difficulty": "expert",
+    "question": "Pourquoi est-il important d'associer un identifiant taxonomique stable plutôt qu'un simple nom scientifique dans une base de données biodiversité ?",
+    "expected_skills": [
+      "TAXREF",
+      "gestion des référentiels",
+      "interopérabilité"
+    ]
+  },
+  {
+    "id": "TAX-HARD-009",
+    "topic": "sous-especes",
+    "difficulty": "expert",
+    "question": "Une observation identifiée à l'espèce permet-elle toujours de conclure à la présence d'une sous-espèce particulière ?",
+    "expected_skills": [
+      "taxonomie",
+      "niveau d'identification",
+      "incertitude"
+    ]
+  },
+  {
+    "id": "TAX-HARD-010",
+    "topic": "protection",
+    "difficulty": "expert",
+    "question": "Deux sous-espèces d'une même espèce peuvent-elles bénéficier de statuts réglementaires différents ?",
+    "expected_skills": [
+      "réglementation",
+      "taxonomie",
+      "conservation"
+    ]
+  },
+  {
+    "id": "TAX-HARD-011",
+    "topic": "classification",
+    "difficulty": "expert",
+    "question": "Classez correctement les niveaux suivants du plus inclusif au plus spécifique : Mammalia, Chiroptera, Vespertilionidae, Pipistrellus, Pipistrellus pipistrellus.",
+    "expected_skills": [
+      "classification biologique",
+      "hiérarchie taxonomique"
+    ]
+  },
+  {
+    "id": "TAX-HARD-012",
+    "topic": "raisonnement taxonomique",
+    "difficulty": "expert",
+    "question": "Toutes les espèces appartenant à un même genre partagent-elles nécessairement les mêmes statuts de conservation ou de protection ?",
+    "expected_skills": [
+      "taxonomie",
+      "conservation",
+      "raisonnement logique"
+    ]
+  },
+  {
+    "id": "TAX-HARD-013",
+    "topic": "taxonomie historique",
+    "difficulty": "expert",
+    "question": "Quelles précautions faut-il prendre lors de l'intégration d'inventaires naturalistes datant de plus de 30 ans dans une base de données moderne ?",
+    "expected_skills": [
+      "historique taxonomique",
+      "gestion des données",
+      "qualité"
+    ]
+  },
+  {
+    "id": "TAX-HARD-014",
+    "topic": "noms vernaculaires",
+    "difficulty": "expert",
+    "question": "Pourquoi les noms vernaculaires sont-ils généralement insuffisants pour assurer l'interopérabilité des données de biodiversité ?",
+    "expected_skills": [
+      "nomenclature",
+      "interopérabilité",
+      "gestion des données"
+    ]
+  },
+  {
+    "id": "TAX-HARD-015",
+    "topic": "homonymie",
+    "difficulty": "expert",
+    "question": "Quels problèmes peuvent être causés par l'utilisation de noms vernaculaires identiques pour plusieurs espèces différentes ?",
+    "expected_skills": [
+      "homonymie",
+      "qualité des données"
+    ]
+  },
+  {
+    "id": "TAX-HARD-016",
+    "topic": "référentiels",
+    "difficulty": "expert",
+    "question": "Pourquoi deux référentiels taxonomiques reconnus peuvent-ils fournir des classifications différentes pour le même groupe biologique ?",
+    "expected_skills": [
+      "référentiels taxonomiques",
+      "épistémologie",
+      "gestion de l'incertitude"
+    ]
+  },
+  {
+    "id": "TAX-HARD-017",
+    "topic": "phylogénie",
+    "difficulty": "expert",
+    "question": "Comment les analyses moléculaires peuvent-elles conduire à une révision de la classification taxonomique d'un groupe d'espèces ?",
+    "expected_skills": [
+      "phylogénie",
+      "évolution",
+      "taxonomie"
+    ]
+  },
+  {
+    "id": "TAX-HARD-018",
+    "topic": "données ouvertes",
+    "difficulty": "expert",
+    "question": "Pourquoi les plateformes comme GBIF ou l'INPN conservent-elles souvent l'identification originale en plus de l'identification actuelle ?",
+    "expected_skills": [
+      "traçabilité",
+      "gestion des données",
+      "taxonomie"
+    ]
+  },
+  {
+    "id": "TAX-HARD-019",
+    "topic": "biais taxonomiques",
+    "difficulty": "expert",
+    "question": "Comment les changements taxonomiques peuvent-ils introduire des biais dans l'estimation de la richesse spécifique au cours du temps ?",
+    "expected_skills": [
+      "écologie",
+      "analyse temporelle",
+      "taxonomie"
+    ]
+  },
+  {
+    "id": "TAX-HARD-020",
+    "topic": "cas métier biodiversité",
+    "difficulty": "expert",
+    "question": "Dans une étude d'impact, quelles vérifications taxonomiques minimales doivent être réalisées avant d'interpréter les enjeux réglementaires associés à une liste d'espèces observées ?",
+    "expected_skills": [
+      "étude d'impact",
+      "taxonomie appliquée",
+      "réglementation",
+      "gestion du risque"
+    ]
+  }
+]

@@ -116,6 +116,44 @@ export function modelParams(model: string | null | undefined): string | null {
   return null;
 }
 
+// Indicative blended price in USD per 1 million tokens. A single representative
+// figure per model (not a live quote): the simple average of public input and
+// output list prices, rounded for readability. List prices change over time and
+// vary by region/tier, so the UI labels this "indicatif / indicative". Matched
+// by substring on the model name, most-specific-first so tagged variants win.
+const PRICE_RULES: { match: string; usdPerMTok: number }[] = [
+  // OpenAI
+  { match: "gpt-4o-mini", usdPerMTok: 0.38 },
+  { match: "gpt-4o", usdPerMTok: 6.25 },
+  { match: "gpt-3.5", usdPerMTok: 1.0 },
+  // Anthropic
+  { match: "haiku", usdPerMTok: 3.0 },
+  { match: "sonnet", usdPerMTok: 9.0 },
+  { match: "opus", usdPerMTok: 45.0 },
+  // Google Gemini
+  { match: "gemini-2.0-flash", usdPerMTok: 0.25 },
+  // Mistral (hosted)
+  { match: "mistral-large", usdPerMTok: 4.0 },
+  // Open-weight via OpenRouter (dashed naming, most-specific-first)
+  { match: "ministral-8b", usdPerMTok: 0.1 },
+  { match: "mistral-small-24b", usdPerMTok: 0.1 },
+  { match: "llama-3.2-1b", usdPerMTok: 0.01 },
+  { match: "llama-3.2", usdPerMTok: 0.02 },
+  { match: "qwen-2.5-7b", usdPerMTok: 0.04 },
+  { match: "gemma-3-4b", usdPerMTok: 0.02 },
+  { match: "llama-3.3", usdPerMTok: 0.2 },
+  { match: "gemma-2-27b", usdPerMTok: 0.27 },
+];
+
+export function modelPrice(model: string | null | undefined): number | null {
+  if (!model) return null;
+  const m = model.toLowerCase();
+  for (const rule of PRICE_RULES) {
+    if (m.includes(rule.match)) return rule.usdPerMTok;
+  }
+  return null;
+}
+
 // Open-source / open-weight models: those served via OpenRouter (the Replit AI
 // integration) plus the local Ollama runner. Proprietary API models
 // (OpenAI / Anthropic / Gemini / Mistral's hosted "-latest") are NOT open
