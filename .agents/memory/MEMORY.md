@@ -1,3 +1,4 @@
+- [Active benchmark dataset file](benchmark-active-dataset.md) — live app reads `biodiversity_benchmark_100_v4.json` (NOT the 800-question file); schema uses `section`, judge needs expected_answer_short+criteria.
 - [Biodiversity benchmark web app](benchmark-webapp.md) — React/Express UI wraps the Python CLI; local-subprocess polling (no 5min floor), inverted hallucination score, YAML description gotcha.
 - [benchmark-ui i18n](benchmark-i18n.md) — bilingual FR/EN via co-located tr(fr,en) + language-aware t(key); brand is "ALI Biodiversity Benchmark"; memo deps must include tr.
 - [benchmark-ui design system](benchmark-ui-design.md) — "Carnet de terrain" concept (Fraunces+Inter+mono, paper/green/ochre); ochre = inverted hallucination risk only.

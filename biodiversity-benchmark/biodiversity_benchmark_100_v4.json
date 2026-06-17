@@ -3,14 +3,15 @@
     "name": "Biodiversity Benchmark 100 - V4 Implicit Relational Reasoning",
     "version": "4.0",
     "language": "fr",
-    "total": 106,
+    "total": 126,
     "structure": {
       "factual_easy": 20,
       "factual_expert": 20,
       "bias_and_dilemmas": 20,
       "moral_dilemmas": 20,
       "implicit_knowledge_graph_reasoning": 20,
-      "factual_trap": 6
+      "factual_trap": 6,
+      "taxonomy_expert": 20
     },
     "purpose": "Benchmark court et discriminant pour comparer des LLM sur culture biodiversité, expertise réglementaire, biais socio-écologiques et raisonnement sur graphe de connaissance.",
     "recommended_prompting": "Pour les questions KG, demander explicitement au modèle de répondre uniquement à partir du graphe fourni.",
@@ -2100,6 +2101,306 @@
         "signalement explicite que l'élément (espèce, texte, dispositif) n'existe pas ou n'est pas vérifiable",
         "demande de vérification dans une source officielle",
         "absence d'hallucination réglementaire ou taxonomique"
+      ]
+    },
+    {
+      "id": "TAX-HARD-001",
+      "section": "taxonomy_expert",
+      "difficulty": "expert",
+      "question_type": "expert_domain_knowledge",
+      "question": "Le taxon végétal Armeria maritima a historiquement été décrit sous plusieurs synonymes. Pourquoi est-il risqué d'agréger automatiquement toutes les observations associées à ces synonymes dans une analyse de biodiversité ?",
+      "expected_answer_short": "Réponse attendue : agréger les synonymes sans vérifier les concepts taxonomiques peut mélanger des taxons non strictement équivalents, créer des doublons et fausser les comptages ; il faut établir la correspondance des concepts via un référentiel (TAXREF/CD_NOM), tracer l'identification d'origine et documenter l'incertitude avant toute agrégation.",
+      "evaluation_criteria": [
+        "précision métier",
+        "gestion de l'incertitude taxonomique",
+        "qualité du raisonnement",
+        "mention des référentiels/sources à vérifier (TAXREF, INPN)",
+        "absence d'hallucination réglementaire"
+      ]
+    },
+    {
+      "id": "TAX-HARD-002",
+      "section": "taxonomy_expert",
+      "difficulty": "expert",
+      "question_type": "expert_domain_knowledge",
+      "question": "Une espèce apparaît sous un nom scientifique devenu obsolète dans un arrêté de protection. Peut-on conclure que la protection ne s'applique plus au taxon actuellement reconnu ? Expliquez.",
+      "expected_answer_short": "Réponse attendue : non. La protection vise le taxon, pas la chaîne de caractères. Un nom obsolète dans un arrêté reste rattaché au taxon actuellement reconnu via la synonymie ; il faut établir la correspondance nom historique → taxon actuel (TAXREF/INPN) et signaler l'incertitude si elle n'est pas univoque.",
+      "evaluation_criteria": [
+        "précision métier",
+        "gestion de l'incertitude taxonomique",
+        "qualité du raisonnement",
+        "mention des référentiels/sources à vérifier (TAXREF, INPN)",
+        "absence d'hallucination réglementaire"
+      ]
+    },
+    {
+      "id": "TAX-HARD-003",
+      "section": "taxonomy_expert",
+      "difficulty": "expert",
+      "question_type": "expert_domain_knowledge",
+      "question": "Une espèce historiquement reconnue a été divisée en trois espèces distinctes lors d'une révision taxonomique récente. Comment interpréter les observations historiques réalisées avant cette révision ?",
+      "expected_answer_short": "Réponse attendue : les observations antérieures au split sont ambiguës et peuvent correspondre à l'une ou l'autre des nouvelles espèces ; on ne réattribue pas automatiquement. Conserver l'identification d'origine, traiter au niveau du complexe/agrégat et ne réviser que si des éléments le permettent, en documentant l'incertitude.",
+      "evaluation_criteria": [
+        "précision métier",
+        "gestion de l'incertitude taxonomique",
+        "qualité du raisonnement",
+        "mention des référentiels/sources à vérifier (TAXREF, INPN)",
+        "absence d'hallucination réglementaire"
+      ]
+    },
+    {
+      "id": "TAX-HARD-004",
+      "section": "taxonomy_expert",
+      "difficulty": "expert",
+      "question_type": "expert_domain_knowledge",
+      "question": "Deux espèces anciennement reconnues sont désormais fusionnées dans un même taxon. Quels impacts cela peut-il avoir sur les séries temporelles de biodiversité ?",
+      "expected_answer_short": "Réponse attendue : la fusion introduit une rupture méthodologique : les comptages avant/après ne sont plus comparables au même niveau, d'où un risque de fausses tendances de richesse. Harmoniser rétrospectivement au concept actuel, documenter le changement et ne pas interpréter la rupture comme un signal écologique.",
+      "evaluation_criteria": [
+        "précision métier",
+        "gestion de l'incertitude taxonomique",
+        "qualité du raisonnement",
+        "mention des référentiels/sources à vérifier (TAXREF, INPN)",
+        "absence d'hallucination réglementaire"
+      ]
+    },
+    {
+      "id": "TAX-HARD-005",
+      "section": "taxonomy_expert",
+      "difficulty": "expert",
+      "question_type": "expert_domain_knowledge",
+      "question": "Quelle différence existe entre un changement de nom scientifique et un changement de concept taxonomique ?",
+      "expected_answer_short": "Réponse attendue : un changement de nom est purement nomenclatural (même concept, étiquette différente) ; un changement de concept modifie la délimitation du taxon (ce qu'il englobe). Le premier n'affecte pas le périmètre biologique, le second oui, avec des impacts différents sur les données.",
+      "evaluation_criteria": [
+        "précision métier",
+        "gestion de l'incertitude taxonomique",
+        "qualité du raisonnement",
+        "mention des référentiels/sources à vérifier (TAXREF, INPN)",
+        "absence d'hallucination réglementaire"
+      ]
+    },
+    {
+      "id": "TAX-HARD-006",
+      "section": "taxonomy_expert",
+      "difficulty": "expert",
+      "question_type": "expert_domain_knowledge",
+      "question": "Pourquoi les complexes d'espèces cryptiques représentent-ils un défi particulier pour les études d'impact environnemental ?",
+      "expected_answer_short": "Réponse attendue : les espèces cryptiques sont morphologiquement indiscernables mais distinctes ; une étude d'impact peut sous-estimer la diversité, manquer une espèce protégée ou mal évaluer les enjeux. Recourir à des méthodes complémentaires (génétique, bioacoustique), raisonner au niveau du complexe et documenter l'incertitude.",
+      "evaluation_criteria": [
+        "précision métier",
+        "gestion de l'incertitude taxonomique",
+        "qualité du raisonnement",
+        "mention des référentiels/sources à vérifier (TAXREF, INPN)",
+        "absence d'hallucination réglementaire"
+      ]
+    },
+    {
+      "id": "TAX-HARD-007",
+      "section": "taxonomy_expert",
+      "difficulty": "expert",
+      "question_type": "expert_domain_knowledge",
+      "question": "Un résultat d'ADN environnemental est attribué à un complexe d'espèces. Peut-on conclure à la présence d'une espèce précise ? Pourquoi ?",
+      "expected_answer_short": "Réponse attendue : non. Un résultat eDNA attribué à un complexe ne permet pas de conclure à une espèce précise (résolution du marqueur, bases de référence incomplètes, ADN transporté). On conclut à la présence probable du complexe en précisant la résolution atteinte et l'incertitude.",
+      "evaluation_criteria": [
+        "précision métier",
+        "gestion de l'incertitude taxonomique",
+        "qualité du raisonnement",
+        "mention des référentiels/sources à vérifier (TAXREF, INPN)",
+        "absence d'hallucination réglementaire"
+      ]
+    },
+    {
+      "id": "TAX-HARD-008",
+      "section": "taxonomy_expert",
+      "difficulty": "expert",
+      "question_type": "expert_domain_knowledge",
+      "question": "Pourquoi est-il important d'associer un identifiant taxonomique stable plutôt qu'un simple nom scientifique dans une base de données biodiversité ?",
+      "expected_answer_short": "Réponse attendue : un identifiant stable (ex. CD_NOM) reste lié au taxon malgré les changements de noms et de synonymes ; il garantit la traçabilité, l'interopérabilité et évite les confusions d'homonymie, alors qu'un simple nom est ambigu et instable dans le temps.",
+      "evaluation_criteria": [
+        "précision métier",
+        "gestion de l'incertitude taxonomique",
+        "qualité du raisonnement",
+        "mention des référentiels/sources à vérifier (TAXREF, INPN)",
+        "absence d'hallucination réglementaire"
+      ]
+    },
+    {
+      "id": "TAX-HARD-009",
+      "section": "taxonomy_expert",
+      "difficulty": "expert",
+      "question_type": "expert_domain_knowledge",
+      "question": "Une observation identifiée à l'espèce permet-elle toujours de conclure à la présence d'une sous-espèce particulière ?",
+      "expected_answer_short": "Réponse attendue : non. Une identification à l'espèce n'implique pas une sous-espèce particulière, sauf aire ou critère discriminant. Conclure à la sous-espèce serait une sur-interprétation : rester au niveau réellement identifié et documenter l'incertitude.",
+      "evaluation_criteria": [
+        "précision métier",
+        "gestion de l'incertitude taxonomique",
+        "qualité du raisonnement",
+        "mention des référentiels/sources à vérifier (TAXREF, INPN)",
+        "absence d'hallucination réglementaire"
+      ]
+    },
+    {
+      "id": "TAX-HARD-010",
+      "section": "taxonomy_expert",
+      "difficulty": "expert",
+      "question_type": "expert_domain_knowledge",
+      "question": "Deux sous-espèces d'une même espèce peuvent-elles bénéficier de statuts réglementaires différents ?",
+      "expected_answer_short": "Réponse attendue : oui. Le statut réglementaire peut différer entre sous-espèces (ou populations) d'une même espèce. Vérifier le texte de protection au niveau taxonomique exact visé (espèce vs sous-espèce) via INPN/arrêtés, sans généraliser.",
+      "evaluation_criteria": [
+        "précision métier",
+        "gestion de l'incertitude taxonomique",
+        "qualité du raisonnement",
+        "mention des référentiels/sources à vérifier (TAXREF, INPN)",
+        "absence d'hallucination réglementaire"
+      ]
+    },
+    {
+      "id": "TAX-HARD-011",
+      "section": "taxonomy_expert",
+      "difficulty": "expert",
+      "question_type": "expert_domain_knowledge",
+      "question": "Classez correctement les niveaux suivants du plus inclusif au plus spécifique : Mammalia, Chiroptera, Vespertilionidae, Pipistrellus, Pipistrellus pipistrellus.",
+      "expected_answer_short": "Réponse attendue : du plus inclusif au plus spécifique : Mammalia (classe) > Chiroptera (ordre) > Vespertilionidae (famille) > Pipistrellus (genre) > Pipistrellus pipistrellus (espèce).",
+      "evaluation_criteria": [
+        "précision métier",
+        "gestion de l'incertitude taxonomique",
+        "qualité du raisonnement",
+        "mention des référentiels/sources à vérifier (TAXREF, INPN)",
+        "absence d'hallucination réglementaire"
+      ]
+    },
+    {
+      "id": "TAX-HARD-012",
+      "section": "taxonomy_expert",
+      "difficulty": "expert",
+      "question_type": "expert_domain_knowledge",
+      "question": "Toutes les espèces appartenant à un même genre partagent-elles nécessairement les mêmes statuts de conservation ou de protection ?",
+      "expected_answer_short": "Réponse attendue : non. Appartenir au même genre n'implique pas le même statut de conservation ou de protection ; chaque espèce a son évaluation (UICN) et son statut réglementaire propres. Vérifier espèce par espèce.",
+      "evaluation_criteria": [
+        "précision métier",
+        "gestion de l'incertitude taxonomique",
+        "qualité du raisonnement",
+        "mention des référentiels/sources à vérifier (TAXREF, INPN)",
+        "absence d'hallucination réglementaire"
+      ]
+    },
+    {
+      "id": "TAX-HARD-013",
+      "section": "taxonomy_expert",
+      "difficulty": "expert",
+      "question_type": "expert_domain_knowledge",
+      "question": "Quelles précautions faut-il prendre lors de l'intégration d'inventaires naturalistes datant de plus de 30 ans dans une base de données moderne ?",
+      "expected_answer_short": "Réponse attendue : réconcilier la nomenclature historique avec le référentiel actuel (synonymes, splits/lumps), conserver l'identification d'origine, tenir compte des changements de méthode et d'effort d'échantillonnage, qualifier l'incertitude géographique et ne pas comparer brutalement avec des données récentes.",
+      "evaluation_criteria": [
+        "précision métier",
+        "gestion de l'incertitude taxonomique",
+        "qualité du raisonnement",
+        "mention des référentiels/sources à vérifier (TAXREF, INPN)",
+        "absence d'hallucination réglementaire"
+      ]
+    },
+    {
+      "id": "TAX-HARD-014",
+      "section": "taxonomy_expert",
+      "difficulty": "expert",
+      "question_type": "expert_domain_knowledge",
+      "question": "Pourquoi les noms vernaculaires sont-ils généralement insuffisants pour assurer l'interopérabilité des données de biodiversité ?",
+      "expected_answer_short": "Réponse attendue : les noms vernaculaires sont ambigus (variabilité régionale, multilinguisme, un nom pour plusieurs espèces et inversement) ; ils ne garantissent pas l'interopérabilité. S'appuyer sur le nom scientifique associé à un identifiant taxonomique stable.",
+      "evaluation_criteria": [
+        "précision métier",
+        "gestion de l'incertitude taxonomique",
+        "qualité du raisonnement",
+        "mention des référentiels/sources à vérifier (TAXREF, INPN)",
+        "absence d'hallucination réglementaire"
+      ]
+    },
+    {
+      "id": "TAX-HARD-015",
+      "section": "taxonomy_expert",
+      "difficulty": "expert",
+      "question_type": "expert_domain_knowledge",
+      "question": "Quels problèmes peuvent être causés par l'utilisation de noms vernaculaires identiques pour plusieurs espèces différentes ?",
+      "expected_answer_short": "Réponse attendue : un même nom vernaculaire pour plusieurs espèces provoque des confusions d'identification, des agrégations erronées, des erreurs réglementaires et des pertes de traçabilité ; d'où la nécessité d'un référentiel scientifique.",
+      "evaluation_criteria": [
+        "précision métier",
+        "gestion de l'incertitude taxonomique",
+        "qualité du raisonnement",
+        "mention des référentiels/sources à vérifier (TAXREF, INPN)",
+        "absence d'hallucination réglementaire"
+      ]
+    },
+    {
+      "id": "TAX-HARD-016",
+      "section": "taxonomy_expert",
+      "difficulty": "expert",
+      "question_type": "expert_domain_knowledge",
+      "question": "Pourquoi deux référentiels taxonomiques reconnus peuvent-ils fournir des classifications différentes pour le même groupe biologique ?",
+      "expected_answer_short": "Réponse attendue : la taxonomie est une science en évolution ; deux référentiels peuvent diverger selon les concepts retenus, les écoles, l'intégration de données moléculaires et les rythmes de mise à jour. Ce ne sont pas des erreurs mais des choix : préciser le référentiel et sa version, et gérer l'incertitude.",
+      "evaluation_criteria": [
+        "précision métier",
+        "gestion de l'incertitude taxonomique",
+        "qualité du raisonnement",
+        "mention des référentiels/sources à vérifier (TAXREF, INPN)",
+        "absence d'hallucination réglementaire"
+      ]
+    },
+    {
+      "id": "TAX-HARD-017",
+      "section": "taxonomy_expert",
+      "difficulty": "expert",
+      "question_type": "expert_domain_knowledge",
+      "question": "Comment les analyses moléculaires peuvent-elles conduire à une révision de la classification taxonomique d'un groupe d'espèces ?",
+      "expected_answer_short": "Réponse attendue : les analyses moléculaires révèlent les relations évolutives réelles (para/polyphylie) et conduisent à redéfinir, fusionner ou scinder des taxons pour refléter la monophylie, d'où des révisions de classification.",
+      "evaluation_criteria": [
+        "précision métier",
+        "gestion de l'incertitude taxonomique",
+        "qualité du raisonnement",
+        "mention des référentiels/sources à vérifier (TAXREF, INPN)",
+        "absence d'hallucination réglementaire"
+      ]
+    },
+    {
+      "id": "TAX-HARD-018",
+      "section": "taxonomy_expert",
+      "difficulty": "expert",
+      "question_type": "expert_domain_knowledge",
+      "question": "Pourquoi les plateformes comme GBIF ou l'INPN conservent-elles souvent l'identification originale en plus de l'identification actuelle ?",
+      "expected_answer_short": "Réponse attendue : conserver l'identification originale (verbatim) en plus de l'actuelle assure la traçabilité et la provenance, permet de rejouer les changements taxonomiques, d'auditer et de corriger sans perte d'information.",
+      "evaluation_criteria": [
+        "précision métier",
+        "gestion de l'incertitude taxonomique",
+        "qualité du raisonnement",
+        "mention des référentiels/sources à vérifier (TAXREF, INPN)",
+        "absence d'hallucination réglementaire"
+      ]
+    },
+    {
+      "id": "TAX-HARD-019",
+      "section": "taxonomy_expert",
+      "difficulty": "expert",
+      "question_type": "expert_domain_knowledge",
+      "question": "Comment les changements taxonomiques peuvent-ils introduire des biais dans l'estimation de la richesse spécifique au cours du temps ?",
+      "expected_answer_short": "Réponse attendue : les splits gonflent artificiellement la richesse et les lumps la réduisent, indépendamment de tout changement écologique réel ; sans harmonisation au même concept (backcasting taxonomique), les tendances temporelles sont biaisées.",
+      "evaluation_criteria": [
+        "précision métier",
+        "gestion de l'incertitude taxonomique",
+        "qualité du raisonnement",
+        "mention des référentiels/sources à vérifier (TAXREF, INPN)",
+        "absence d'hallucination réglementaire"
+      ]
+    },
+    {
+      "id": "TAX-HARD-020",
+      "section": "taxonomy_expert",
+      "difficulty": "expert",
+      "question_type": "expert_domain_knowledge",
+      "question": "Dans une étude d'impact, quelles vérifications taxonomiques minimales doivent être réalisées avant d'interpréter les enjeux réglementaires associés à une liste d'espèces observées ?",
+      "expected_answer_short": "Réponse attendue : valider les noms via TAXREF (synonymes, CD_NOM), contrôler le niveau d'identification et l'incertitude, vérifier les statuts réglementaires au bon niveau taxonomique et territorial (arrêtés, directives), et tracer les sources avant d'interpréter les enjeux ; signaler explicitement les incertitudes.",
+      "evaluation_criteria": [
+        "précision métier",
+        "gestion de l'incertitude taxonomique",
+        "qualité du raisonnement",
+        "mention des référentiels/sources à vérifier (TAXREF, INPN)",
+        "absence d'hallucination réglementaire"
       ]
     }
   ]
