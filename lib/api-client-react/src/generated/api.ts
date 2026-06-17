@@ -34,6 +34,9 @@ import type {
   QuestionVoteCount,
   QuestionVoteInput,
   QuestionVotes,
+  ReviewInput,
+  ReviewLeaderboard,
+  ReviewQuestion,
   Run,
   RunInput,
   RunResults,
@@ -1322,4 +1325,230 @@ export const useSubmitQuestionVote = <TError = ErrorType<Error>,
       > => {
       return useMutation(getSubmitQuestionVoteMutationOptions(options));
     }
+
+export const getGetReviewQuestionUrl = () => {
+
+
+
+
+  return `/api/benchmark/review/question`
+}
+
+/**
+ * Reuses already-stored run results — no live model calls. Returns one random question that has at least one usable stored answer, with each model's answer (model names visible). Judge scores are omitted so reviewers aren't anchored.
+ * @summary A random dataset question with every model's stored answer, for human review
+ */
+export const getReviewQuestion = async ( options?: RequestInit): Promise<ReviewQuestion> => {
+
+  return customFetch<ReviewQuestion>(getGetReviewQuestionUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetReviewQuestionQueryKey = () => {
+    return [
+    `/api/benchmark/review/question`
+    ] as const;
+    }
+
+
+export const getGetReviewQuestionQueryOptions = <TData = Awaited<ReturnType<typeof getReviewQuestion>>, TError = ErrorType<Error>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getReviewQuestion>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetReviewQuestionQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getReviewQuestion>>> = ({ signal }) => getReviewQuestion({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getReviewQuestion>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetReviewQuestionQueryResult = NonNullable<Awaited<ReturnType<typeof getReviewQuestion>>>
+export type GetReviewQuestionQueryError = ErrorType<Error>
+
+
+/**
+ * @summary A random dataset question with every model's stored answer, for human review
+ */
+
+export function useGetReviewQuestion<TData = Awaited<ReturnType<typeof getReviewQuestion>>, TError = ErrorType<Error>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getReviewQuestion>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetReviewQuestionQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getSubmitReviewUrl = () => {
+
+
+
+
+  return `/api/benchmark/review/score`
+}
+
+/**
+ * @summary Submit human scores (5 criteria, 0–5 each) for a question's model answers
+ */
+export const submitReview = async (reviewInput: ReviewInput, options?: RequestInit): Promise<ReviewLeaderboard> => {
+
+  return customFetch<ReviewLeaderboard>(getSubmitReviewUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      reviewInput,)
+  }
+);}
+
+
+
+
+export const getSubmitReviewMutationOptions = <TError = ErrorType<Error>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof submitReview>>, TError,{data: BodyType<ReviewInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof submitReview>>, TError,{data: BodyType<ReviewInput>}, TContext> => {
+
+const mutationKey = ['submitReview'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof submitReview>>, {data: BodyType<ReviewInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  submitReview(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SubmitReviewMutationResult = NonNullable<Awaited<ReturnType<typeof submitReview>>>
+    export type SubmitReviewMutationBody = BodyType<ReviewInput>
+    export type SubmitReviewMutationError = ErrorType<Error>
+
+    /**
+ * @summary Submit human scores (5 criteria, 0–5 each) for a question's model answers
+ */
+export const useSubmitReview = <TError = ErrorType<Error>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof submitReview>>, TError,{data: BodyType<ReviewInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof submitReview>>,
+        TError,
+        {data: BodyType<ReviewInput>},
+        TContext
+      > => {
+      return useMutation(getSubmitReviewMutationOptions(options));
+    }
+
+export const getGetReviewLeaderboardUrl = () => {
+
+
+
+
+  return `/api/benchmark/review/leaderboard`
+}
+
+/**
+ * @summary Community human-score leaderboard aggregated from review scores
+ */
+export const getReviewLeaderboard = async ( options?: RequestInit): Promise<ReviewLeaderboard> => {
+
+  return customFetch<ReviewLeaderboard>(getGetReviewLeaderboardUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetReviewLeaderboardQueryKey = () => {
+    return [
+    `/api/benchmark/review/leaderboard`
+    ] as const;
+    }
+
+
+export const getGetReviewLeaderboardQueryOptions = <TData = Awaited<ReturnType<typeof getReviewLeaderboard>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getReviewLeaderboard>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetReviewLeaderboardQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getReviewLeaderboard>>> = ({ signal }) => getReviewLeaderboard({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getReviewLeaderboard>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetReviewLeaderboardQueryResult = NonNullable<Awaited<ReturnType<typeof getReviewLeaderboard>>>
+export type GetReviewLeaderboardQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Community human-score leaderboard aggregated from review scores
+ */
+
+export function useGetReviewLeaderboard<TData = Awaited<ReturnType<typeof getReviewLeaderboard>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getReviewLeaderboard>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetReviewLeaderboardQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
 

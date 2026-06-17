@@ -14,6 +14,9 @@ import {
   SubmitArenaVoteBody,
   SubmitContactBody,
   SubmitQuestionVoteBody,
+  SubmitReviewBody,
+  GetReviewQuestionResponse,
+  GetReviewLeaderboardResponse,
   TranslateTextsBody,
 } from "@workspace/api-zod";
 import { appendFileSync } from "node:fs";
@@ -44,6 +47,12 @@ import {
   answersForQuestion,
   isKnownQuestion,
 } from "../lib/benchmark/question-answers";
+import {
+  HumanReviewError,
+  getReviewLeaderboard,
+  randomReviewQuestion,
+  recordReview,
+} from "../lib/benchmark/human-reviews";
 import {
   TranslateValidationError,
   translateTexts,
@@ -280,6 +289,47 @@ router.post("/benchmark/questions/vote", (req, res) => {
     req.log.error({ err }, "Échec de l'enregistrement du vote question");
     res.status(500).json({ error: "Erreur interne lors de l'enregistrement du vote." });
   }
+});
+
+// --- Community human review & scoring (5 criteria, 0–5, over stored answers) ---
+
+router.get("/benchmark/review/question", (_req, res) => {
+  const question = randomReviewQuestion();
+  if (!question) {
+    res.status(404).json({
+      error:
+        "Aucune question ne dispose encore de réponses générées à évaluer.",
+    });
+    return;
+  }
+  res.json(GetReviewQuestionResponse.parse(question));
+});
+
+router.post("/benchmark/review/score", (req, res) => {
+  const parsed = SubmitReviewBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.issues[0]?.message ?? "Notes invalides" });
+    return;
+  }
+  try {
+    const leaderboard = recordReview(
+      parsed.data.reviewerId,
+      parsed.data.questionId,
+      parsed.data.scores,
+    );
+    res.status(201).json(GetReviewLeaderboardResponse.parse(leaderboard));
+  } catch (err) {
+    if (err instanceof HumanReviewError) {
+      res.status(400).json({ error: err.message });
+      return;
+    }
+    req.log.error({ err }, "Échec de l'enregistrement de l'évaluation humaine");
+    res.status(500).json({ error: "Erreur interne lors de l'enregistrement de l'évaluation." });
+  }
+});
+
+router.get("/benchmark/review/leaderboard", (_req, res) => {
+  res.json(GetReviewLeaderboardResponse.parse(getReviewLeaderboard()));
 });
 
 export default router;

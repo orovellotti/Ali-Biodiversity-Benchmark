@@ -383,3 +383,81 @@ export interface QuestionVoteInput {
   vote: QuestionVoteInputVote;
 }
 
+export interface ReviewAnswer {
+  provider: string;
+  model: string;
+  response: string;
+}
+
+export interface ReviewQuestion {
+  questionId: string;
+  question: string;
+  answers: ReviewAnswer[];
+}
+
+export interface ReviewAnswerScore {
+  provider: string;
+  model: string;
+  /**
+     * @minimum 0
+     * @maximum 5
+     */
+  accuracy: number;
+  /**
+     * @minimum 0
+     * @maximum 5
+     */
+  uncertainty: number;
+  /**
+     * @minimum 0
+     * @maximum 5
+     */
+  justification: number;
+  /**
+     * @minimum 0
+     * @maximum 5
+     */
+  sources: number;
+  /**
+     * Inverted: 5 = no regulatory hallucination risk (higher is better)
+     * @minimum 0
+     * @maximum 5
+     */
+  hallucination: number;
+}
+
+export interface ReviewInput {
+  /**
+     * @minLength 1
+     * @maxLength 64
+     */
+  reviewerId: string;
+  /**
+     * @minLength 1
+     * @maxLength 200
+     */
+  questionId: string;
+  /**
+     * @minItems 1
+     * @maxItems 50
+     */
+  scores: ReviewAnswerScore[];
+}
+
+export interface ReviewModelRanking {
+  provider: string;
+  model: string;
+  accuracy: number;
+  uncertainty: number;
+  justification: number;
+  sources: number;
+  hallucination: number;
+  overall: number;
+  nReviews: number;
+}
+
+export interface ReviewLeaderboard {
+  totalReviews: number;
+  rankings: ReviewModelRanking[];
+}
+

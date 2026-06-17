@@ -361,3 +361,78 @@ export const SubmitQuestionVoteBody = zod.object({
 })
 
 
+/**
+ * Reuses already-stored run results — no live model calls. Returns one random question that has at least one usable stored answer, with each model's answer (model names visible). Judge scores are omitted so reviewers aren't anchored.
+ * @summary A random dataset question with every model's stored answer, for human review
+ */
+export const GetReviewQuestionResponse = zod.object({
+  "questionId": zod.string(),
+  "question": zod.string(),
+  "answers": zod.array(zod.object({
+  "provider": zod.string(),
+  "model": zod.string(),
+  "response": zod.string()
+}))
+})
+
+
+/**
+ * @summary Submit human scores (5 criteria, 0–5 each) for a question's model answers
+ */
+export const submitReviewBodyReviewerIdMax = 64;
+
+export const submitReviewBodyQuestionIdMax = 200;
+
+export const submitReviewBodyScoresItemAccuracyMin = 0;
+export const submitReviewBodyScoresItemAccuracyMax = 5;
+
+export const submitReviewBodyScoresItemUncertaintyMin = 0;
+export const submitReviewBodyScoresItemUncertaintyMax = 5;
+
+export const submitReviewBodyScoresItemJustificationMin = 0;
+export const submitReviewBodyScoresItemJustificationMax = 5;
+
+export const submitReviewBodyScoresItemSourcesMin = 0;
+export const submitReviewBodyScoresItemSourcesMax = 5;
+
+export const submitReviewBodyScoresItemHallucinationMin = 0;
+export const submitReviewBodyScoresItemHallucinationMax = 5;
+
+export const submitReviewBodyScoresMax = 50;
+
+
+
+export const SubmitReviewBody = zod.object({
+  "reviewerId": zod.string().min(1).max(submitReviewBodyReviewerIdMax),
+  "questionId": zod.string().min(1).max(submitReviewBodyQuestionIdMax),
+  "scores": zod.array(zod.object({
+  "provider": zod.string(),
+  "model": zod.string(),
+  "accuracy": zod.number().min(submitReviewBodyScoresItemAccuracyMin).max(submitReviewBodyScoresItemAccuracyMax),
+  "uncertainty": zod.number().min(submitReviewBodyScoresItemUncertaintyMin).max(submitReviewBodyScoresItemUncertaintyMax),
+  "justification": zod.number().min(submitReviewBodyScoresItemJustificationMin).max(submitReviewBodyScoresItemJustificationMax),
+  "sources": zod.number().min(submitReviewBodyScoresItemSourcesMin).max(submitReviewBodyScoresItemSourcesMax),
+  "hallucination": zod.number().min(submitReviewBodyScoresItemHallucinationMin).max(submitReviewBodyScoresItemHallucinationMax).describe('Inverted: 5 = no regulatory hallucination risk (higher is better)')
+})).min(1).max(submitReviewBodyScoresMax)
+})
+
+
+/**
+ * @summary Community human-score leaderboard aggregated from review scores
+ */
+export const GetReviewLeaderboardResponse = zod.object({
+  "totalReviews": zod.number(),
+  "rankings": zod.array(zod.object({
+  "provider": zod.string(),
+  "model": zod.string(),
+  "accuracy": zod.number(),
+  "uncertainty": zod.number(),
+  "justification": zod.number(),
+  "sources": zod.number(),
+  "hallucination": zod.number(),
+  "overall": zod.number(),
+  "nReviews": zod.number()
+}))
+})
+
+

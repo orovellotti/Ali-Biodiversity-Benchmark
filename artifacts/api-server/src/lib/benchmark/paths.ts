@@ -62,6 +62,16 @@ export function questionVotesFilePath(): string {
   return path.join(dir, "votes.jsonl");
 }
 
+/**
+ * JSONL file where community human review scores (per model, per criterion) are
+ * appended. Lives outside `runs/` so it is never mistaken for a benchmark run.
+ */
+export function humanReviewsFilePath(): string {
+  const dir = path.join(benchmarkDir(), "reviews");
+  fs.mkdirSync(dir, { recursive: true });
+  return path.join(dir, "scores.jsonl");
+}
+
 const RUN_ID_RE = /^[A-Za-z0-9_-]+$/;
 
 /** Validate a runId and resolve its directory, guarding against path traversal. */

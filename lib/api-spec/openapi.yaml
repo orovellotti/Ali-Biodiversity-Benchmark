@@ -354,6 +354,61 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /benchmark/review/question:
+    get:
+      operationId: getReviewQuestion
+      tags: [benchmark]
+      summary: A random dataset question with every model's stored answer, for human review
+      description: Reuses already-stored run results — no live model calls. Returns one random question that has at least one usable stored answer, with each model's answer (model names visible). Judge scores are omitted so reviewers aren't anchored.
+      responses:
+        "200":
+          description: A question with model answers to review
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReviewQuestion"
+        "404":
+          description: No question has stored answers yet
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /benchmark/review/score:
+    post:
+      operationId: submitReview
+      tags: [benchmark]
+      summary: Submit human scores (5 criteria, 0–5 each) for a question's model answers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReviewInput"
+      responses:
+        "201":
+          description: Scores recorded and the refreshed community leaderboard
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReviewLeaderboard"
+        "400":
+          description: Invalid scores
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /benchmark/review/leaderboard:
+    get:
+      operationId: getReviewLeaderboard
+      tags: [benchmark]
+      summary: Community human-score leaderboard aggregated from review scores
+      responses:
+        "200":
+          description: Leaderboard
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReviewLeaderboard"
 components:
   schemas:
     HealthStatus:
@@ -852,3 +907,106 @@ components:
         vote:
           type: string
           enum: [up, down, none]
+    ReviewAnswer:
+      type: object
+      required: [provider, model, response]
+      properties:
+        provider:
+          type: string
+        model:
+          type: string
+        response:
+          type: string
+    ReviewQuestion:
+      type: object
+      required: [questionId, question, answers]
+      properties:
+        questionId:
+          type: string
+        question:
+          type: string
+        answers:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReviewAnswer"
+    ReviewAnswerScore:
+      type: object
+      required:
+        [provider, model, accuracy, uncertainty, justification, sources, hallucination]
+      properties:
+        provider:
+          type: string
+        model:
+          type: string
+        accuracy:
+          type: integer
+          minimum: 0
+          maximum: 5
+        uncertainty:
+          type: integer
+          minimum: 0
+          maximum: 5
+        justification:
+          type: integer
+          minimum: 0
+          maximum: 5
+        sources:
+          type: integer
+          minimum: 0
+          maximum: 5
+        hallucination:
+          type: integer
+          minimum: 0
+          maximum: 5
+          description: "Inverted: 5 = no regulatory hallucination risk (higher is better)"
+    ReviewInput:
+      type: object
+      required: [reviewerId, questionId, scores]
+      properties:
+        reviewerId:
+          type: string
+          minLength: 1
+          maxLength: 64
+        questionId:
+          type: string
+          minLength: 1
+          maxLength: 200
+        scores:
+          type: array
+          minItems: 1
+          maxItems: 50
+          items:
+            $ref: "#/components/schemas/ReviewAnswerScore"
+    ReviewModelRanking:
+      type: object
+      required:
+        [provider, model, accuracy, uncertainty, justification, sources, hallucination, overall, nReviews]
+      properties:
+        provider:
+          type: string
+        model:
+          type: string
+        accuracy:
+          type: number
+        uncertainty:
+          type: number
+        justification:
+          type: number
+        sources:
+          type: number
+        hallucination:
+          type: number
+        overall:
+          type: number
+        nReviews:
+          type: integer
+    ReviewLeaderboard:
+      type: object
+      required: [totalReviews, rankings]
+      properties:
+        totalReviews:
+          type: integer
+        rankings:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReviewModelRanking"
