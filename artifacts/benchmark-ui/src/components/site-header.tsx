@@ -19,7 +19,6 @@ export function SiteHeader({
     { href: "/resultats", label: tr("Résultats", "Results") },
     { href: "/questions", label: tr("Questions", "Questions") },
     { href: "/comparer", label: tr("Comparer", "Compare") },
-    { href: "/arena", label: tr("Arène", "Arena") },
     { href: "/revue", label: tr("Évaluer", "Review") },
     { href: "/methode", label: tr("Méthode", "Paper") },
     { href: "/contact", label: tr("Contact", "Contact") },

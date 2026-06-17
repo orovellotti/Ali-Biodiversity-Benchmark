@@ -10,7 +10,6 @@ import { RunDetail } from "@/pages/run-detail";
 import { Results } from "@/pages/results";
 import { Questions } from "@/pages/questions";
 import { Compare } from "@/pages/compare";
-import { Arena } from "@/pages/arena";
 import { Review } from "@/pages/review";
 import { Methodology } from "@/pages/methodology";
 import { Contact } from "@/pages/contact";
@@ -36,7 +35,6 @@ function Router() {
       <Route path="/resultats" component={Results} />
       <Route path="/questions" component={Questions} />
       <Route path="/comparer" component={Compare} />
-      <Route path="/arena" component={Arena} />
       <Route path="/revue" component={Review} />
       <Route path="/methode" component={Methodology} />
       <Route path="/contact" component={Contact} />

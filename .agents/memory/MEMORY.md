@@ -12,3 +12,4 @@
 - [Benchmark share UI](benchmark-sharing.md) — social share is one reusable component (share-menu.tsx) reused by Questions + results page; run share text must not claim a "top model" for no-eval/dry-run runs.
 - [Benchmark re-run ops](benchmark-rerun-ops.md) — launch batches sequentially (1 active run max); Gemini free-tier key = zero quota (drop from models AND BENCHMARK_JUDGES); merge offset batches into one synthetic run dir for a full leaderboard.
 - [Benchmark comparative ranking](benchmark-comparative-ranking.md) — leaderboard sorts by meanRank asc (ties = shared competition rank); comparative judge ranks all models per question in ONE call; factual_trap baits detect fabrication.
+- [rg match-render artifact](rg-match-render-artifact.md) — ripgrep's highlighted match can render as a bogus "n" in tool output; don't mistake it for source corruption — READ the file to confirm.
